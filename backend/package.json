@@ -1,0 +1,43 @@
+{
+  "name": "top-odin-book",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/ChristoferLv/top-odin-book#readme",
+  "bugs": {
+    "url": "https://github.com/ChristoferLv/top-odin-book/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ChristoferLv/top-odin-book.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "prisma": {
+    "seed": "node seed.js"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14",
+    "prisma": "^7.9.1"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.9.1",
+    "@prisma/client": "^7.9.1",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-validator": "^7.3.2",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.2.0",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1",
+    "passport-local": "^1.0.0",
+    "pg": "^8.22.0"
+  }
+}
