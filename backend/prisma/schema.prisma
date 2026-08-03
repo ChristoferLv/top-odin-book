@@ -8,11 +8,54 @@ datasource db {
 }
 
 model Users {
-  id         Int      @id @default(autoincrement())
-  username   String   @unique @db.VarChar(30)
+  id         Int        @id @default(autoincrement())
+  username   String     @unique @db.VarChar(30)
   password   String
   picture    Bytes?
   mime       String?
-  created_at DateTime @default(now()) @db.Timestamptz(6)
+  created_at DateTime   @default(now()) @db.Timestamptz(6)
+  posts      Posts[]
+  comments   Comments[]
+  likes      Likes[]
+  followedBy Follows[]  @relation("followedBy")
+  following  Follows[]  @relation("following")
 }
 
+model Posts {
+  id        Int        @id @default(autoincrement())
+  content   String     @db.VarChar(500)
+  createdAt DateTime   @default(now())
+  authorId  Int
+  author    Users      @relation(fields: [authorId], references: [id])
+  comments  Comments[]
+  likes     Likes[]
+}
+
+model Comments {
+  id        Int      @id @default(autoincrement())
+  content   String   @db.VarChar(500)
+  createdAt DateTime @default(now())
+  postId    Int
+  authorId  Int
+  post      Posts    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author    Users    @relation(fields: [authorId], references: [id])
+}
+
+model Likes {
+  id         Int   @id @default(autoincrement())
+  postId     Int
+  post       Posts @relation(fields: [postId], references: [id], onDelete: Cascade)
+  whoLikedId Int
+  whoLiked   Users @relation(fields: [whoLikedId], references: [id])
+
+  @@unique([postId, whoLikedId])
+}
+
+model Follows {
+  followedById Int
+  followedBy   Users @relation("followedBy", fields: [followedById], references: [id])
+  followingId  Int
+  following    Users @relation("following", fields: [followingId], references: [id])
+
+  @@id([followingId, followedById])
+}
