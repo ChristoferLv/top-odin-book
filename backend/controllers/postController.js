@@ -11,6 +11,7 @@ const validatePost = [
 const makePost = [
     validatePost,
     async (req, res) => {
+        console.log("here", req.body)
         const errors = validationResult(req);
 
         if (!errors.isEmpty()) {
@@ -39,9 +40,22 @@ const makePost = [
     }
 ];
 
-function getAllPosts(req, res) {
+async function getAllPosts(req, res) {
     try {
-        const result = await prisma.posts.findMany();
+        const result = await prisma.posts.findMany({
+            include:
+            {
+                author: {
+                    omit:
+                    {
+                        password: true,
+                        picture: true,
+                        mime: true,
+                        created_at: true
+                    }
+                }
+            }
+        });
 
         if (!result) {
             return res.status(500).send({ success: false });
@@ -54,7 +68,7 @@ function getAllPosts(req, res) {
     }
 }
 
-function getPostById(req, res) {
+async function getPostById(req, res) {
     try {
         const postId = parseInt(req.params.id);
 
@@ -118,7 +132,7 @@ const updatePost = [
     }
 ];
 
-function deletePost(req, res) {
+async function deletePost(req, res) {
     try {
         const postId = parseInt(req.params.id);
 
@@ -149,7 +163,7 @@ function deletePost(req, res) {
     }
 }
 
-function likePost(req, res) {
+async function likePost(req, res) {
     try {
         const postId = parseInt(req.params.id);
 
@@ -181,7 +195,7 @@ function likePost(req, res) {
     }
 }
 
-function removeLike(req, res) {
+async function removeLike(req, res) {
     try {
         const postId = parseInt(req.params.id);
 

@@ -24,7 +24,7 @@ model Users {
 model Posts {
   id        Int        @id @default(autoincrement())
   content   String     @db.VarChar(500)
-  createdAt DateTime   @default(now())
+  createdAt DateTime   @default(now()) @db.Timestamptz(6)
   authorId  Int
   author    Users      @relation(fields: [authorId], references: [id])
   comments  Comments[]
@@ -34,7 +34,7 @@ model Posts {
 model Comments {
   id        Int      @id @default(autoincrement())
   content   String   @db.VarChar(500)
-  createdAt DateTime @default(now())
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
   postId    Int
   authorId  Int
   post      Posts    @relation(fields: [postId], references: [id], onDelete: Cascade)
@@ -42,20 +42,22 @@ model Comments {
 }
 
 model Likes {
-  id         Int   @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
+  createdAt  DateTime @default(now()) @db.Timestamptz(6)
   postId     Int
-  post       Posts @relation(fields: [postId], references: [id], onDelete: Cascade)
+  post       Posts    @relation(fields: [postId], references: [id], onDelete: Cascade)
   whoLikedId Int
-  whoLiked   Users @relation(fields: [whoLikedId], references: [id])
+  whoLiked   Users    @relation(fields: [whoLikedId], references: [id])
 
   @@unique([postId, whoLikedId])
 }
 
 model Follows {
+  createdAt    DateTime @default(now()) @db.Timestamptz(6)
   followedById Int
-  followedBy   Users @relation("followedBy", fields: [followedById], references: [id])
+  followedBy   Users    @relation("followedBy", fields: [followedById], references: [id])
   followingId  Int
-  following    Users @relation("following", fields: [followingId], references: [id])
+  following    Users    @relation("following", fields: [followingId], references: [id])
 
   @@id([followingId, followedById])
 }

@@ -6,16 +6,17 @@ import { prisma } from "./lib/prisma.js";
 import cors from 'cors'
 import jwt from 'jsonwebtoken';
 import userRoutes from './routes/userRoutes.js';
+import postRouter from './routes/postRoutes.js';
 
 
 const app = express();
-app.use(json());
 
 const corsOptions = {
   origin: 'http://localhost:5173'
 };
 
 app.use(urlencoded({ extended: true }));
+app.use(json());
 app.use(cors(corsOptions));
 
 app.use((req, res, next) => {
@@ -33,6 +34,7 @@ app.use((req, res, next) => {
   }
 });
 
+app.use("/posts", postRouter)
 app.use("/users", userRoutes);
 app.use("/auth", authRouter);
 app.use("/", (req, res) => res.status(200).send({ message: "Ok" }))

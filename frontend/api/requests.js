@@ -67,10 +67,52 @@ async function getMe() {
     }
 }
 
+async function makePost(postData) {
+    try {
+        const token = localStorage.getItem("token");
+        const rawResponse = await fetch('http://localhost:3000/posts', {
+            method: 'POST',
+            headers: {
+                'Authorization': token,
+                'Content-type': 'application/x-www-form-urlencoded'
+            },
+            body: postData
+        });
+
+        return rawResponse;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+
+async function getAllPosts() {
+    const token = localStorage.getItem("token");
+    const rawReponse = await fetch('http://localhost:3000/posts', {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': token
+        }
+    });
+    if (rawReponse.status == 200) {
+        const response = await rawReponse.json();
+        if (response && response.success) {
+            console.log(response)
+            return response;
+        }
+    } else {
+        return null;
+    }
+}
+
 
 export {
     register,
     login,
     logOut,
-    getMe
+    getMe,
+    makePost,
+    getAllPosts
 }
