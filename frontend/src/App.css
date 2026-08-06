@@ -107,6 +107,7 @@ label {
 
     display: flex;
     flex-direction: column;
+    gap: 5px 0;
 
     padding: 20px;
     padding-right: 5px;
@@ -118,9 +119,13 @@ label {
         background-color: transparent;
         text-align: left;
         border: none;
+         cursor: pointer;
     }
 
     .navigation-button-inner {
+        display: flex;
+        /* align-items: center; */
+        gap: 0 15px;
         border-radius: 99px;
         width: fit-content;
         padding: 5px 15px;
@@ -129,6 +134,30 @@ label {
 
     .navigation-button:hover>.navigation-button-inner {
         background-color: #202020;
+    }
+
+    .navigation-icon {
+        display: flex;
+        align-self: center;
+    }
+
+    .navigation-icon svg {
+        width: 30px;
+        height: 30px;
+        object-fit: contain;
+        align-self: baseline;
+
+        path {
+            fill: transparent;
+            stroke: white;
+        }
+    }
+
+    .navigation-icon.active svg {
+        path {
+            fill: white;
+            stroke: none;
+        }
     }
 }
 
