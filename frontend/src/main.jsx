@@ -6,6 +6,9 @@ import LoginPage from './LoginPage.jsx';
 import { AuthProvider } from './AuthProvider.jsx'
 import MainPage from './MainPage.jsx';
 import RegisterPage from './RegisterPage.jsx';
+import MyPage from './MyPage.jsx';
+import PostsList from './components/PostsList.jsx';
+import ContentPane from './components/ContentPane.jsx';
 
 
 const router = createBrowserRouter([
@@ -13,9 +16,10 @@ const router = createBrowserRouter([
   { path: "/register", element: <RegisterPage /> },
   {
     path: "/",
-    element: <App />,
+    element: <MainPage />,
     children: [
-      { path: "/", element: <MainPage /> },
+      { path: "/:username", element: <MyPage /> },
+      { path: "/", element: <ContentPane /> },
       { path: "*", element: <Navigate to="/" replace /> }
     ]
   },

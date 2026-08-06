@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react";
 import NewPost from "./NewPost";
 import PostsList from "./PostsList";
-import { getAllPosts } from "../../api/requests";
+import { fetchAllPosts } from "../../api/requests";
 
 function ContentPane() {
-
     const [postsList, setPostsList] = useState([]);
 
     useEffect(() => {
         async function getPosts() {
-            const result = await getAllPosts();
+            const result = await fetchAllPosts();
             if (result && result.success) {
                 setPostsList(result.data)
             }

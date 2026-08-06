@@ -13,7 +13,7 @@ model Users {
   password   String
   picture    Bytes?
   mime       String?
-  created_at DateTime   @default(now()) @db.Timestamptz(6)
+  createdAt DateTime   @default(now()) @db.Timestamptz(6)
   posts      Posts[]
   comments   Comments[]
   likes      Likes[]

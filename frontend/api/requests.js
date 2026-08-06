@@ -86,7 +86,28 @@ async function makePost(postData) {
     }
 }
 
-async function getAllPosts() {
+async function fetchAllPosts() {
+    const token = localStorage.getItem("token");
+    const rawReponse = await fetch('http://localhost:3000/posts', {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': token
+        }
+    });
+    if (rawReponse.status == 200) {
+        const response = await rawReponse.json();
+        if (response && response.success) {
+            console.log(response)
+            return response;
+        }
+    } else {
+        return null;
+    }
+}
+
+async function fetchMyPosts() {
     const token = localStorage.getItem("token");
     const rawReponse = await fetch('http://localhost:3000/posts', {
         method: 'GET',
@@ -114,5 +135,6 @@ export {
     logOut,
     getMe,
     makePost,
-    getAllPosts
+    fetchAllPosts,
+    fetchMyPosts
 }

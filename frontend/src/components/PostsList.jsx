@@ -1,7 +1,6 @@
 import Post from "./Post";
 
 function PostsList({postsList}) {
-   
     return (<>
         <div className="posts-list">
             {postsList.map((post) => {

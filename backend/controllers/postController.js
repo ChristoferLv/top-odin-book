@@ -11,7 +11,6 @@ const validatePost = [
 const makePost = [
     validatePost,
     async (req, res) => {
-        console.log("here", req.body)
         const errors = validationResult(req);
 
         if (!errors.isEmpty()) {
@@ -51,7 +50,7 @@ async function getAllPosts(req, res) {
                         password: true,
                         picture: true,
                         mime: true,
-                        created_at: true
+                        createdAt: true
                     }
                 }
             }
