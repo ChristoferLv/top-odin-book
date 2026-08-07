@@ -2,6 +2,7 @@ import { useContext } from "react";
 import { AuthContext } from "./AuthContext";
 import NewPost from "./components/NewPost";
 import { Outlet, useNavigate } from "react-router";
+import UserToast from "./components/UserToast";
 
 function MainPage() {
     const { user, isLoading } = useContext(AuthContext);
@@ -65,6 +66,7 @@ function MainPage() {
                         Profile
                     </div>
                 </div>
+                <UserToast user={user} />
             </div>
             <Outlet />
             <div className="right-pane">
