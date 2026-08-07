@@ -2,6 +2,7 @@ import { useContext, useState } from "react";
 import { AuthContext } from "../AuthContext";
 import { makePost } from "../../api/requests";
 import UserPicture from "./UserPicture";
+import { USER_PICTURE_DEFAULT_SIZE} from "../utils/defaults"
 
 function NewPost() {
     const { user, isLoading } = useContext(AuthContext);
@@ -39,7 +40,7 @@ function NewPost() {
     return (
         <>
             <div className="new-post">
-                <UserPicture size={40}/>
+                <UserPicture size={USER_PICTURE_DEFAULT_SIZE}/>
                 <form onSubmit={handlePost}>
                     <textarea name="content" placeholder="What is happening?" onChange={handlePostContentChange} value={postContent}></textarea>
                     <input type="submit" value="Post" />

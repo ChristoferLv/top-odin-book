@@ -1,10 +1,11 @@
+import { USER_PICTURE_DEFAULT_SIZE } from "../utils/defaults";
 import UserPicture from "./UserPicture";
 
 function UserToast({ user }) {
     return (
         <>
             <div className="user-toast">
-                <UserPicture size={35} />
+                <UserPicture size={USER_PICTURE_DEFAULT_SIZE} />
                 <div className="user-toast-info">
                     <p>
                         {user.username}
