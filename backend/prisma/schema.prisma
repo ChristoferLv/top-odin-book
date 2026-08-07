@@ -8,27 +8,29 @@ datasource db {
 }
 
 model Users {
-  id         Int        @id @default(autoincrement())
-  username   String     @unique @db.VarChar(30)
+  id         Int         @id @default(autoincrement())
+  username   String      @unique @db.VarChar(30)
   password   String
   picture    Bytes?
   mime       String?
-  createdAt DateTime   @default(now()) @db.Timestamptz(6)
+  createdAt  DateTime    @default(now()) @db.Timestamptz(6)
   posts      Posts[]
   comments   Comments[]
   likes      Likes[]
-  followedBy Follows[]  @relation("followedBy")
-  following  Follows[]  @relation("following")
+  followedBy Follows[]   @relation("followedBy")
+  following  Follows[]   @relation("following")
+  bookmarks  Bookmarks[]
 }
 
 model Posts {
-  id        Int        @id @default(autoincrement())
-  content   String     @db.VarChar(500)
-  createdAt DateTime   @default(now()) @db.Timestamptz(6)
+  id        Int         @id @default(autoincrement())
+  content   String      @db.VarChar(500)
+  createdAt DateTime    @default(now()) @db.Timestamptz(6)
   authorId  Int
-  author    Users      @relation(fields: [authorId], references: [id])
+  author    Users       @relation(fields: [authorId], references: [id])
   comments  Comments[]
   likes     Likes[]
+  bookmarks Bookmarks[]
 }
 
 model Comments {
@@ -50,6 +52,16 @@ model Likes {
   whoLiked   Users    @relation(fields: [whoLikedId], references: [id])
 
   @@unique([postId, whoLikedId])
+}
+
+model Bookmarks {
+  id      Int   @id @default(autoincrement())
+  postId  Int
+  post    Posts @relation(fields: [postId], references: [id])
+  userId  Int
+  user    Users @relation(fields: [userId], references: [id])
+
+  @@unique([postId, userId])
 }
 
 model Follows {
