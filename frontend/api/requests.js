@@ -117,7 +117,7 @@ async function fetchMyPosts() {
             'Authorization': token
         }
     });
-    if (rawReponse.status == 200) {
+    if (rawReponse.ok) {
         const response = await rawReponse.json();
         if (response && response.success) {
             console.log(response)
