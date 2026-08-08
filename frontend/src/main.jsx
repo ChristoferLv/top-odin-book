@@ -9,6 +9,7 @@ import RegisterPage from './RegisterPage.jsx';
 import MyPage from './MyPage.jsx';
 import PostsList from './components/PostsList.jsx';
 import ContentPane from './components/ContentPane.jsx';
+import BookmarksPage from './BookmarksPage.jsx';
 
 
 const router = createBrowserRouter([
@@ -19,6 +20,7 @@ const router = createBrowserRouter([
     element: <MainPage />,
     children: [
       { path: "/:username", element: <MyPage /> },
+      { path: "/bookmarks", element: <BookmarksPage /> },
       { path: "/", element: <ContentPane /> },
       { path: "*", element: <Navigate to="/" replace /> }
     ]

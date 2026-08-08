@@ -134,7 +134,7 @@ async function fetchMyPosts() {
 async function likePost(postId) {
     try {
         const token = localStorage.getItem("token");
-        const rawResponse = await fetch(`http://localhost:3000/posts/${postId}/like`, {
+        const rawResponse = await fetch(`http://localhost:3000/posts/${postId}/likes`, {
             method: 'POST',
             headers: {
                 'Authorization': token,
@@ -155,7 +155,72 @@ async function likePost(postId) {
 async function dislikePost(postId) {
     try {
         const token = localStorage.getItem("token");
-        const rawResponse = await fetch(`http://localhost:3000/posts/${postId}/like`, {
+        const rawResponse = await fetch(`http://localhost:3000/posts/${postId}/likes`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': token,
+            },
+        });
+
+        if (rawResponse.ok) {
+            const result = await rawResponse.json();
+            return result;
+        }
+        return false;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+
+
+async function fetchBookmarkedPosts() {
+    const token = localStorage.getItem("token");
+    const rawReponse = await fetch('http://localhost:3000/posts/bookmarks', {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': token
+        }
+    });
+    if (rawReponse.ok) {
+        const response = await rawReponse.json();
+        if (response && response.success) {
+            console.log(response)
+            return response;
+        }
+    } else {
+        return null;
+    }
+}
+
+
+async function bookmarkPost(postId) {
+    try {
+        const token = localStorage.getItem("token");
+        const rawResponse = await fetch(`http://localhost:3000/posts/${postId}/bookmarks`, {
+            method: 'POST',
+            headers: {
+                'Authorization': token,
+            },
+        });
+
+        if (rawResponse.ok) {
+            const result = await rawResponse.json();
+            return result;
+        }
+        return false;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+
+async function removeBookmarkPost(postId) {
+    try {
+        const token = localStorage.getItem("token");
+        const rawResponse = await fetch(`http://localhost:3000/posts/${postId}/bookmarks`, {
             method: 'DELETE',
             headers: {
                 'Authorization': token,
@@ -182,6 +247,11 @@ export {
     fetchAllPosts,
     fetchMyPosts,
 
+
     likePost,
-    dislikePost
+    dislikePost,
+
+    fetchBookmarkedPosts,
+    bookmarkPost,
+    removeBookmarkPost
 }

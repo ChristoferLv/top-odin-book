@@ -1,7 +1,7 @@
 import { formatDate } from "../utils/dateUtils";
 import UserPicture from "../components/UserPicture"
 import { USER_PICTURE_DEFAULT_SIZE } from "../utils/defaults"
-import { dislikePost, likePost } from "../../api/requests";
+import { bookmarkPost, dislikePost, likePost, removeBookmarkPost } from "../../api/requests";
 import { useState } from "react";
 
 function Post({ data }) {
@@ -17,12 +17,28 @@ function Post({ data }) {
             }
             return;
         }
+
         const result = await likePost(postData.id);
         if (result && result.success) {
             setPostData({ ...postData, likes: [{ id: result.data.id }] });
         }
     }
-    
+
+    async function handleBookmark() {
+        if (postData.bookmarks.length) {
+            const result = await removeBookmarkPost(postData.id);
+            if (result && result.success) {
+                setPostData({ ...postData, bookmarks: [] });
+            }
+            return;
+        }
+
+        const result = await bookmarkPost(postData.id);
+        if (result && result.success) {
+            setPostData({ ...postData, bookmarks: [{ id: result.data.id }] });
+        }
+    }
+
     return (
         <>
             <div className="post">
@@ -55,7 +71,7 @@ function Post({ data }) {
                                 </svg>
                             </div>
                         </div>
-                        <div className="bookmark-control-button no-fill">
+                        <div onClick={handleBookmark} className={`bookmark-control-button no-fill ${postData.bookmarks.length ? "active" : ""}`}>
                             <svg viewBox="0 0 24 24" aria-hidden="true"><g>
                                 <path d="M4 4.5C4 3.12 5.119 2 6.5 2h11C18.881 2 20 3.12 20 4.5v18.44l-8-5.71-8 5.71V4.5z"></path></g>
                             </svg>

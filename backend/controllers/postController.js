@@ -54,7 +54,8 @@ async function getAllPosts(req, res) {
                         createdAt: true
                     }
                 },
-                likes: { where: { whoLikedId: userId }, select: { id: true } }
+                likes: { where: { whoLikedId: userId }, select: { id: true } },
+                bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } }
             }
         });
 
@@ -164,6 +165,28 @@ async function deletePost(req, res) {
     }
 }
 
+
+
+
+
+async function getLikedPosts(req, res) {
+    try {
+        const result = await prisma.likes.findMany({
+            where: { whoLikedId: req.user.id },
+            select: { post: true }
+        })
+
+        if (!result) {
+            return res.status(500).send({ success: false });
+        }
+
+        return res.send({ success: true, data: result });
+    } catch (e) {
+        console.log(e);
+        throw e;
+    }
+}
+
 async function likePost(req, res) {
     try {
         const postId = parseInt(req.params.postId);
@@ -209,15 +232,15 @@ async function removeLike(req, res) {
     try {
         const postId = parseInt(req.params.postId);
 
-        const exists = await prisma.posts.findUnique({
-            where: {
-                id: postId
-            }
-        });
+        // const exists = await prisma.posts.findUnique({
+        //     where: {
+        //         id: postId
+        //     }
+        // });
 
-        if (!exists) {
-            return res.status(400).send({ success: false, message: "Post not found." });
-        }
+        // if (!exists) {
+        //     return res.status(400).send({ success: false, message: "Post not found." });
+        // }
 
         const hasLiked = await prisma.likes.findUnique({
             where: {
@@ -234,6 +257,121 @@ async function removeLike(req, res) {
                     postId: postId,
                     whoLikedId: req.user.id
                 }
+            }
+        });
+
+        if (!result) {
+            return res.status(500).send({ success: false });
+        }
+
+        return res.send({ success: true, data: result });
+    } catch (e) {
+        console.log(e);
+        throw e;
+    }
+}
+
+
+
+async function getBookmarkedPosts(req, res) {
+    const userId = req.user.id;
+    try {
+        const result = await prisma.bookmarks.findMany({
+            where: { whoBookmarkedId: req.user.id },
+            select: {
+                post: {
+                    include: {
+                        author: {
+                            omit:
+                            {
+                                password: true,
+                                picture: true,
+                                mime: true,
+                                createdAt: true
+                            }
+                        },
+                        likes: { where: { whoLikedId: userId }, select: { id: true } },
+                        bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } }
+                    }
+                }
+            },
+
+        })
+
+        if (!result) {
+            return res.status(500).send({ success: false });
+        }
+
+        return res.send({ success: true, data: result });
+    } catch (e) {
+        console.log(e);
+        throw e;
+    }
+}
+
+async function bookmarkPost(req, res) {
+    try {
+        const postId = parseInt(req.params.postId);
+        console.log("postid", postId)
+        const exists = await prisma.posts.findUnique({
+            where: {
+                id: postId
+            }
+        });
+
+        if (!exists) {
+            return res.status(400).send({ success: false, message: "Post not found." });
+        }
+
+        const hasBookmarked = await prisma.bookmarks.findUnique({
+            where: {
+                postId_whoBookmarkedId: { postId: postId, whoBookmarkedId: req.user.id }
+            }
+        });
+
+        if (hasBookmarked)
+            return res.status(400).send({ success: false, message: "You have already bookmarked this post." });
+
+        const result = await prisma.bookmarks.create({
+            data: { postId: postId, whoBookmarkedId: req.user.id }
+        });
+
+        if (!result) {
+            return res.status(500).send({ success: false });
+        }
+
+        return res.send({ success: true, data: result });
+    } catch (e) {
+        throw e;
+    }
+}
+
+async function removePostBookmark(req, res) {
+    try {
+        const postId = parseInt(req.params.postId);
+
+        // const exists = await prisma.posts.findUnique({
+        //     where: {
+        //         id: postId
+        //     }
+        // });
+
+        // if (!exists) {
+        //     return res.status(400).send({ success: false, message: "Post not found." });
+        // }
+
+        const hasBookmarked = await prisma.bookmarks.findUnique({
+            where: {
+                postId_whoBookmarkedId: { postId: postId, whoBookmarkedId: req.user.id }
+            }
+        });
+
+        if (!hasBookmarked)
+            return res.status(400).send({ success: false, message: "You have not bookmarked this post." });
+
+        const result = await prisma.bookmarks.delete({
+            where: {
+                postId_whoBookmarkedId: { postId: postId, whoBookmarkedId: req.user.id }
             }
         });
 
@@ -348,8 +486,15 @@ export {
     getPostById,
     updatePost,
     deletePost,
+
+    getLikedPosts,
     likePost,
     removeLike,
+
+    getBookmarkedPosts,
+    bookmarkPost,
+    removePostBookmark,
+
     makeComment,
     getCommentsOfPost,
     deleteComment

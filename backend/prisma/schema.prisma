@@ -55,13 +55,14 @@ model Likes {
 }
 
 model Bookmarks {
-  id      Int   @id @default(autoincrement())
-  postId  Int
-  post    Posts @relation(fields: [postId], references: [id])
-  userId  Int
-  user    Users @relation(fields: [userId], references: [id])
+  id              Int      @id @default(autoincrement())
+  createdAt       DateTime @default(now()) @db.Timestamptz(6)
+  postId          Int
+  post            Posts    @relation(fields: [postId], references: [id])
+  whoBookmarkedId Int
+  whoBookmarked   Users    @relation(fields: [whoBookmarkedId], references: [id])
 
-  @@unique([postId, userId])
+  @@unique([postId, whoBookmarkedId])
 }
 
 model Follows {

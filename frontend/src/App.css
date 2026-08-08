@@ -199,7 +199,7 @@ label {
     padding-left: 10px;
     border-radius: 99px;
     transition: background-color 0.2s cubic-bezier(0, 0.55, 0.45, 1);
-
+    cursor: pointer;
 }
 
 .user-toast:hover {
@@ -374,10 +374,11 @@ label {
     }
 
     .like-control-button {
-        &.active{
+        &.active {
             stroke: transparent;
             fill: #f91880;
         }
+
         :hover {
             path {
                 stroke: #f91880;
@@ -386,6 +387,11 @@ label {
     }
 
     .bookmark-control-button {
+        &.active {
+            stroke: transparent;
+            fill: #1a8bd8;
+        }
+
         :hover {
             path {
                 stroke: #1a8bd8;
@@ -468,6 +474,7 @@ label {
 .my-page-back-button {
     width: 20px;
     height: 20px;
+    margin-right: 15px;
 }
 
 .tooltip {
