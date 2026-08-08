@@ -129,6 +129,50 @@ async function fetchMyPosts() {
 }
 
 
+
+
+async function likePost(postId) {
+    try {
+        const token = localStorage.getItem("token");
+        const rawResponse = await fetch(`http://localhost:3000/posts/${postId}/like`, {
+            method: 'POST',
+            headers: {
+                'Authorization': token,
+            },
+        });
+
+        if (rawResponse.ok) {
+            const result = await rawResponse.json();
+            return result;
+        }
+        return false;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+
+async function dislikePost(postId) {
+    try {
+        const token = localStorage.getItem("token");
+        const rawResponse = await fetch(`http://localhost:3000/posts/${postId}/like`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': token,
+            },
+        });
+
+        if (rawResponse.ok) {
+            const result = await rawResponse.json();
+            return result;
+        }
+        return false;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+
 export {
     register,
     login,
@@ -136,5 +180,8 @@ export {
     getMe,
     makePost,
     fetchAllPosts,
-    fetchMyPosts
+    fetchMyPosts,
+
+    likePost,
+    dislikePost
 }

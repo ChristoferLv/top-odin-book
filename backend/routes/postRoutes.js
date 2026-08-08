@@ -15,12 +15,12 @@ postRouter.get("/:postId", getPostById);
 postRouter.put("/:postId", checkUser, updatePost);
 postRouter.delete("/:postId", checkUser, deletePost);
 
-postRouter.post("/:postId/likes", checkUser, likePost);
-postRouter.delete("/:postId/likes", checkUser, removeLike);
+postRouter.post("/:postId/like", passport.authenticate('jwt', { session: false }), checkUser, likePost);
+postRouter.delete("/:postId/like", passport.authenticate('jwt', { session: false }), checkUser, removeLike);
 
-postRouter.post("/:postId/comments", checkUser, makeComment);
-postRouter.get("/:postId/comments", checkUser, getCommentsOfPost);
-postRouter.delete("/comments/:commentId", checkUser, deleteComment);
+postRouter.post("/:postId/comments", passport.authenticate('jwt', { session: false }), checkUser, makeComment);
+postRouter.get("/:postId/comments", passport.authenticate('jwt', { session: false }), checkUser, getCommentsOfPost);
+postRouter.delete("/comments/:commentId", passport.authenticate('jwt', { session: false }), checkUser, deleteComment);
 
 
 export default postRouter;

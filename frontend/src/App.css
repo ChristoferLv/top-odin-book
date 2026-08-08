@@ -315,16 +315,16 @@ label {
     border-bottom: solid 1px var(--main-border-color);
 }
 
-.post-head{
+.post-head {
 
-    span:nth-child(1){
+    span:nth-child(1) {
         color: var(--main-white-color);
         font-weight: bold;
         font-family: sans-serif;
         font-size: 0.94rem
     }
 
-    span:nth-child(2){
+    span:nth-child(2) {
         margin-left: 7px;
         color: var(--shadowed-text-color);
     }
@@ -334,25 +334,76 @@ label {
     display: flex;
     justify-content: space-between;
     margin-top: 15px;
+
+    /* 
+    path {
+        fill: #656a6e;
+    }
+
+    .no-fill path {
+        fill: transparent;
+        stroke: #656a6e;
+        stroke-width: 2px;
+    } */
+
+    .comment-control-button,
+    .share-control-button {
+        fill: #656a6e;
+    }
+
+    .like-control-button,
+    .bookmark-control-button {
+        stroke: #656a6e;
+        stroke-width: 2px;
+    }
+
+    .comment-control-button {
+        :hover {
+            path {
+                fill: #1a8bd8;
+            }
+        }
+    }
+
+    .share-control-button {
+        :hover {
+            path {
+                fill: #00a76f;
+            }
+        }
+    }
+
+    .like-control-button {
+        &.active{
+            stroke: transparent;
+            fill: #f91880;
+        }
+        :hover {
+            path {
+                stroke: #f91880;
+            }
+        }
+    }
+
+    .bookmark-control-button {
+        :hover {
+            path {
+                stroke: #1a8bd8;
+            }
+        }
+    }
 }
 
 .post-controls>div {
     width: 20px;
     height: 20px;
-    
-
-    path {
-
-        fill: #656a6e;
-    }
-
-    &.no-fill path {
-
-        fill: transparent;
-        stroke: #656a6e;
-        stroke-width: 2px;
-    }
+    cursor: pointer;
+    border-radius: 99px;
 }
+
+
+
+
 
 
 

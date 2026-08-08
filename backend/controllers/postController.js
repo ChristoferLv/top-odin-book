@@ -40,6 +40,7 @@ const makePost = [
 ];
 
 async function getAllPosts(req, res) {
+    const userId = req.user.id;
     try {
         const result = await prisma.posts.findMany({
             include:
@@ -52,7 +53,8 @@ async function getAllPosts(req, res) {
                         mime: true,
                         createdAt: true
                     }
-                }
+                },
+                likes: { where: { whoLikedId: userId }, select: { id: true } }
             }
         });
 
@@ -164,7 +166,7 @@ async function deletePost(req, res) {
 
 async function likePost(req, res) {
     try {
-        const postId = parseInt(req.params.id);
+        const postId = parseInt(req.params.postId);
 
         const exists = await prisma.posts.findUnique({
             where: {
@@ -175,6 +177,15 @@ async function likePost(req, res) {
         if (!exists) {
             return res.status(400).send({ success: false, message: "Post not found." });
         }
+
+        const hasLiked = await prisma.likes.findUnique({
+            where: {
+                postId_whoLikedId: { postId: postId, whoLikedId: req.user.id }
+            }
+        });
+
+        if (hasLiked)
+            return res.status(400).send({ success: false, message: "You have already liked this post." });
 
         const result = await prisma.likes.create({
             data: {
@@ -196,7 +207,7 @@ async function likePost(req, res) {
 
 async function removeLike(req, res) {
     try {
-        const postId = parseInt(req.params.id);
+        const postId = parseInt(req.params.postId);
 
         const exists = await prisma.posts.findUnique({
             where: {
@@ -207,6 +218,15 @@ async function removeLike(req, res) {
         if (!exists) {
             return res.status(400).send({ success: false, message: "Post not found." });
         }
+
+        const hasLiked = await prisma.likes.findUnique({
+            where: {
+                postId_whoLikedId: { postId: postId, whoLikedId: req.user.id }
+            }
+        });
+
+        if (!hasLiked)
+            return res.status(400).send({ success: false, message: "You have not liked this post." });
 
         const result = await prisma.likes.delete({
             where: {
