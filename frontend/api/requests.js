@@ -131,6 +131,29 @@ async function fetchMyPosts() {
 
 
 
+
+
+async function fetchLikedPosts() {
+    const token = localStorage.getItem("token");
+    const rawReponse = await fetch('http://localhost:3000/posts/likes', {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': token
+        }
+    });
+    if (rawReponse.ok) {
+        const response = await rawReponse.json();
+        if (response && response.success) {
+            console.log(response)
+            return response;
+        }
+    } else {
+        return null;
+    }
+}
+
 async function likePost(postId) {
     try {
         const token = localStorage.getItem("token");
@@ -247,7 +270,7 @@ export {
     fetchAllPosts,
     fetchMyPosts,
 
-
+    fetchLikedPosts,
     likePost,
     dislikePost,
 

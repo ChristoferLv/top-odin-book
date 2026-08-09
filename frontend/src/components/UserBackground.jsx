@@ -1,12 +1,8 @@
 function UserBackground(){
-
-
-
-
     return (
         <>
         <div className="user-background">
-            <img src="bkgd.jpg" alt="" />
+            <img src="/bkgd.jpg" alt="" />
         </div>
         </>
     )

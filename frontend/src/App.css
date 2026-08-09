@@ -559,6 +559,32 @@ label {
     }
 }
 
+.view-list-options {
+    --inactive-text-color: #71767b;
+
+    display: flex;
+    justify-content: space-between;
+    padding: 0 10px;
+
+    color: var(--inactive-text-color);
+    font-family: Inter;
+    font-weight: bold;
+    font-size: 15px;
+
+    div{
+        padding:20px;
+    }
+
+    p{
+        margin:0;
+    }
+
+    .active{
+        color: var(--main-white-color);
+    }
+
+}
+
 
 
 

@@ -171,9 +171,26 @@ async function deletePost(req, res) {
 
 async function getLikedPosts(req, res) {
     try {
+        const userId = req.user.id;
         const result = await prisma.likes.findMany({
             where: { whoLikedId: req.user.id },
-            select: { post: true }
+            select: {
+                post: {
+                    include: {
+                        author: {
+                            omit:
+                            {
+                                password: true,
+                                picture: true,
+                                mime: true,
+                                createdAt: true
+                            }
+                        },
+                        likes: { where: { whoLikedId: userId }, select: { id: true } },
+                        bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } }
+                    }
+                }
+            },
         })
 
         if (!result) {
@@ -295,7 +312,6 @@ async function getBookmarkedPosts(req, res) {
                     }
                 }
             },
-
         })
 
         if (!result) {

@@ -19,7 +19,7 @@ const router = createBrowserRouter([
     path: "/",
     element: <MainPage />,
     children: [
-      { path: "/:username", element: <MyPage /> },
+      { path: "/:username/*", element: <MyPage /> },
       { path: "/bookmarks", element: <BookmarksPage /> },
       { path: "/", element: <ContentPane /> },
       { path: "*", element: <Navigate to="/" replace /> }

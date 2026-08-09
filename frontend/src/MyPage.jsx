@@ -1,32 +1,82 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "./AuthContext";
-import { fetchMyPosts } from "../api/requests";
+import { fetchLikedPosts, fetchMyPosts } from "../api/requests";
 import UserPicture from "./components/UserPicture";
 import UserBackground from "./components/UserBackground";
 import PostsList from "./components/PostsList";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 
 
 
 function MyPage() {
+    const SeeingOptions = Object.freeze({
+        POSTS: Symbol("posts"),
+        LIKES: Symbol("likes"),
+        COMMENTS: Symbol("comments")
+    });
+    const location = useLocation();
+    const parts = location.pathname.split("/");
+    const curLocation = parts[2];
+    let active = SeeingOptions.POSTS;
+    switch (curLocation) {
+        case "":
+            active = SeeingOptions.POSTS;
+            break;
+        case "likes":
+            active = SeeingOptions.LIKES;
+            break;
+        case "comments":
+            active = SeeingOptions.COMMENTS;
+            break;
+    }
+
     const { user, setUser } = useContext(AuthContext);
     const [myPosts, setMyPosts] = useState([]);
+    const [seeingOption, setSeeingOption] = useState(SeeingOptions.POSTS)
     const navigate = useNavigate();
+    console.log(location)
+    if (!user) return <div className="loading"><p>Loading</p></div>
 
+    function handleSeePosts() {
+        navigate("/" + user.username);
+    }
+
+    function handleSeeComments() {
+        navigate("/" + user.username + "/comments", { replace: true });
+    }
+
+    function handleSeeLikes() {
+        navigate("/" + user.username + "/likes", { replace: true });
+    }
 
     useEffect(() => {
         async function getMyPosts() {
-            const response = await fetchMyPosts();
-            if (response && response.success) {
-                setMyPosts(response.data);
+            console.log(active)
+            let response = null;
+            if (active == SeeingOptions.POSTS) {
+                response = await fetchMyPosts();
+                if (response && response.success) {
+                    setMyPosts(response.data);
+                }
             }
+
+            if (active == SeeingOptions.LIKES) {
+                response = await fetchLikedPosts();
+                if (response && response.success) {
+                    setMyPosts(response.data.map((item) => item.post));
+                }
+            }
+
+            if (active == SeeingOptions.COMMENTS)
+                response = await fetchMyPosts();
+
+
         }
 
         getMyPosts();
-    }, []);
+    }, [location]);
 
-    if (!user) return <div className="loading"><p>Loading</p></div>
-
+    console.log(myPosts)
     return (
         <>
             <div className="my-page">
@@ -52,6 +102,17 @@ function MyPage() {
                     <div className="user-profile-info">
                         <p>{user.username}</p>
                         <p>@{user.username}</p>
+                    </div>
+                    <div className="view-list-options">
+                        <div onClick={handleSeePosts} className={`posts-option ${active == SeeingOptions.POSTS ? "active" : ""}`}>
+                            <p>Posts</p>
+                        </div>
+                        <div onClick={handleSeeComments} className={`comments-option ${active == SeeingOptions.COMMENTS ? "active" : ""}`}>
+                            <p>Comments</p>
+                        </div>
+                        <div onClick={handleSeeLikes} className={`likes-option ${active == SeeingOptions.LIKES ? "active" : ""}`}>
+                            <p>Likes</p>
+                        </div>
                     </div>
                 </div>
                 <div className="my-page-content">
