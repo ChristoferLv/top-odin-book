@@ -1,14 +1,17 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { AuthContext } from "../AuthContext";
 import UserBackground from "./UserBackground";
 import UserPicture from "./UserPicture";
-import { editUser } from "../../api/requests";
+import { editUser, fetchUserPicture, sendUserPicture } from "../../api/requests";
 import { useNavigate } from "react-router";
 
 function EditProfile() {
     const { user, isLoading, setUser } = useContext(AuthContext);
     const [userData, setUserData] = useState({ name: "", bio: "" });
     const navigate = useNavigate();
+    const fileInputRef = useRef(null);
+    const [pictureBuff, setPicture] = useState(null);
+    const [mime, setMime] = useState(null);
 
     function handleChange(e) {
         const whoChanged = event.target;
@@ -18,23 +21,74 @@ function EditProfile() {
 
     async function handleSaveEdit() {
         const result = await editUser(userData);
-        if(result && result.success){
+        if (result && result.success) {
             localStorage.setItem('user', JSON.stringify(result.data));
             setUser(result.data);
-            navigate("/"+user.username);
+            navigate("/" + user.username);
+        }
+    }
+
+    function handleClickImage(e) {
+        fileInputRef.current.click();
+    }
+
+    async function handleUploadImage(e) {
+        e.target.parentElement.requestSubmit();
+    }
+
+    async function handlePictureSubmit(e) {
+        e.preventDefault();
+        const data = Object.fromEntries(new FormData(e.target).entries());
+        fileInputRef.current.value = "";
+        if (data.picture.size > 5000000) {
+            alert("Maximum picture file size is 5MB.");
+            return;
+        }
+
+        const result = await sendUserPicture(data);
+        if (result.success) {
+            setPicture(result.data.data);
+            setUpdate(c => c + 1)
         }
     }
 
     useEffect(() => {
-        if (user){
+        async function getPicture() {
+            if (user) {
+                const picture = await fetchUserPicture(user.id);
+                setPicture(picture.data.buffer?.data);
+                setMime(picture.data.mime);
+            }
+        }
+        getPicture();
+    }, [user, isLoading])
+
+    useEffect(() => {
+        if (user) {
             console.log("setting data")
             setUserData({ name: user.name, bio: user.bio });
         }
     }, [user, isLoading])
-console.log(userData)
+    console.log(userData)
+
+
+    const rawBuffer = new Uint8Array(pictureBuff);
+    const blob = new Blob([rawBuffer], { type: mime });
+    const imageUrl = URL.createObjectURL(blob);
+
     return (
         <>
             <div className="my-page my-page-edit">
+                <form onSubmit={handlePictureSubmit}>
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        name="picture"
+                        style={{ display: "none" }}
+                        onChange={handleUploadImage}
+                    />
+                </form>
                 <div>
                     <div className="my-page-top edit-page-top">
                         <div onClick={() => navigate(-1)} className="my-page-back-button">
@@ -51,16 +105,21 @@ console.log(userData)
                     <UserBackground />
                     <div className="my-page-controls">
                         <div className="my-page-picture">
-                            <UserPicture />
+                            <div
+                                className="profile-pic" onClick={handleClickImage}
+                            >
+                                <img src={!pictureBuff ? "../public/avatar.png" :
+                                    imageUrl} alt="" />
+                            </div>
                         </div>
                     </div>
                     <div className="user-data-inputs">
                         <div className="user-field">
-                            <input name="name" type="text" id="name" placeholder=" " required value={userData.name} onChange={handleChange}/>
+                            <input name="name" type="text" id="name" placeholder=" " required value={userData.name} onChange={handleChange} />
                             <label htmlFor="name">Name</label>
                         </div>
                         <div className="user-field">
-                            <textarea name="bio" type="text" id="bio" placeholder=" " required defaultValue={userData.bio} onChange={handleChange}/>
+                            <textarea name="bio" type="text" id="bio" placeholder=" " required defaultValue={userData.bio} onChange={handleChange} />
                             <label htmlFor="bio">Bio</label>
                         </div>
                     </div>

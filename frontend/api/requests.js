@@ -89,6 +89,54 @@ async function editUser(data) {
     }
 }
 
+async function sendUserPicture(data) {
+    try {
+        const formData = new FormData();
+        formData.append("picture", data.picture);
+        const token = localStorage.getItem("token");
+        const result = await fetch("http://localhost:3000/users/picture/", {
+
+            method: 'Post',
+            body: formData,
+
+            headers: {
+                Authorization: token,
+            },
+        })
+        const resultData = await result.json();
+        return resultData;
+    } catch (e) {
+        console.log(e);
+        throw e;
+    }
+}
+
+async function fetchUserPicture(userId) {
+    try {
+        const token = localStorage.getItem("token");
+        const request = await fetch("http://localhost:3000/users/picture/" + userId, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': token
+            }
+        });
+        if (request.ok) {
+            const picture = await request.json();
+            return picture;
+        }
+    } catch (e) {
+        console.log(e);
+        throw e;
+    }
+}
+
+
+
+
+
+
 
 
 
@@ -307,6 +355,8 @@ export {
     logOut,
     getMe,
     editUser,
+    sendUserPicture,
+    fetchUserPicture,
 
     makePost,
     fetchAllPosts,

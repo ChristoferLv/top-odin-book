@@ -42,7 +42,7 @@ function Post({ data }) {
     return (
         <>
             <div className="post">
-                <UserPicture size={USER_PICTURE_DEFAULT_SIZE} />
+                <UserPicture id={postData.author.id} size={USER_PICTURE_DEFAULT_SIZE} />
                 <div className="post-data">
                     <div className="post-head">
                         <span>{postData.author.name}</span>

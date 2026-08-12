@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-// import { fetchPicture, getGroupPicture } from "../api/requests";
+import { fetchUserPicture } from "../../api/requests";
 
-function UserPicture({ id, type, update, isOnline, size }) {
+function UserPicture({ id, size }) {
     const [pictureBuff, setPicture] = useState(null);
     const [mime, setMime] = useState(null);
     const rawBuffer = new Uint8Array(pictureBuff);
@@ -9,20 +9,15 @@ function UserPicture({ id, type, update, isOnline, size }) {
     const imageUrl = URL.createObjectURL(blob);
 
     useEffect(() => {
-        return;
         async function getPicture() {
-            if (type == "GROUP") {
-                // const picture = await getGroupPicture(id);
-                setPicture(picture.data.buffer?.data);
-                setMime(picture.data.mime);
-            } else if (id) {
-                const picture = await fetchPicture(id);
+            if (id) {
+                const picture = await fetchUserPicture(id);
                 setPicture(picture.data.buffer?.data);
                 setMime(picture.data.mime);
             }
         }
         getPicture();
-    }, [update, id])
+    }, [id])
 
     useEffect(() => {
         return;
@@ -34,7 +29,6 @@ function UserPicture({ id, type, update, isOnline, size }) {
     return (
         <>
             <div className="pic-container">
-                {isOnline && <div className="status-dot"></div>}
                 <div className="profile-pic"
                     style={{ width: size + "px", height: size + "px" }}>
                     <img src={!pictureBuff ? "../public/avatar.png" :

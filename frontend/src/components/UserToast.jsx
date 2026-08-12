@@ -5,7 +5,7 @@ function UserToast({ user, onClick }) {
     return (
         <>
             <div onClick={onClick} className="user-toast">
-                <UserPicture size={USER_PICTURE_DEFAULT_SIZE} />
+                <UserPicture size={USER_PICTURE_DEFAULT_SIZE} id={user.id}/>
                 <div className="user-toast-info">
                     <p>
                         {user.name}

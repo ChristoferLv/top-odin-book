@@ -5,6 +5,7 @@ import UserPicture from "./components/UserPicture";
 import UserBackground from "./components/UserBackground";
 import PostsList from "./components/PostsList";
 import { useLocation, useNavigate } from "react-router";
+import { USER_PICTURE_DEFAULT_SIZE } from "./utils/defaults";
 
 
 
@@ -34,7 +35,6 @@ function MyPage() {
     const [myPosts, setMyPosts] = useState([]);
     const [seeingOption, setSeeingOption] = useState(SeeingOptions.POSTS)
     const navigate = useNavigate();
-    console.log(location)
     
     function handleSeePosts() {
         navigate("/" + user.username);
@@ -54,7 +54,6 @@ function MyPage() {
     
     useEffect(() => {
         async function getMyPosts() {
-            console.log(active)
             let response = null;
             if (active == SeeingOptions.POSTS) {
                 response = await fetchMyPosts();
@@ -99,7 +98,7 @@ function MyPage() {
                     <UserBackground />
                     <div className="my-page-controls">
                         <div className="my-page-picture">
-                            <UserPicture />
+                            <UserPicture id={user.id}/>
                         </div>
                         <button onClick={handleEditProfile} className="edit-profile-button">Edit profile</button>
                     </div>

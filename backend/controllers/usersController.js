@@ -100,10 +100,57 @@ const updateUserProfile = [
     }
 ];
 
+async function getPicture(req, res) {
+    if (!req.user) {
+        return res.status(401).send({ success: false });
+    }
+
+    const userId = parseInt(req.params.userId);
+    const result = await prisma.users.findUnique(
+        { where: { id: userId }, select: { picture: true, mime:true } }
+    );
+    let newbuffer = null;
+    if (result.picture)
+        newbuffer = Buffer.from(result.picture, result.picture.byteOffset, result.picture.byteLength)
+
+    res.status(200).send({ success: true, data: { buffer: newbuffer, mime: result.mime } });
+}
+
+async function uploadPicture(req, res) {
+    try {
+
+        const userId = req.user.id;
+        const mime = req.file.mimetype;
+
+        if (!mime.startsWith("image/"))
+            return res.status(400).send({ success: false, message: "Invalid file type." });
+
+        if (req.file.size > 5000000) {
+            return res.status(400).send({ success: false, message: "Maximum picture file size is 5MB." });
+        }
+
+        const result = await prisma.users.update(
+            {
+                data: { picture: req.file.buffer, mime: mime },
+                where: { id: userId }
+            }
+        );
+        let newbuffer = null;
+        if (result.picture)
+            newbuffer = Buffer.from(result.picture, result.picture.byteOffset, result.picture.byteLength)
+        return res.status(201).send({ success: true, data: newbuffer });
+    } catch (e) {
+        console.log(e);
+        return res.status(500).send({ success: false });
+    }
+}
+
 
 export {
     getAllUsers,
     findUserByUsername,
     getUserById,
     updateUserProfile,
+    uploadPicture, 
+    getPicture
 }
