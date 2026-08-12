@@ -9,10 +9,14 @@ datasource db {
 
 model Users {
   id         Int         @id @default(autoincrement())
+  name       String
   username   String      @unique @db.VarChar(30)
+  bio        String?
   password   String
   picture    Bytes?
   mime       String?
+  background Bytes?
+  bgmime     String?
   createdAt  DateTime    @default(now()) @db.Timestamptz(6)
   posts      Posts[]
   comments   Comments[]

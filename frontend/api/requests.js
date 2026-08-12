@@ -67,6 +67,33 @@ async function getMe() {
     }
 }
 
+async function editUser(data) {
+    try {
+        const token = localStorage.getItem("token");
+        const request = await fetch(`http://localhost:3000/users`, {
+            method: 'PUT',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': token
+            },
+            body: JSON.stringify(data)
+        });
+        if (request.ok) {
+            const messages = await request.json();
+            return messages;
+        }
+    } catch (e) {
+        console.log(e);
+        throw e;
+    }
+}
+
+
+
+
+
+
 async function makePost(postData) {
     try {
         const token = localStorage.getItem("token");
@@ -197,6 +224,12 @@ async function dislikePost(postId) {
 }
 
 
+
+
+
+
+
+
 async function fetchBookmarkedPosts() {
     const token = localStorage.getItem("token");
     const rawReponse = await fetch('http://localhost:3000/posts/bookmarks', {
@@ -217,7 +250,6 @@ async function fetchBookmarkedPosts() {
         return null;
     }
 }
-
 
 async function bookmarkPost(postId) {
     try {
@@ -261,11 +293,21 @@ async function removeBookmarkPost(postId) {
     }
 }
 
+
+
+
+
+
+
+
+
 export {
     register,
     login,
     logOut,
     getMe,
+    editUser,
+
     makePost,
     fetchAllPosts,
     fetchMyPosts,

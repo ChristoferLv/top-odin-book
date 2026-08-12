@@ -45,7 +45,7 @@ function Post({ data }) {
                 <UserPicture size={USER_PICTURE_DEFAULT_SIZE} />
                 <div className="post-data">
                     <div className="post-head">
-                        <span>{postData.author.username}</span>
+                        <span>{postData.author.name}</span>
                         <span>@{postData.author.username} - {formatedDate}</span>
                     </div>
                     <div className="post-content">{postData.content}</div>

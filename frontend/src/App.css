@@ -56,7 +56,7 @@ app-root {
 
 }
 
-label {
+.auth-container label {
     display: block;
     width: 100%;
     margin-top: 10px;
@@ -533,7 +533,8 @@ label {
     border: #536471 solid 0.1em;
     font-weight: bold;
     font-size: 15px;
-    font-family: sans-serif
+    font-family: sans-serif;
+    cursor: pointer;
 }
 
 .user-profile-info {
@@ -571,15 +572,16 @@ label {
     font-weight: bold;
     font-size: 15px;
 
-    div{
-        padding:20px;
+    div {
+        padding: 20px;
+        cursor: pointer;
     }
 
-    p{
-        margin:0;
+    p {
+        margin: 0;
     }
 
-    .active{
+    .active {
         color: var(--main-white-color);
     }
 
@@ -588,6 +590,117 @@ label {
 
 
 
+
+.my-page-edit {
+    background-color: #141414;
+}
+
+.edit-page-top {
+    /* align-items: center; */
+}
+
+.user-data-inputs {
+    font-family: sans-serif;
+    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    /* align-items: stretch; */
+    gap: 10px 0;
+    padding: 0 15px;
+    --focus-color:#686c71;
+}
+
+.user-field {
+    position: relative;
+    width: 100%;
+    display: flex;
+}
+
+.user-data-inputs textarea,
+.user-data-inputs input {
+    box-sizing: border-box;
+    color: #e1e3e4;
+    width: inherit;
+
+    padding-bottom: 5px;
+    border: 1px solid #333639;
+    outline: 0 solid transparent;
+    border-radius: 4px;
+    outline: none;
+    font-size: 16px;
+    background: transparent;
+}
+
+.user-data-inputs input {
+    padding: 0 12px;
+    padding-top: 20px;
+    height: 60px;
+}
+
+.user-data-inputs textarea {
+    padding: 10px 12px;
+    padding-top: 30px;
+    flex-grow: 1;
+    flex-shrink: 1;
+    color: white;
+    font-family: sans-serif;
+    font-size: medium;
+    resize: none;
+    field-sizing: content;
+    height: 5lh;
+    max-height: 7lh;
+
+
+    &:focus {
+        outline: none;
+    }
+
+    &::placeholder {
+        color: #d3d3d3;
+    }
+}
+
+.user-data-inputs label {
+    margin: 0;
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    /* background: #fff; */
+    color: #686c71;
+    transition: 0.2s ease all;
+    pointer-events: none;
+}
+
+.user-data-inputs textarea:focus~label,
+.user-data-inputs textarea:not(:placeholder-shown)~label,
+.user-data-inputs input:focus~label,
+.user-data-inputs input:not(:placeholder-shown)~label {
+    top: 15px;
+    font-size: 12px;
+}
+
+.user-data-inputs input:focus~label{
+    color: #1d9bf0;
+}
+
+.user-data-inputs textarea:focus,
+.user-data-inputs input:focus {
+    outline: 2px solid #1d9bf0;
+    border-color: transparent;
+}
+
+.save-profile {
+    cursor: pointer;
+    margin-left: auto;
+    padding: 10px 20px;
+    background-color: white;
+    border-radius: 95px;
+    color: black;
+    font-size: 15px;
+    font-weight: bold;
+    border: none;
+}
 
 
 

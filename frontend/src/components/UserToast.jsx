@@ -8,7 +8,7 @@ function UserToast({ user, onClick }) {
                 <UserPicture size={USER_PICTURE_DEFAULT_SIZE} />
                 <div className="user-toast-info">
                     <p>
-                        {user.username}
+                        {user.name}
                     </p>
                     <p>
                         @{user.username}

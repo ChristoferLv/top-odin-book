@@ -35,20 +35,23 @@ function MyPage() {
     const [seeingOption, setSeeingOption] = useState(SeeingOptions.POSTS)
     const navigate = useNavigate();
     console.log(location)
-    if (!user) return <div className="loading"><p>Loading</p></div>
-
+    
     function handleSeePosts() {
         navigate("/" + user.username);
     }
-
+    
     function handleSeeComments() {
         navigate("/" + user.username + "/comments", { replace: true });
     }
-
+    
     function handleSeeLikes() {
         navigate("/" + user.username + "/likes", { replace: true });
     }
-
+    
+    function handleEditProfile(){
+        navigate("/settings/profile");
+    }
+    
     useEffect(() => {
         async function getMyPosts() {
             console.log(active)
@@ -59,24 +62,25 @@ function MyPage() {
                     setMyPosts(response.data);
                 }
             }
-
+            
             if (active == SeeingOptions.LIKES) {
                 response = await fetchLikedPosts();
                 if (response && response.success) {
                     setMyPosts(response.data.map((item) => item.post));
                 }
             }
-
+            
             if (active == SeeingOptions.COMMENTS)
                 response = await fetchMyPosts();
-
-
+            
+            
         }
-
+        
         getMyPosts();
     }, [location]);
-
+    
     console.log(myPosts)
+    if (!user) return <div className="loading"><p>Loading</p></div>
     return (
         <>
             <div className="my-page">
@@ -90,17 +94,17 @@ function MyPage() {
                                 Back
                             </div>
                         </div>
-                        <p>{user.username}</p>
+                        <p>{user.name}</p>
                     </div>
                     <UserBackground />
                     <div className="my-page-controls">
                         <div className="my-page-picture">
                             <UserPicture />
                         </div>
-                        <button className="edit-profile-button">Edit profile</button>
+                        <button onClick={handleEditProfile} className="edit-profile-button">Edit profile</button>
                     </div>
                     <div className="user-profile-info">
-                        <p>{user.username}</p>
+                        <p>{user.name}</p>
                         <p>@{user.username}</p>
                     </div>
                     <div className="view-list-options">

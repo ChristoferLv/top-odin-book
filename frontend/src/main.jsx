@@ -10,6 +10,7 @@ import MyPage from './MyPage.jsx';
 import PostsList from './components/PostsList.jsx';
 import ContentPane from './components/ContentPane.jsx';
 import BookmarksPage from './BookmarksPage.jsx';
+import EditProfile from './components/EditProfile.jsx';
 
 
 const router = createBrowserRouter([
@@ -19,6 +20,7 @@ const router = createBrowserRouter([
     path: "/",
     element: <MainPage />,
     children: [
+      { path: "/settings/profile", element: <EditProfile /> },
       { path: "/:username/*", element: <MyPage /> },
       { path: "/bookmarks", element: <BookmarksPage /> },
       { path: "/", element: <ContentPane /> },
