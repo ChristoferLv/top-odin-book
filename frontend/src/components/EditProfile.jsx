@@ -2,16 +2,20 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { AuthContext } from "../AuthContext";
 import UserBackground from "./UserBackground";
 import UserPicture from "./UserPicture";
-import { editUser, fetchUserPicture, sendUserPicture } from "../../api/requests";
+import { editUser, fetchUserBackground, fetchUserPicture, sendUserBackground, sendUserPicture } from "../../api/requests";
 import { useNavigate } from "react-router";
+import background from "../../public/bkgd.png";
 
 function EditProfile() {
     const { user, isLoading, setUser } = useContext(AuthContext);
     const [userData, setUserData] = useState({ name: "", bio: "" });
     const navigate = useNavigate();
     const fileInputRef = useRef(null);
+    const fileBackgroundRef = useRef(null);
     const [pictureBuff, setPicture] = useState(null);
     const [mime, setMime] = useState(null);
+    const [backgroundBuff, setBackground] = useState(null);
+    const [mimeBkgd, setMimeBkgd] = useState(null);
 
     function handleChange(e) {
         const whoChanged = event.target;
@@ -48,7 +52,31 @@ function EditProfile() {
         const result = await sendUserPicture(data);
         if (result.success) {
             setPicture(result.data.data);
-            setUpdate(c => c + 1)
+            // setUpdate(c => c + 1)
+        }
+    }
+
+    function handleClickBackground(e) {
+        fileBackgroundRef.current.click();
+    }
+
+    async function handleUploadBackground(e) {
+        e.target.parentElement.requestSubmit();
+    }
+
+    async function handleBackgroundSubmit(e) {
+        e.preventDefault();
+        const data = Object.fromEntries(new FormData(e.target).entries());
+        fileBackgroundRef.current.value = "";
+        if (data.background.size > 5000000) {
+            alert("Maximum background file size is 5MB.");
+            return;
+        }
+
+        const result = await sendUserBackground(data);
+        if (result.success) {
+            setBackground(result.data.data);
+            // setUpdate(c => c + 1)
         }
     }
 
@@ -64,17 +92,31 @@ function EditProfile() {
     }, [user, isLoading])
 
     useEffect(() => {
+        async function getBackground() {
+            if (user) {
+                const background = await fetchUserBackground(user.id);
+                if (background.success) {
+                    setBackground(background.data.buffer?.data);
+                    setMimeBkgd(background.data.mime);
+                }
+            }
+        }
+        getBackground();
+    }, [user, isLoading])
+
+    useEffect(() => {
         if (user) {
-            console.log("setting data")
             setUserData({ name: user.name, bio: user.bio });
         }
     }, [user, isLoading])
-    console.log(userData)
 
+    const rawBufferPicture = new Uint8Array(pictureBuff);
+    const blobPicture = new Blob([rawBufferPicture], { type: mime });
+    const imageUrlPicture = URL.createObjectURL(blobPicture);
 
-    const rawBuffer = new Uint8Array(pictureBuff);
-    const blob = new Blob([rawBuffer], { type: mime });
-    const imageUrl = URL.createObjectURL(blob);
+    const rawBufferBkgd = new Uint8Array(backgroundBuff);
+    const blobBkgd = new Blob([rawBufferBkgd], { type: mimeBkgd });
+    const imageUrlBkgd = URL.createObjectURL(blobBkgd);
 
     return (
         <>
@@ -87,6 +129,16 @@ function EditProfile() {
                         name="picture"
                         style={{ display: "none" }}
                         onChange={handleUploadImage}
+                    />
+                </form>
+                <form onSubmit={handleBackgroundSubmit}>
+                    <input
+                        ref={fileBackgroundRef}
+                        type="file"
+                        accept="image/*"
+                        name="background"
+                        style={{ display: "none" }}
+                        onChange={handleUploadBackground}
                     />
                 </form>
                 <div>
@@ -102,14 +154,19 @@ function EditProfile() {
                         <p>Edit Profile</p>
                         <button onClick={handleSaveEdit} className="save-profile">Save</button>
                     </div>
-                    <UserBackground />
+                    <>
+                        <div className="user-background" onClick={handleClickBackground}>
+                            <img src={!backgroundBuff ? background :
+                                imageUrlBkgd} alt="" />
+                        </div>
+                    </>
                     <div className="my-page-controls">
                         <div className="my-page-picture">
                             <div
                                 className="profile-pic" onClick={handleClickImage}
                             >
-                                <img src={!pictureBuff ? "../public/avatar.png" :
-                                    imageUrl} alt="" />
+                                <img src={!rawBufferPicture ? "../public/avatar.png" :
+                                    imageUrlPicture} alt="" />
                             </div>
                         </div>
                     </div>

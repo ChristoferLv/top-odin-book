@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { findUserByUsername, getAllUsers, getPicture, getUserById, updateUserProfile, uploadPicture } from "../controllers/usersController.js";
+import { findUserByUsername, getAllUsers, getBackground, getPicture, getUserById, updateUserProfile, uploadBackground, uploadPicture } from "../controllers/usersController.js";
 import { passport } from "../authUtils.js";
 import { checkUser } from "../utils.js";
 import multer from "multer";
@@ -18,5 +18,8 @@ userRoutes.get("/find/:username", passport.authenticate('jwt', { session: false 
 
 userRoutes.get("/picture/:userId", passport.authenticate('jwt', { session: false }), checkUser, getPicture);
 userRoutes.post("/picture", upload.single("picture"), passport.authenticate('jwt', { session: false }), checkUser, uploadPicture);
+
+userRoutes.get("/background/:userId", passport.authenticate('jwt', { session: false }), checkUser, getBackground);
+userRoutes.post("/background", upload.single("background"), passport.authenticate('jwt', { session: false }), checkUser, uploadBackground);
 
 export default userRoutes;

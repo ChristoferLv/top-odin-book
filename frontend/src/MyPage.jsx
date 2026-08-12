@@ -5,7 +5,7 @@ import UserPicture from "./components/UserPicture";
 import UserBackground from "./components/UserBackground";
 import PostsList from "./components/PostsList";
 import { useLocation, useNavigate } from "react-router";
-import { USER_PICTURE_DEFAULT_SIZE } from "./utils/defaults";
+import background from "../public/bkgd.png"
 
 
 
@@ -95,7 +95,7 @@ function MyPage() {
                         </div>
                         <p>{user.name}</p>
                     </div>
-                    <UserBackground />
+                    <UserBackground id={user.id}/>
                     <div className="my-page-controls">
                         <div className="my-page-picture">
                             <UserPicture id={user.id}/>

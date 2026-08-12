@@ -17,13 +17,10 @@ function NewPost() {
     }
 
     async function handlePost(e) {
-        console.log("here", e.target)
         e.preventDefault();
         const payload = new URLSearchParams();
         payload.append("content", postContent)
         const check = Object.fromEntries(payload.entries());
-
-        console.log(check);
 
         if (postContent.length < 1) {
             return;
@@ -40,7 +37,7 @@ function NewPost() {
     return (
         <>
             <div className="new-post">
-                <UserPicture size={USER_PICTURE_DEFAULT_SIZE}/>
+                <UserPicture id={user.id} size={USER_PICTURE_DEFAULT_SIZE}/>
                 <form onSubmit={handlePost}>
                     <textarea name="content" placeholder="What is happening?" onChange={handlePostContentChange} value={postContent}></textarea>
                     <input type="submit" value="Post" />

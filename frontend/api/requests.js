@@ -132,6 +132,49 @@ async function fetchUserPicture(userId) {
     }
 }
 
+async function sendUserBackground(data) {
+    try {
+        const formData = new FormData();
+        formData.append("background", data.background);
+        const token = localStorage.getItem("token");
+        const result = await fetch("http://localhost:3000/users/background/", {
+
+            method: 'Post',
+            body: formData,
+
+            headers: {
+                Authorization: token,
+            },
+        })
+        const resultData = await result.json();
+        return resultData;
+    } catch (e) {
+        console.log(e);
+        throw e;
+    }
+}
+
+async function fetchUserBackground(userId) {
+    try {
+        const token = localStorage.getItem("token");
+        const request = await fetch("http://localhost:3000/users/background/" + userId, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': token
+            }
+        });
+        if (request.ok) {
+            const background = await request.json();
+            return background;
+        }
+    } catch (e) {
+        console.log(e);
+        throw e;
+    }
+}
+
 
 
 
@@ -174,7 +217,6 @@ async function fetchAllPosts() {
     if (rawReponse.status == 200) {
         const response = await rawReponse.json();
         if (response && response.success) {
-            console.log(response)
             return response;
         }
     } else {
@@ -195,7 +237,6 @@ async function fetchMyPosts() {
     if (rawReponse.ok) {
         const response = await rawReponse.json();
         if (response && response.success) {
-            console.log(response)
             return response;
         }
     } else {
@@ -221,7 +262,6 @@ async function fetchLikedPosts() {
     if (rawReponse.ok) {
         const response = await rawReponse.json();
         if (response && response.success) {
-            console.log(response)
             return response;
         }
     } else {
@@ -291,7 +331,6 @@ async function fetchBookmarkedPosts() {
     if (rawReponse.ok) {
         const response = await rawReponse.json();
         if (response && response.success) {
-            console.log(response)
             return response;
         }
     } else {
@@ -357,6 +396,8 @@ export {
     editUser,
     sendUserPicture,
     fetchUserPicture,
+    sendUserBackground,
+    fetchUserBackground,
 
     makePost,
     fetchAllPosts,

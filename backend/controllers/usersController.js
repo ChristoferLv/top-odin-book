@@ -73,7 +73,6 @@ const updateUserProfile = [
             return res.status(401).send({ success: false });
         }
 
-        console.log("editando")
 
         const { name, bio } = req.body;
         const userId = parseInt(req.user.id);
@@ -145,6 +144,50 @@ async function uploadPicture(req, res) {
     }
 }
 
+async function getBackground(req, res) {
+    if (!req.user) {
+        return res.status(401).send({ success: false });
+    }
+
+    const userId = parseInt(req.params.userId);
+    const result = await prisma.users.findUnique(
+        { where: { id: userId }, select: { background: true, mime:true } }
+    );
+    let newbuffer = null;
+    if (result.background)
+        newbuffer = Buffer.from(result.background, result.background.byteOffset, result.background.byteLength)
+
+    res.status(200).send({ success: true, data: { buffer: newbuffer, mime: result.mime } });
+}
+
+async function uploadBackground(req, res) {
+    try {
+        const userId = req.user.id;
+        const mime = req.file.mimetype;
+
+        if (!mime.startsWith("image/"))
+            return res.status(400).send({ success: false, message: "Invalid file type." });
+
+        if (req.file.size > 5000000) {
+            return res.status(400).send({ success: false, message: "Maximum background file size is 5MB." });
+        }
+
+        const result = await prisma.users.update(
+            {
+                data: { background: req.file.buffer, bgmime: mime },
+                where: { id: userId }
+            }
+        );
+        let newbuffer = null;
+        if (result.background)
+            newbuffer = Buffer.from(result.background, result.background.byteOffset, result.background.byteLength)
+        return res.status(201).send({ success: true, data: newbuffer });
+    } catch (e) {
+        console.log(e);
+        return res.status(500).send({ success: false });
+    }
+}
+
 
 export {
     getAllUsers,
@@ -152,5 +195,7 @@ export {
     getUserById,
     updateUserProfile,
     uploadPicture, 
-    getPicture
+    getPicture,
+    uploadBackground,
+    getBackground
 }
