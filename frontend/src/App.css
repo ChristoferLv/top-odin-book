@@ -149,6 +149,10 @@ app-root {
         cursor: pointer;
     }
 
+    .navigation-button:first-of-type{
+        align-self: flex-start;
+    }
+
     .navigation-button-inner {
         display: flex;
         align-items: center;
@@ -160,6 +164,7 @@ app-root {
         transition: background-color 0.2s cubic-bezier(0, 0.55, 0.45, 1);
     }
 
+    .navigation-button:hover>.main-button-inner,
     .navigation-button:hover>.navigation-button-inner {
         background-color: #202020;
     }
@@ -186,6 +191,27 @@ app-root {
             fill: white;
             stroke: none;
         }
+    }
+
+    .main-button-inner {
+        display: flex;
+        align-items: center;
+        gap: 0 15px;
+        border-radius: 99px;
+        width: fit-content;
+        padding: 5px 5px;
+        margin-left: 7px;
+        transition: background-color 0.2s cubic-bezier(0, 0.55, 0.45, 1);
+    }
+
+    .main-icon {
+        width: 48px;
+        height: 48px;
+    }
+
+    .main-icon svg {
+        width: 48px;
+        height: 48px;
     }
 }
 
@@ -746,4 +772,3 @@ app-root {
         max-height: 200px;
     }
 }
-
