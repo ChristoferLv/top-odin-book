@@ -200,6 +200,18 @@ async function deletePost(req, res) {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 async function getLikedPosts(req, res) {
     try {
         const userId = req.user.id;
@@ -323,6 +335,20 @@ async function removeLike(req, res) {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 async function getBookmarkedPosts(req, res) {
     const userId = req.user.id;
     try {
@@ -439,10 +465,53 @@ async function removePostBookmark(req, res) {
 
 
 
+
+
+
+
+
+
+
+
+
+
+async function getMyComments(req, res) {
+    const userId = req.user.id;
+    try {
+        const result = await prisma.comments.findMany({
+            where: { authorId: userId },
+
+            include: {
+                author: {
+                    omit:
+                    {
+                        password: true,
+                        picture: true,
+                        mime: true,
+                        background: true,
+                        bgmime: true,
+                        createdAt: true
+                    }
+                },
+            }
+        })
+
+        if (!result) {
+            return res.status(500).send({ success: false });
+        }
+
+        return res.send({ success: true, data: result });
+    } catch (e) {
+        console.log(e);
+        throw e;
+    }
+}
+
+
 async function makeComment(req, res) {
     try {
         const postId = parseInt(req.params.postId);
-
+        console.log(req.body)
         const content = req.body.content;
 
         const exists = await prisma.posts.findUnique({
@@ -486,6 +555,19 @@ async function getCommentsOfPost(req, res) {
 
         const result = await prisma.comments.findMany({
             where: { postId: postId },
+            include: {
+                author: {
+                    omit:
+                    {
+                        password: true,
+                        picture: true,
+                        mime: true,
+                        background: true,
+                        bgmime: true,
+                        createdAt: true
+                    }
+                },
+            },
             orderBy: { createdAt: "desc" }
         });
 
@@ -546,6 +628,7 @@ export {
     bookmarkPost,
     removePostBookmark,
 
+    getMyComments,
     makeComment,
     getCommentsOfPost,
     deleteComment

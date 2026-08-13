@@ -247,7 +247,27 @@ async function fetchMyPosts() {
 async function fetchPostById(postId) {
     console.log("getting post", postId)
     const token = localStorage.getItem("token");
-    const rawReponse = await fetch('http://localhost:3000/posts/' + postId, {
+    const rawResponse = await fetch('http://localhost:3000/posts/' + postId, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': token
+        }
+    });
+    if (rawResponse.ok) {
+        const response = await rawResponse.json();
+        if (response && response.success) {
+            return response;
+        }
+    } else {
+        return null;
+    }
+}
+
+async function fetchMyComments() {
+    const token = localStorage.getItem("token");
+    const rawReponse = await fetch(`http://localhost:3000/posts/comments`, {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
@@ -264,6 +284,54 @@ async function fetchPostById(postId) {
         return null;
     }
 }
+
+async function makeComment(data, postId) {
+    console.log(data, postId)
+    try {
+        const token = localStorage.getItem("token");
+        const rawResponse = await fetch(`http://localhost:3000/posts/${postId}/comments`, {
+            method: 'POST',
+            headers: {
+                'Authorization': token,
+                'Accept': 'application/json',
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        if (rawResponse.ok) {
+            const response = await rawResponse.json();
+            if (response && response.success) {
+                return response;
+            }
+        }
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+
+async function fetchCommentsOfPost(postId) {
+    const token = localStorage.getItem("token");
+    const rawReponse = await fetch(`http://localhost:3000/posts/${postId}/comments`, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': token
+        }
+    });
+    if (rawReponse.ok) {
+        const response = await rawReponse.json();
+        if (response && response.success) {
+            return response;
+        }
+    } else {
+        return null;
+    }
+}
+
+
 
 
 
@@ -424,6 +492,9 @@ export {
     fetchAllPosts,
     fetchMyPosts,
     fetchPostById,
+    fetchMyComments,
+    makeComment, 
+    fetchCommentsOfPost,
 
     fetchLikedPosts,
     likePost,

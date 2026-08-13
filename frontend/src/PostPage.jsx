@@ -1,11 +1,12 @@
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router";
 import { AuthContext } from "./AuthContext";
 import { formatDate } from "./utils/dateUtils";
-import { fetchPostById } from "../api/requests";
+import { fetchCommentsOfPost, fetchPostById, makeComment } from "../api/requests";
 import UserPicture from "./components/UserPicture";
 import { USER_PICTURE_DEFAULT_SIZE } from "./utils/defaults";
 import Post from "./components/Post";
+import Comment from "./components/Comment";
 
 function PostPage() {
     const { user, isLoading } = useContext(AuthContext);
@@ -13,6 +14,19 @@ function PostPage() {
     const navigate = useNavigate();
     const location = useLocation();
     const [postData, setPostData] = useState(null);
+    const [commentContent, setCommentContent] = useState("");
+    const [commentsList, setCommentsList] = useState([]);
+
+    const fetchComments = useCallback(async () => {
+        try {
+            const result = await fetchCommentsOfPost(postId);
+            if (result && result.success) {
+                setCommentsList(result.data);
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    }, []);
 
     function adjustPostDate(date) {
         const day = date.toDateString().split(" ").slice(1).join(" ");
@@ -28,10 +42,26 @@ function PostPage() {
             }
         }
         getPostData();
+    }, []);
+
+    useEffect(() => {
+        fetchComments();
     }, [])
 
     function goToPostAuthor() {
         navigate("/" + postData.author.username);
+    }
+
+    function handleCommentChange(e) {
+        setCommentContent(e.target.value);
+    }
+
+    async function postComment() {
+        const result = await makeComment({ content: commentContent }, postId);
+        if (result.success) {
+            setCommentContent("");
+            fetchComments();
+        }
     }
 
     async function handleLike() {
@@ -63,7 +93,7 @@ function PostPage() {
             setPostData({ ...postData, bookmarks: [{ id: result.data.id }] });
         }
     }
-    console.log(postData)
+    
     if (!postData) return <><div className="loading">
         <p>&nbsp;</p>
     </div></>;
@@ -128,6 +158,19 @@ function PostPage() {
                             </svg>
                         </div>
                     </div>
+                    <div className="controls-separator"></div>
+
+                    <div className="make-comment">
+                        <UserPicture id={user.id} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
+                        <textarea name="" id="" value={commentContent} onChange={handleCommentChange}></textarea>
+                        <button onClick={postComment} className="post-comment">Comment</button>
+                    </div>
+                </div>
+
+                <div className="comments-list">
+                    {commentsList.map((comment) => {
+                        return <Comment key={comment.id} data={comment} />
+                    })}
                 </div>
             </div>
         </>

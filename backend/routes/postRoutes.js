@@ -1,7 +1,7 @@
 import Router from 'express';
 import { passport } from "../authUtils.js"
 import { checkUser } from '../utils.js';
-import { bookmarkPost, deleteComment, deletePost, getAllPosts, getBookmarkedPosts, getCommentsOfPost, getLikedPosts, getPostById, likePost, makeComment, makePost, removeLike, removePostBookmark, updatePost } from '../controllers/postController.js';
+import { bookmarkPost, deleteComment, deletePost, getAllPosts, getBookmarkedPosts, getCommentsOfPost, getLikedPosts, getMyComments, getPostById, likePost, makeComment, makePost, removeLike, removePostBookmark, updatePost } from '../controllers/postController.js';
 
 const postRouter = Router();
 
@@ -20,6 +20,7 @@ postRouter.delete("/:postId/bookmarks", passport.authenticate('jwt', { session: 
 postRouter.post("/:postId/comments", passport.authenticate('jwt', { session: false }), checkUser, makeComment);
 postRouter.get("/:postId/comments", passport.authenticate('jwt', { session: false }), checkUser, getCommentsOfPost);
 postRouter.delete("/comments/:commentId", passport.authenticate('jwt', { session: false }), checkUser, deleteComment);
+postRouter.get("/comments", passport.authenticate('jwt', { session: false }), checkUser, getMyComments);
 
 postRouter.post("/", passport.authenticate('jwt', { session: false }), checkUser, makePost);
 postRouter.get("/", passport.authenticate('jwt', { session: false }), checkUser, getAllPosts);

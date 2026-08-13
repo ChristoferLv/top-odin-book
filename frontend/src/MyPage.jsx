@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "./AuthContext";
-import { fetchLikedPosts, fetchMyPosts } from "../api/requests";
+import { fetchLikedPosts, fetchMyComments, fetchMyPosts } from "../api/requests";
 import UserPicture from "./components/UserPicture";
 import UserBackground from "./components/UserBackground";
 import PostsList from "./components/PostsList";
@@ -35,23 +35,24 @@ function MyPage() {
     const [myPosts, setMyPosts] = useState([]);
     const [seeingOption, setSeeingOption] = useState(SeeingOptions.POSTS)
     const navigate = useNavigate();
-    
+    const [count, setCount] = useState(0);
+
     function handleSeePosts() {
         navigate("/" + user.username);
     }
-    
+
     function handleSeeComments() {
         navigate("/" + user.username + "/comments", { replace: true });
     }
-    
+
     function handleSeeLikes() {
         navigate("/" + user.username + "/likes", { replace: true });
     }
-    
-    function handleEditProfile(){
+
+    function handleEditProfile() {
         navigate("/settings/profile");
     }
-    
+
     useEffect(() => {
         async function getMyPosts() {
             let response = null;
@@ -61,24 +62,26 @@ function MyPage() {
                     setMyPosts(response.data);
                 }
             }
-            
+
             if (active == SeeingOptions.LIKES) {
                 response = await fetchLikedPosts();
                 if (response && response.success) {
                     setMyPosts(response.data.map((item) => item.post));
                 }
             }
-            
-            if (active == SeeingOptions.COMMENTS)
-                response = await fetchMyPosts();
-            
-            
+
+            if (active == SeeingOptions.COMMENTS) {
+                response = await fetchMyComments();
+                if (response && response.success) {
+                    setMyPosts(response.data.map((item) => { return { ...item, likes: [], bookmarks: [] } }));
+                }
+            }
+
+
         }
-        
+        setCount(c => ++c);
         getMyPosts();
     }, [location]);
-    
-    console.log(myPosts)
     if (!user) return <div className="loading"><p>Loading</p></div>
     return (
         <>
@@ -95,10 +98,10 @@ function MyPage() {
                         </div>
                         <p>{user.name}</p>
                     </div>
-                    <UserBackground id={user.id}/>
+                    <UserBackground id={user.id} />
                     <div className="my-page-controls">
                         <div className="my-page-picture">
-                            <UserPicture id={user.id} useBorder={true}/>
+                            <UserPicture id={user.id} useBorder={true} />
                         </div>
                         <button onClick={handleEditProfile} className="edit-profile-button">Edit profile</button>
                     </div>
@@ -119,7 +122,7 @@ function MyPage() {
                     </div>
                 </div>
                 <div className="my-page-content">
-                    <PostsList postsList={myPosts} />
+                    <PostsList key={Date.now()} postsList={myPosts} />
                 </div>
             </div>
         </>
