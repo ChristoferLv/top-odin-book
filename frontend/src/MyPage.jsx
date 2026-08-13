@@ -98,7 +98,7 @@ function MyPage() {
                     <UserBackground id={user.id}/>
                     <div className="my-page-controls">
                         <div className="my-page-picture">
-                            <UserPicture id={user.id}/>
+                            <UserPicture id={user.id} useBorder={true}/>
                         </div>
                         <button onClick={handleEditProfile} className="edit-profile-button">Edit profile</button>
                     </div>

@@ -5,7 +5,7 @@ async function getAllUsers(req, res) {
     try {
         const users = await prisma.users.findMany({
             omit: {
-                created_at: true, password: true, mime: true
+                created_at: true, password: true, mime: true, picture: true, background: true, bgmime: true
             }
         });
 
@@ -25,7 +25,7 @@ async function findUserByUsername(req, res) {
         const user = await prisma.users.findUnique({
             where: { username: username },
             omit: {
-                password: true, picture: true, mime: true
+                password: true, picture: true, mime: true, background: true, bgmime: true
             }
         });
 
@@ -48,7 +48,7 @@ async function getUserById(req, res) {
         const user = await prisma.users.findUnique({
             where: { id: userId },
             omit: {
-                password: true, picture: true, mime: true
+                password: true, picture: true, mime: true,background:true, bgmime:true
             }
         });
 
@@ -106,7 +106,7 @@ async function getPicture(req, res) {
 
     const userId = parseInt(req.params.userId);
     const result = await prisma.users.findUnique(
-        { where: { id: userId }, select: { picture: true, mime:true } }
+        { where: { id: userId }, select: { picture: true, mime: true } }
     );
     let newbuffer = null;
     if (result.picture)
@@ -151,7 +151,7 @@ async function getBackground(req, res) {
 
     const userId = parseInt(req.params.userId);
     const result = await prisma.users.findUnique(
-        { where: { id: userId }, select: { background: true, mime:true } }
+        { where: { id: userId }, select: { background: true, mime: true } }
     );
     let newbuffer = null;
     if (result.background)
@@ -194,7 +194,7 @@ export {
     findUserByUsername,
     getUserById,
     updateUserProfile,
-    uploadPicture, 
+    uploadPicture,
     getPicture,
     uploadBackground,
     getBackground

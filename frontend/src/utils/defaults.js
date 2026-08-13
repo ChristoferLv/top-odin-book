@@ -1,1 +1,1 @@
-export const USER_PICTURE_DEFAULT_SIZE = 37;
+export const USER_PICTURE_DEFAULT_SIZE = 38;

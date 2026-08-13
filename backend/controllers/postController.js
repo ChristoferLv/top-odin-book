@@ -51,6 +51,8 @@ async function getAllPosts(req, res) {
                         password: true,
                         picture: true,
                         mime: true,
+                        background: true,
+                        bgmime: true,
                         createdAt: true
                     }
                 },
@@ -72,12 +74,41 @@ async function getAllPosts(req, res) {
 
 async function getPostById(req, res) {
     try {
-        const postId = parseInt(req.params.id);
+        const postId = parseInt(req.params.postId);
 
         const result = await prisma.posts.findUnique({
             where: {
                 id: postId
             },
+
+            include: {
+                author: {
+                    omit:
+                    {
+                        password: true,
+                        picture: true,
+                        mime: true,
+                        background: true,
+                        bgmime: true,
+                        createdAt: true,
+
+                    }
+                },
+                likes: { where: { whoLikedId: req.user.id }, select: { id: true } },
+                bookmarks: { where: { whoBookmarkedId: req.user.id }, select: { id: true } },
+                _count: {
+                    select: {
+                        likes: {
+                            where: { postId: postId }
+                        },
+                        bookmarks: {
+                            where: { postId: postId }
+                        }
+                    }
+                }
+            }
+
+
             // select: { _count: { select: { likes: true } } }
         });
 
@@ -85,7 +116,7 @@ async function getPostById(req, res) {
             return res.status(500).send({ success: false });
         }
 
-        return res.send({ success: true, data: result });
+        return res.status(200).send({ success: true, data: result });
     } catch (e) {
         console.log(e);
         throw e;
@@ -183,6 +214,8 @@ async function getLikedPosts(req, res) {
                                 password: true,
                                 picture: true,
                                 mime: true,
+                                background: true,
+                                bgmime: true,
                                 createdAt: true
                             }
                         },
@@ -304,6 +337,8 @@ async function getBookmarkedPosts(req, res) {
                                 password: true,
                                 picture: true,
                                 mime: true,
+                                background: true,
+                                bgmime: true,
                                 createdAt: true
                             }
                         },

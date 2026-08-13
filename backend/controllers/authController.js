@@ -42,7 +42,9 @@ async function getMe(req, res) {
             omit: {
                 password: true,
                 picture: true,
-                mime:true
+                mime: true,
+                background: true,
+                bgmime: true,
             }
         });
 

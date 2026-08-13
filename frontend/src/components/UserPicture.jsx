@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchUserPicture } from "../../api/requests";
 
-function UserPicture({ id, size }) {
+function UserPicture({ id, size, useBorder }) {
     const [pictureBuff, setPicture] = useState(null);
     const [mime, setMime] = useState(null);
     const rawBuffer = new Uint8Array(pictureBuff);
@@ -29,7 +29,7 @@ function UserPicture({ id, size }) {
     return (
         <>
             <div className="pic-container">
-                <div className="profile-pic"
+                <div className={`profile-pic ${useBorder ? "pic-border" : ""}`}
                     style={{ width: size + "px", height: size + "px" }}>
                     <img src={!pictureBuff ? "../public/avatar.png" :
                         imageUrl} alt="" />

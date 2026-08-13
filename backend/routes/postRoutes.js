@@ -23,7 +23,7 @@ postRouter.delete("/comments/:commentId", passport.authenticate('jwt', { session
 
 postRouter.post("/", passport.authenticate('jwt', { session: false }), checkUser, makePost);
 postRouter.get("/", passport.authenticate('jwt', { session: false }), checkUser, getAllPosts);
-postRouter.get("/:postId", getPostById);
+postRouter.get("/:postId",passport.authenticate('jwt', { session: false }), getPostById);
 postRouter.put("/:postId", checkUser, updatePost);
 postRouter.delete("/:postId", checkUser, deletePost);
 
