@@ -175,6 +175,73 @@ async function fetchUserBackground(userId) {
     }
 }
 
+async function fetchAllUsers() {
+    try {
+        const token = localStorage.getItem("token");
+        const request = await fetch(`http://localhost:3000/users`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': token
+            }
+        });
+        if (request.ok) {
+            const background = await request.json();
+            return background;
+        }
+    } catch (e) {
+        console.log(e);
+        throw e;
+    }
+}
+
+
+async function followUser(userId) {
+    console.log("follow user")
+
+    try {
+        const token = localStorage.getItem("token");
+        const request = await fetch(`http://localhost:3000/users/${userId}/follows`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': token
+            }
+        });
+        if (request.ok) {
+            const result = await request.json();
+            return result;
+        }
+    } catch (e) {
+        console.log(e);
+        throw e;
+    }
+}
+
+async function unfollowUser(userId) {
+    console.log("unfollow user")
+    try {
+        const token = localStorage.getItem("token");
+        const request = await fetch(`http://localhost:3000/users/${userId}/follows`, {
+            method: 'DELETE',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': token
+            }
+        });
+        if (request.ok) {
+            const background = await request.json();
+            return background;
+        }
+    } catch (e) {
+        console.log(e);
+        throw e;
+    }
+}
+
 
 
 
@@ -487,13 +554,17 @@ export {
     fetchUserPicture,
     sendUserBackground,
     fetchUserBackground,
+    fetchAllUsers,
+
+    followUser,
+    unfollowUser,
 
     makePost,
     fetchAllPosts,
     fetchMyPosts,
     fetchPostById,
     fetchMyComments,
-    makeComment, 
+    makeComment,
     fetchCommentsOfPost,
 
     fetchLikedPosts,

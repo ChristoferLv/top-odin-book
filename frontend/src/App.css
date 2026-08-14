@@ -831,6 +831,11 @@ app-root {
     border-color: transparent;
 }
 
+.follow-button{
+    margin-left: auto;
+}   
+
+.follow-button,
 .save-profile {
     cursor: pointer;
     margin-left: auto;
@@ -842,6 +847,17 @@ app-root {
     font-weight: bold;
     border: none;
 }
+
+
+
+
+
+
+
+
+
+
+
 
 
 

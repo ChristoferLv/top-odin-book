@@ -12,6 +12,7 @@ import ContentPane from './components/ContentPane.jsx';
 import BookmarksPage from './BookmarksPage.jsx';
 import EditProfile from './components/EditProfile.jsx';
 import PostPage from './PostPage.jsx';
+import UsersPage from './UsersPage.jsx';
 
 
 const router = createBrowserRouter([
@@ -21,6 +22,7 @@ const router = createBrowserRouter([
     path: "/",
     element: <MainPage />,
     children: [
+      { path: "/users", element: <UsersPage /> },
       { path: "/settings/profile", element: <EditProfile /> },
       { path: "/:username/post/:postId", element: <PostPage /> },
       { path: "/:username/*", element: <MyPage /> },

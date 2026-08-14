@@ -2,10 +2,15 @@ import { body, matchedData, validationResult } from "express-validator";
 import { prisma } from "../lib/prisma.js";
 
 async function getAllUsers(req, res) {
+    const userId = req.user.id;
     try {
         const users = await prisma.users.findMany({
-            omit: {
-                created_at: true, password: true, mime: true, picture: true, background: true, bgmime: true
+            where: { NOT: { id: userId } },
+            select: {
+                id: true,
+                username: true,
+                name: true,
+                following: { where: { followedById: userId, }, select: { id: true } }
             }
         });
 
@@ -48,7 +53,7 @@ async function getUserById(req, res) {
         const user = await prisma.users.findUnique({
             where: { id: userId },
             omit: {
-                password: true, picture: true, mime: true,background:true, bgmime:true
+                password: true, picture: true, mime: true, background: true, bgmime: true
             }
         });
 
@@ -99,11 +104,71 @@ const updateUserProfile = [
     }
 ];
 
-async function getPicture(req, res) {
-    if (!req.user) {
-        return res.status(401).send({ success: false });
+async function followUser(req, res) {
+    const toFollow = parseInt(req.params.userId);
+
+    if (req.user.id == toFollow)
+        return res.status(400).send({ success: false, message: "You cannot follow yourself." });
+
+    const alreadyFollowing = await prisma.follows.findUnique(
+        {
+            where: {
+                followingId_followedById: {
+                    followedById: req.user.id,
+                    followingId: toFollow
+                }
+            }
+        }
+    );
+
+    if (alreadyFollowing) {
+        return res.status(409).send({ success: false, message: "You already follow this user." });
     }
 
+    const result = await prisma.follows.create({
+        data: {
+            followedById: req.user.id,
+            followingId: toFollow
+        }
+    });
+
+    return res.status(201).send({ success: true, data: result });
+}
+
+async function unfollowUser(req, res) {
+    const toUnfollow = parseInt(req.params.userId);
+
+    if (req.user.id == toUnfollow)
+        return res.status(400).send({ success: false, message: "You cannot unfollow yourself." });
+
+    const ifFollowing = await prisma.follows.findUnique(
+        {
+            where: {
+                followingId_followedById: {
+                    followedById: req.user.id,
+                    followingId: toUnfollow
+                }
+            }
+        }
+    );
+
+    if (!ifFollowing) {
+        return res.status(400).send({ success: false, message: "You do not follow this user." });
+    }
+
+    const result = await prisma.follows.delete({
+        where: {
+            followingId_followedById: {
+                followedById: req.user.id,
+                followingId: toUnfollow
+            }
+        }
+    });
+
+    return res.status(200).send({ success: true });
+}
+
+async function getPicture(req, res) {
     const userId = parseInt(req.params.userId);
     const result = await prisma.users.findUnique(
         { where: { id: userId }, select: { picture: true, mime: true } }
@@ -117,7 +182,6 @@ async function getPicture(req, res) {
 
 async function uploadPicture(req, res) {
     try {
-
         const userId = req.user.id;
         const mime = req.file.mimetype;
 
@@ -145,10 +209,6 @@ async function uploadPicture(req, res) {
 }
 
 async function getBackground(req, res) {
-    if (!req.user) {
-        return res.status(401).send({ success: false });
-    }
-
     const userId = parseInt(req.params.userId);
     const result = await prisma.users.findUnique(
         { where: { id: userId }, select: { background: true, mime: true } }
@@ -194,6 +254,8 @@ export {
     findUserByUsername,
     getUserById,
     updateUserProfile,
+    followUser,
+    unfollowUser,
     uploadPicture,
     getPicture,
     uploadBackground,

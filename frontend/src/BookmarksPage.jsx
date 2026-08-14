@@ -10,7 +10,7 @@ import { useNavigate } from "react-router";
 
 function BookmarksPage() {
     const { user, setUser } = useContext(AuthContext);
-        const navigate = useNavigate();
+    const navigate = useNavigate();
     const [bookmarkedPosts, setBookmarkedPosts] = useState([]);
 
     useEffect(() => {

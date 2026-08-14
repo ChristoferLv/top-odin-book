@@ -27,6 +27,13 @@ app.use((req, res, next) => {
     console.log(`📝 ${timestamp} - ${method} ${url}`);
     console.log("   └req.body ->", req.body)
     //console.log(req.headers.cookie)
+
+    const originalJson = res.json.bind(res)
+    res.json = (body) => {
+      if (!req.originalUrl.includes("picture") && !req.originalUrl.includes("picture"))
+        console.log(`   └─ res [${res.statusCode}] ->`, JSON.stringify(body, null, 2), req.originalUrl)
+      return originalJson(body)
+    }
     next();
   } catch (error) {
     console.error("❌ Erro no middleware de log:", error);

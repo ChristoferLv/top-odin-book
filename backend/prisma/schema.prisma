@@ -70,11 +70,12 @@ model Bookmarks {
 }
 
 model Follows {
+  id              Int      @id @default(autoincrement())
   createdAt    DateTime @default(now()) @db.Timestamptz(6)
   followedById Int
   followedBy   Users    @relation("followedBy", fields: [followedById], references: [id])
   followingId  Int
   following    Users    @relation("following", fields: [followingId], references: [id])
 
-  @@id([followingId, followedById])
+  @@unique([followingId, followedById])
 }
