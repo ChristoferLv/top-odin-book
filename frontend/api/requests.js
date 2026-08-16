@@ -196,6 +196,27 @@ async function fetchAllUsers() {
     }
 }
 
+async function fetchUserByUsername(username) {
+    try {
+        const token = localStorage.getItem("token");
+        const request = await fetch(`http://localhost:3000/users/find/${username}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': token
+            }
+        });
+        if (request.ok) {
+            const result = await request.json();
+            return result;
+        }
+    } catch (e) {
+        console.log(e);
+        throw e;
+    }
+}
+
 
 async function followUser(userId) {
     console.log("follow user")
@@ -252,6 +273,11 @@ async function unfollowUser(userId) {
 
 
 
+
+
+
+
+
 async function makePost(postData) {
     try {
         const token = localStorage.getItem("token");
@@ -291,6 +317,27 @@ async function fetchAllPosts() {
     }
 }
 
+async function fetchPostsByUserId(userId) {
+    const token = localStorage.getItem("token");
+    const rawReponse = await fetch('http://localhost:3000/posts?userId=' + userId, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': token
+        }
+    });
+    if (rawReponse.ok) {
+        const response = await rawReponse.json();
+        if (response && response.success) {
+            return response;
+        }
+    } else {
+        return null;
+    }
+}
+
+//CHECK IF BEING USED, IF NOT, REMOVE ==========================================================================
 async function fetchMyPosts() {
     const token = localStorage.getItem("token");
     const rawReponse = await fetch('http://localhost:3000/posts', {
@@ -332,6 +379,47 @@ async function fetchPostById(postId) {
     }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+async function fetchCommentsByUserId(userId) {
+    const token = localStorage.getItem("token");
+    const rawReponse = await fetch('http://localhost:3000/posts/comments?userId=' + userId, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': token
+        }
+    });
+    if (rawReponse.ok) {
+        const response = await rawReponse.json();
+        if (response && response.success) {
+            return response;
+        }
+    } else {
+        return null;
+    }
+}
+
+//CHECK IF BEING USED, IF NOT, REMOVE ==========================================================================
 async function fetchMyComments() {
     const token = localStorage.getItem("token");
     const rawReponse = await fetch(`http://localhost:3000/posts/comments`, {
@@ -405,6 +493,33 @@ async function fetchCommentsOfPost(postId) {
 
 
 
+
+
+
+
+
+
+async function fetchLikedPostsByUserId(userId) {
+    const token = localStorage.getItem("token");
+    const rawReponse = await fetch('http://localhost:3000/posts/likes?userId=' + userId, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': token
+        }
+    });
+    if (rawReponse.ok) {
+        const response = await rawReponse.json();
+        if (response && response.success) {
+            return response;
+        }
+    } else {
+        return null;
+    }
+}
+
+//CHECK IF BEING USED, IF NOT, REMOVE ==========================================================================
 async function fetchLikedPosts() {
     const token = localStorage.getItem("token");
     const rawReponse = await fetch('http://localhost:3000/posts/likes', {
@@ -466,6 +581,15 @@ async function dislikePost(postId) {
         return false;
     }
 }
+
+
+
+
+
+
+
+
+
 
 
 
@@ -555,18 +679,23 @@ export {
     sendUserBackground,
     fetchUserBackground,
     fetchAllUsers,
+    fetchUserByUsername,
 
     followUser,
     unfollowUser,
 
     makePost,
     fetchAllPosts,
+    fetchPostsByUserId,
     fetchMyPosts,
     fetchPostById,
+
+    fetchCommentsByUserId,
     fetchMyComments,
     makeComment,
     fetchCommentsOfPost,
 
+    fetchLikedPostsByUserId,
     fetchLikedPosts,
     likePost,
     dislikePost,

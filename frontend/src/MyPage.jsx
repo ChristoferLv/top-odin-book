@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "./AuthContext";
-import { fetchLikedPosts, fetchMyComments, fetchMyPosts } from "../api/requests";
+import { fetchCommentsByUserId, fetchLikedPosts, fetchLikedPostsByUserId, fetchMyComments, fetchMyPosts, fetchPostsByUserId, fetchUserByUsername } from "../api/requests";
 import UserPicture from "./components/UserPicture";
 import UserBackground from "./components/UserBackground";
 import PostsList from "./components/PostsList";
@@ -8,8 +8,8 @@ import { useLocation, useNavigate } from "react-router";
 import background from "../public/bkgd.png"
 
 
-
 function MyPage() {
+    const [userData, setUserData] = useState(null);
     const SeeingOptions = Object.freeze({
         POSTS: Symbol("posts"),
         LIKES: Symbol("likes"),
@@ -17,6 +17,7 @@ function MyPage() {
     });
     const location = useLocation();
     const parts = location.pathname.split("/");
+    console.log(parts)
     const curLocation = parts[2];
     let active = SeeingOptions.POSTS;
     switch (curLocation) {
@@ -54,24 +55,35 @@ function MyPage() {
     }
 
     useEffect(() => {
-        async function getMyPosts() {
+        async function fetchUserData() {
+            const result = await fetchUserByUsername(parts[1]);
+            console.log(result)
+            if (result && result.success) {
+                setUserData(result.data)
+            }
+        }
+        fetchUserData();
+    }, [])
+
+    useEffect(() => {
+        async function getPosts() {
             let response = null;
             if (active == SeeingOptions.POSTS) {
-                response = await fetchMyPosts();
+                response = await fetchPostsByUserId(userData.id);
                 if (response && response.success) {
                     setMyPosts(response.data);
                 }
             }
 
             if (active == SeeingOptions.LIKES) {
-                response = await fetchLikedPosts();
+                response = await fetchLikedPostsByUserId(userData.id);
                 if (response && response.success) {
                     setMyPosts(response.data.map((item) => item.post));
                 }
             }
 
             if (active == SeeingOptions.COMMENTS) {
-                response = await fetchMyComments();
+                response = await fetchCommentsByUserId(userData.id);
                 if (response && response.success) {
                     setMyPosts(response.data.map((item) => { return { ...item, likes: [], bookmarks: [] } }));
                 }
@@ -80,9 +92,10 @@ function MyPage() {
 
         }
         setCount(c => ++c);
-        getMyPosts();
-    }, [location]);
-    if (!user) return <div className="loading"><p>Loading</p></div>
+        if (userData)
+            getPosts();
+    }, [location, userData]);
+    if (!userData || !user) return <div className="loading"><p>Loading</p></div>
     return (
         <>
             <div className="my-page">
@@ -96,18 +109,18 @@ function MyPage() {
                                 Back
                             </div>
                         </div>
-                        <p>{user.name}</p>
+                        <p>{userData.name}</p>
                     </div>
-                    <UserBackground id={user.id} />
+                    <UserBackground id={userData.id} />
                     <div className="my-page-controls">
                         <div className="my-page-picture">
-                            <UserPicture id={user.id} useBorder={true} />
+                            <UserPicture id={userData.id} useBorder={true} />
                         </div>
                         <button onClick={handleEditProfile} className="edit-profile-button">Edit profile</button>
                     </div>
                     <div className="user-profile-info">
-                        <p>{user.name}</p>
-                        <p>@{user.username}</p>
+                        <p>{userData.name}</p>
+                        <p>@{userData.username}</p>
                     </div>
                     <div className="view-list-options">
                         <div onClick={handleSeePosts} className={`posts-option ${active == SeeingOptions.POSTS ? "active" : ""}`}>

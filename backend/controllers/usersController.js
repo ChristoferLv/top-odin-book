@@ -20,22 +20,39 @@ async function getAllUsers(req, res) {
     }
 }
 
-async function findUserByUsername(req, res) {
-    if (!req.user) {
-        return res.status(401).send({ success: false });
-    }
-
+async function getUserByUsername(req, res) {
     const { username } = req.params;
     try {
         const user = await prisma.users.findUnique({
             where: { username: username },
-            omit: {
-                password: true, picture: true, mime: true, background: true, bgmime: true
+            // omit: {
+            //     password: true, picture: true, mime: true, background: true, bgmime: true
+            // },
+            select: {
+                id: true,
+                username: true,
+                name: true,
+                bio: true,
+                createdAt: true,
+                following: { select: { id:true}, where: { followedById: req.user.id } },
+                _count: {
+                    /*Here what it is counting is the number of entries on the tabble "Follows" 
+                        where the number of following is the id of the current user got on where
+                        and where the id on followdBy is the id of the current user got on where
+                        so on following shows the number of times the current user is followed
+                        and on followedBy shows the number of times the current user is following someone
+                        the confusion is caused by the name of the columns
+                    */
+                    select: {
+                        following: true,
+                        followedBy: true
+                    }
+                }
             }
         });
 
         if (!user)
-            return res.status(400).send({ success: false, message: "No contact found with requested username." })
+            return res.status(400).send({ success: false, message: "No user found with requested username." })
 
         res.status(200).send({ success: true, data: user });
     } catch (e) {
@@ -251,7 +268,7 @@ async function uploadBackground(req, res) {
 
 export {
     getAllUsers,
-    findUserByUsername,
+    getUserByUsername,
     getUserById,
     updateUserProfile,
     followUser,

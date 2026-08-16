@@ -40,9 +40,13 @@ const makePost = [
 ];
 
 async function getAllPosts(req, res) {
-    const userId = req.user.id;
     try {
+        const userId = req.user.id;
+        let condition = {}
+        if (req.query.userId)
+            condition = { authorId: parseInt(req.query.userId) };
         const result = await prisma.posts.findMany({
+            where: condition,
             include:
             {
                 author: {
@@ -215,9 +219,12 @@ async function deletePost(req, res) {
 
 async function getLikedPosts(req, res) {
     try {
+        let condition = {}
+        if (req.query.userId)
+            condition = { whoLikedId: parseInt(req.query.userId) };
         const userId = req.user.id;
         const result = await prisma.likes.findMany({
-            where: { whoLikedId: req.user.id },
+            where: condition,
             select: {
                 post: {
                     include: {
@@ -477,10 +484,13 @@ async function removePostBookmark(req, res) {
 
 
 async function getMyComments(req, res) {
-    const userId = req.user.id;
     try {
+        const userId = req.user.id;
+        let condition = {}
+        if (req.query.userId)
+            condition = { authorId: parseInt(req.query.userId) };
         const result = await prisma.comments.findMany({
-            where: { authorId: userId },
+            where: condition,
 
             include: {
                 author: {

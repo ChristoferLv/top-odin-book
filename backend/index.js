@@ -30,7 +30,7 @@ app.use((req, res, next) => {
 
     const originalJson = res.json.bind(res)
     res.json = (body) => {
-      if (!req.originalUrl.includes("picture") && !req.originalUrl.includes("picture"))
+      if (!req.originalUrl.includes("picture") && !req.originalUrl.includes("background"))
         console.log(`   └─ res [${res.statusCode}] ->`, JSON.stringify(body, null, 2), req.originalUrl)
       return originalJson(body)
     }
