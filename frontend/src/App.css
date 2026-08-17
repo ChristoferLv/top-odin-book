@@ -116,20 +116,28 @@ app-root {
 
 
 
-
+.master-pane{
+    display: grid;
+    grid-template-columns: 40vw auto;
+    overflow-y: scroll;
+    /* background-color: var(--main-background-color); */
+}
 
 
 .main-page {
     height: 100%;
     max-height: 100vh;
     display: grid;
-    grid-template-columns: 27vw 40vw 33vw;
+    grid-template-columns: 27vw auto;
+     /* grid-template-columns: 27vw 40vw 33vw; */
 }
 
 .navigation-pane {
+    box-sizing: border-box;
     background-color: var(--main-background-color);
     border-right: 1px solid var(--main-border-color);
-
+    max-height: 100vh;
+    overflow-y: hidden;
     display: flex;
     flex-direction: column;
     gap: 3px 0;
@@ -272,6 +280,8 @@ app-root {
 
 .content-pane {
     background-color: black;
+    width: 40vw;
+    /* overflow: auto; */
     /* border: solid white 1px;
     border-style: none solid; */
 }
@@ -573,6 +583,7 @@ app-root {
 
 
 .right-pane {
+    display: flex;
     background-color: rgb(7, 6, 29);
     border-left: 1px solid var(--main-border-color);
     color: white;

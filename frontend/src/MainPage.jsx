@@ -103,9 +103,11 @@ function MainPage() {
                 </div>
                 <UserToast onClick={goToProfile} user={user} />
             </div>
-            <Outlet />
-            <div className="right-pane">
-                <p>3</p>
+            <div className="master-pane">
+                <Outlet />
+                <div className="right-pane">
+                    <p>3</p>
+                </div>
             </div>
         </div>
     </>)
