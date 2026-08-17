@@ -107,6 +107,56 @@ function MainPage() {
                 <Outlet />
                 <div className="right-pane">
                     <p>3</p>
+                    <div>
+                        <p>1</p>
+                    </div>
+                    <div>
+                        <p>2</p>
+                    </div>
+                    <div>
+                        <p>3</p>
+                    </div>
+                    <div>
+                        <p>4</p>
+                    </div>
+                    <div>
+                        <p>5</p>
+                    </div>
+                    <div>
+                        <p>6</p>
+                    </div>
+                    <div>
+                        <p>7</p>
+                    </div>
+                    <div>
+                        <p>8</p>
+                    </div>
+                    <div>
+                        <p>9</p>
+                    </div>
+                    <div>
+                        <p>10</p>
+                    </div>
+                    <div>
+                        <p>11</p>
+                    </div>
+                    <div>
+                        <p>12</p>
+                    </div>
+                    <div>
+                        <p>13</p>
+                    </div>
+                    <div>
+                        <p>14</p>
+                    </div>
+                    <div>
+                        <p>15</p>
+                    </div>
+                    <div>
+                        <p>16</p>
+                    </div>
+                   
+                  
                 </div>
             </div>
         </div>

@@ -1,6 +1,6 @@
 import { formatDate } from "../utils/dateUtils";
 import UserPicture from "../components/UserPicture"
-import { USER_PICTURE_DEFAULT_SIZE } from "../utils/defaults"
+import { PostType, USER_PICTURE_DEFAULT_SIZE } from "../utils/defaults"
 import { bookmarkPost, dislikePost, likePost, removeBookmarkPost } from "../../api/requests";
 import { useState } from "react";
 import { useNavigate } from "react-router";
@@ -8,6 +8,8 @@ import { useNavigate } from "react-router";
 function Post({ data }) {
     const [postData, setPostData] = useState(data);
     const navigate = useNavigate();
+    const isReply = data.postType == PostType.REPLY;
+    const isShare = data.postType == PostType.SHARE;
 
     const formatedDate = formatDate(postData.createdAt);
 
@@ -50,12 +52,13 @@ function Post({ data }) {
     return (
         <>
             <div className="post" onClick={handleSeePost}>
-                <UserPicture id={postData.author.id} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false}/>
+                <UserPicture id={postData.author.id} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
                 <div className="post-data">
                     <div className="post-head">
                         <span>{postData.author.name}</span>
                         <span>@{postData.author.username} - {formatedDate}</span>
                     </div>
+                    {isReply && <div><p>Original post: {postData.originalPostId}</p></div>}
                     <div className="post-content">{postData.content}</div>
                     <div className="post-controls">
                         <div className="comment-control-button">

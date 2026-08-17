@@ -483,15 +483,50 @@ async function removePostBookmark(req, res) {
 
 
 
+// async function getMyComments(req, res) {
+//     try {
+//         const userId = req.user.id;
+//         let condition = {}
+//         if (req.query.userId)
+//             condition = { authorId: parseInt(req.query.userId) };
+//         const result = await prisma.comments.findMany({
+//             where: condition,
+
+//             include: {
+//                 author: {
+//                     omit:
+//                     {
+//                         password: true,
+//                         picture: true,
+//                         mime: true,
+//                         background: true,
+//                         bgmime: true,
+//                         createdAt: true
+//                     }
+//                 },
+//             }
+//         })
+
+//         if (!result) {
+//             return res.status(500).send({ success: false });
+//         }
+
+//         return res.send({ success: true, data: result });
+//     } catch (e) {
+//         console.log(e);
+//         throw e;
+//     }
+// }
+
 async function getMyComments(req, res) {
     try {
         const userId = req.user.id;
-        let condition = {}
+        let condition = { postType: "REPLY" }
         if (req.query.userId)
-            condition = { authorId: parseInt(req.query.userId) };
-        const result = await prisma.comments.findMany({
+            Object.assign(condition, { authorId: parseInt(req.query.userId) });
+        console.log("condition", condition)
+        const result = await prisma.posts.findMany({
             where: condition,
-
             include: {
                 author: {
                     omit:
@@ -504,6 +539,21 @@ async function getMyComments(req, res) {
                         createdAt: true
                     }
                 },
+                originalPost: {
+                    include: {
+                        author: {
+                            omit:
+                            {
+                                password: true,
+                                picture: true,
+                                mime: true,
+                                background: true,
+                                bgmime: true,
+                                createdAt: true
+                            }
+                        }
+                    }
+                }
             }
         })
 
@@ -517,7 +567,6 @@ async function getMyComments(req, res) {
         throw e;
     }
 }
-
 
 async function makeComment(req, res) {
     try {
@@ -533,13 +582,16 @@ async function makeComment(req, res) {
             return res.status(400).send({ success: false, message: "Post not found." });
         }
 
-        const result = await prisma.comments.create({
-            data: {
-                content: content,
-                postId: postId,
-                authorId: req.user.id
+        const result = await prisma.posts.create(
+            {
+                data: {
+                    content: content,
+                    authorId: req.user.id,
+                    postType: "REPLY",
+                    originalPostId: postId
+                }
             }
-        });
+        );
 
         if (!result) {
             return res.status(500).send({ success: false });
@@ -551,6 +603,40 @@ async function makeComment(req, res) {
         throw e;
     }
 }
+
+
+// async function makeComment(req, res) {
+//     try {
+//         const postId = parseInt(req.params.postId);
+//         console.log(req.body)
+//         const content = req.body.content;
+
+//         const exists = await prisma.posts.findUnique({
+//             where: { id: postId }
+//         });
+
+//         if (!exists) {
+//             return res.status(400).send({ success: false, message: "Post not found." });
+//         }
+
+//         const result = await prisma.comments.create({
+//             data: {
+//                 content: content,
+//                 postId: postId,
+//                 authorId: req.user.id
+//             }
+//         });
+
+//         if (!result) {
+//             return res.status(500).send({ success: false });
+//         }
+
+//         return res.status(201).send({ success: true, data: result });
+//     } catch (e) {
+//         console.log(e);
+//         throw e;
+//     }
+// }
 
 async function getCommentsOfPost(req, res) {
     try {

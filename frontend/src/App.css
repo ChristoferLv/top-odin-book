@@ -584,6 +584,7 @@ app-root {
 
 .right-pane {
     display: flex;
+    flex-direction: column;
     background-color: rgb(7, 6, 29);
     border-left: 1px solid var(--main-border-color);
     color: white;

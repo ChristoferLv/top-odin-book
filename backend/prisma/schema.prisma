@@ -7,6 +7,12 @@ datasource db {
   provider = "postgresql"
 }
 
+enum PostType {
+  POST
+  REPLY
+  SHARE
+}
+
 model Users {
   id         Int         @id @default(autoincrement())
   name       String
@@ -27,11 +33,17 @@ model Users {
 }
 
 model Posts {
-  id        Int         @id @default(autoincrement())
-  content   String      @db.VarChar(500)
-  createdAt DateTime    @default(now()) @db.Timestamptz(6)
+  id        Int      @id @default(autoincrement())
+  postType  PostType @default(POST)
+  content   String   @db.VarChar(500)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
   authorId  Int
-  author    Users       @relation(fields: [authorId], references: [id])
+  author    Users    @relation(fields: [authorId], references: [id])
+
+  replyPost      Posts? @relation("originlPostReference")
+  originalPostId Int?   @unique
+  originalPost   Posts? @relation("originlPostReference", fields: [originalPostId], references: [id])
+
   comments  Comments[]
   likes     Likes[]
   bookmarks Bookmarks[]
