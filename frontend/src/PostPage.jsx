@@ -2,7 +2,7 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router";
 import { AuthContext } from "./AuthContext";
 import { formatDate } from "./utils/dateUtils";
-import { fetchCommentsOfPost, fetchPostById, makeComment } from "../api/requests";
+import { fetchPostById } from "../api/requests";
 import UserPicture from "./components/UserPicture";
 import { USER_PICTURE_DEFAULT_SIZE } from "./utils/defaults";
 import Post from "./components/Post";
@@ -93,7 +93,7 @@ function PostPage() {
             setPostData({ ...postData, bookmarks: [{ id: result.data.id }] });
         }
     }
-    
+
     if (!postData) return <><div className="loading">
         <p>&nbsp;</p>
     </div></>;

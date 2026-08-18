@@ -1,10 +1,10 @@
 import Post from "./Post";
 
-function PostsList({postsList}) {
+function PostsList({user, postsList}) {
     return (<>
         <div className="posts-list">
             {postsList.map((post) => {
-                return <Post key={post.id} data={post}/>
+                return <Post key={post.id} data={post} user={user}/>
             })}
         </div>
     </>)

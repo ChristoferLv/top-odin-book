@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "./AuthContext";
-import { fetchCommentsByUserId, fetchLikedPosts, fetchLikedPostsByUserId, fetchMyComments, fetchMyPosts, fetchPostsByUserId, fetchUserByUsername } from "../api/requests";
+import { fetchLikedPosts, fetchLikedPostsByUserId, fetchMyPosts, fetchPostsByUserId, fetchSharedPostsByUserId, fetchUserByUsername } from "../api/requests";
 import UserPicture from "./components/UserPicture";
 import UserBackground from "./components/UserBackground";
 import PostsList from "./components/PostsList";
@@ -13,7 +13,8 @@ function MyPage() {
     const SeeingOptions = Object.freeze({
         POSTS: Symbol("posts"),
         LIKES: Symbol("likes"),
-        COMMENTS: Symbol("comments")
+        SHARES: Symbol("shares"),
+        REPLIES: Symbol("replies")
     });
     const location = useLocation();
     const parts = location.pathname.split("/");
@@ -27,8 +28,11 @@ function MyPage() {
         case "likes":
             active = SeeingOptions.LIKES;
             break;
-        case "comments":
-            active = SeeingOptions.COMMENTS;
+        case "shares":
+            active = SeeingOptions.SHARES;
+            break;
+        case "replies":
+            active = SeeingOptions.REPLIES;
             break;
     }
 
@@ -42,8 +46,12 @@ function MyPage() {
         navigate("/" + user.username);
     }
 
-    function handleSeeComments() {
-        navigate("/" + user.username + "/comments", { replace: true });
+    function handleSeeReplies() {
+        navigate("/" + user.username + "/replies", { replace: true });
+    }
+
+    function handleSeeShares() {
+        navigate("/" + user.username + "/shares", { replace: true });
     }
 
     function handleSeeLikes() {
@@ -75,20 +83,26 @@ function MyPage() {
                 }
             }
 
+            if (active == SeeingOptions.REPLIES) {
+                response = await fetchRepliesByUserId(userData.id);
+                if (response && response.success) {
+                    setMyPosts(response.data.map((item) => { return { ...item, likes: [], bookmarks: [] } }));
+                }
+            }
+
+            if (active == SeeingOptions.SHARES) {
+                response = await fetchSharedPostsByUserId(userData.id);
+                if (response && response.success) {
+                    setMyPosts(response.data.map((item) => { return { ...item, likes: [], bookmarks: [] } }));
+                }
+            }
+
             if (active == SeeingOptions.LIKES) {
                 response = await fetchLikedPostsByUserId(userData.id);
                 if (response && response.success) {
                     setMyPosts(response.data.map((item) => item.post));
                 }
             }
-
-            if (active == SeeingOptions.COMMENTS) {
-                response = await fetchCommentsByUserId(userData.id);
-                if (response && response.success) {
-                    setMyPosts(response.data.map((item) => { return { ...item, likes: [], bookmarks: [] } }));
-                }
-            }
-
 
         }
         setCount(c => ++c);
@@ -126,8 +140,11 @@ function MyPage() {
                         <div onClick={handleSeePosts} className={`posts-option ${active == SeeingOptions.POSTS ? "active" : ""}`}>
                             <p>Posts</p>
                         </div>
-                        <div onClick={handleSeeComments} className={`comments-option ${active == SeeingOptions.COMMENTS ? "active" : ""}`}>
-                            <p>Comments</p>
+                        <div onClick={handleSeeReplies} className={`replies-option ${active == SeeingOptions.REPLIES ? "active" : ""}`}>
+                            <p>Replies</p>
+                        </div>
+                        <div onClick={handleSeeShares} className={`shares-option ${active == SeeingOptions.SHARES ? "active" : ""}`}>
+                            <p>Shares</p>
                         </div>
                         <div onClick={handleSeeLikes} className={`likes-option ${active == SeeingOptions.LIKES ? "active" : ""}`}>
                             <p>Likes</p>
@@ -135,7 +152,7 @@ function MyPage() {
                     </div>
                 </div>
                 <div className="my-page-content">
-                    <PostsList key={Date.now()} postsList={myPosts} />
+                    <PostsList key={Date.now()} postsList={myPosts} user={user}/>
                 </div>
             </div>
         </>

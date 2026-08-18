@@ -399,9 +399,9 @@ async function fetchPostById(postId) {
 
 
 
-async function fetchCommentsByUserId(userId) {
+async function fetchRepliesByUserId(userId) {
     const token = localStorage.getItem("token");
-    const rawReponse = await fetch('http://localhost:3000/posts/comments?userId=' + userId, {
+    const rawReponse = await fetch('http://localhost:3000/posts/replies?userId=' + userId, {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
@@ -420,9 +420,9 @@ async function fetchCommentsByUserId(userId) {
 }
 
 //CHECK IF BEING USED, IF NOT, REMOVE ==========================================================================
-async function fetchMyComments() {
+async function fetchMyReplies() {
     const token = localStorage.getItem("token");
-    const rawReponse = await fetch(`http://localhost:3000/posts/comments`, {
+    const rawReponse = await fetch(`http://localhost:3000/posts/replies`, {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
@@ -444,7 +444,7 @@ async function makeComment(data, postId) {
     console.log(data, postId)
     try {
         const token = localStorage.getItem("token");
-        const rawResponse = await fetch(`http://localhost:3000/posts/${postId}/comments`, {
+        const rawResponse = await fetch(`http://localhost:3000/posts/${postId}/replies`, {
             method: 'POST',
             headers: {
                 'Authorization': token,
@@ -466,9 +466,9 @@ async function makeComment(data, postId) {
     }
 }
 
-async function fetchCommentsOfPost(postId) {
+async function fetchRepliesOfPost(postId) {
     const token = localStorage.getItem("token");
-    const rawReponse = await fetch(`http://localhost:3000/posts/${postId}/comments`, {
+    const rawReponse = await fetch(`http://localhost:3000/posts/${postId}/replies`, {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
@@ -598,6 +598,85 @@ async function dislikePost(postId) {
 
 
 
+
+
+
+
+async function fetchSharedPostsByUserId(userId) {
+    const token = localStorage.getItem("token");
+    const rawReponse = await fetch('http://localhost:3000/posts/shares?userId=' + userId, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': token
+        }
+    });
+    if (rawReponse.ok) {
+        const response = await rawReponse.json();
+        if (response && response.success) {
+            return response;
+        }
+    } else {
+        return null;
+    }
+}
+
+async function sharePost(postId) {
+    try {
+        const token = localStorage.getItem("token");
+        const rawResponse = await fetch(`http://localhost:3000/posts/${postId}/shares`, {
+            method: 'POST',
+            headers: {
+                'Authorization': token,
+            },
+        });
+
+        if (rawResponse.ok) {
+            const result = await rawResponse.json();
+            return result;
+        }
+        return false;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+
+async function unsharePost(postId) {
+    try {
+        const token = localStorage.getItem("token");
+        const rawResponse = await fetch(`http://localhost:3000/posts/${postId}/shares`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': token,
+            },
+        });
+
+        if (rawResponse.ok) {
+            const result = await rawResponse.json();
+            return result;
+        }
+        return false;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 async function fetchBookmarkedPosts() {
     const token = localStorage.getItem("token");
     const rawReponse = await fetch('http://localhost:3000/posts/bookmarks', {
@@ -690,15 +769,19 @@ export {
     fetchMyPosts,
     fetchPostById,
 
-    fetchCommentsByUserId,
-    fetchMyComments,
+    fetchRepliesByUserId,
+    fetchMyReplies,
     makeComment,
-    fetchCommentsOfPost,
+    fetchRepliesOfPost,
 
     fetchLikedPostsByUserId,
     fetchLikedPosts,
     likePost,
     dislikePost,
+
+    fetchSharedPostsByUserId,
+    sharePost,
+    unsharePost,
 
     fetchBookmarkedPosts,
     bookmarkPost,

@@ -116,7 +116,7 @@ app-root {
 
 
 
-.master-pane{
+.master-pane {
     display: grid;
     grid-template-columns: 40vw auto;
     overflow-y: scroll;
@@ -129,7 +129,7 @@ app-root {
     max-height: 100vh;
     display: grid;
     grid-template-columns: 27vw auto;
-     /* grid-template-columns: 27vw 40vw 33vw; */
+    /* grid-template-columns: 27vw 40vw 33vw; */
 }
 
 .navigation-pane {
@@ -341,12 +341,43 @@ app-root {
 }
 
 .post {
+    display: flex;
+    flex-direction: column;
+    padding-top: 7px;
+}
+
+.shared-header {
+    display: flex;
+    align-items: center;
+    gap: 0 8px;
+    color: var(--shadowed-text-color);
+    font-family: sans-serif;
+    font-size: 0.78rem;
+    font-weight: bold;
+    margin-left: 38px;
+
+    .share-icon {
+        width: 16px;
+        height: 16px;
+
+        path {
+            fill: var(--shadowed-text-color);
+        }
+    }
+
+    p {
+        margin: 0;
+    }
+}
+
+.post-body {
     display: grid;
     grid-template-columns: 5fr 90fr;
     gap: 0 10px;
 
     color: white;
     padding: 10px 15px;
+    padding-top: 5px;
 
     border-bottom: solid 1px var(--main-border-color);
     cursor: pointer;
@@ -403,6 +434,11 @@ app-root {
     }
 
     .share-control-button {
+        &.active {
+            stroke: transparent;
+            fill: #00a76f;
+        }
+
         :hover {
             path {
                 fill: #00a76f;
@@ -708,13 +744,13 @@ app-root {
 }
 
 .view-list-options {
-    --inactive-text-color: #71767b;
+    /* --inactive-text-color: #71767b; */
 
     display: flex;
     justify-content: space-between;
     padding: 0 10px;
 
-    color: var(--inactive-text-color);
+    color: var(--shadowed-text-color);
     font-family: Inter;
     font-weight: bold;
     font-size: 15px;
@@ -843,9 +879,9 @@ app-root {
     border-color: transparent;
 }
 
-.follow-button{
+.follow-button {
     margin-left: auto;
-}   
+}
 
 .follow-button,
 .save-profile {

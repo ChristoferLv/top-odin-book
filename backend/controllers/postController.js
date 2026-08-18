@@ -60,6 +60,23 @@ async function getAllPosts(req, res) {
                         createdAt: true
                     }
                 },
+                originalPost: {
+                    include: {
+                        author: {
+                            omit:
+                            {
+                                password: true,
+                                picture: true,
+                                mime: true,
+                                background: true,
+                                bgmime: true,
+                                createdAt: true
+                            }
+                        },
+                        likes: { where: { whoLikedId: userId }, select: { id: true } },
+                        bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } }
+                    }
+                },
                 likes: { where: { whoLikedId: userId }, select: { id: true } },
                 bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } }
             },
@@ -217,6 +234,48 @@ async function deletePost(req, res) {
 
 
 
+
+
+// async function getLikedPosts(req, res) {
+//     try {
+//         let condition = {}
+//         if (req.query.userId)
+//             condition = { whoLikedId: parseInt(req.query.userId) };
+//         const userId = req.user.id;
+//         const result = await prisma.likes.findMany({
+//             where: condition,
+//             select: {
+//                 post: {
+//                     include: {
+//                         author: {
+//                             omit:
+//                             {
+//                                 password: true,
+//                                 picture: true,
+//                                 mime: true,
+//                                 background: true,
+//                                 bgmime: true,
+//                                 createdAt: true
+//                             }
+//                         },
+//                         likes: { where: { whoLikedId: userId }, select: { id: true } },
+//                         bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } }
+//                     }
+//                 }
+//             },
+//         })
+
+//         if (!result) {
+//             return res.status(500).send({ success: false });
+//         }
+
+//         return res.send({ success: true, data: result });
+//     } catch (e) {
+//         console.log(e);
+//         throw e;
+//     }
+// }
+
 async function getLikedPosts(req, res) {
     try {
         let condition = {}
@@ -335,6 +394,413 @@ async function removeLike(req, res) {
         }
 
         return res.send({ success: true, data: result });
+    } catch (e) {
+        console.log(e);
+        throw e;
+    }
+}
+
+// async function removeLike(req, res) {
+//     try {
+//         const postId = parseInt(req.params.postId);
+
+//         // const exists = await prisma.posts.findUnique({
+//         //     where: {
+//         //         id: postId
+//         //     }
+//         // });
+
+//         // if (!exists) {
+//         //     return res.status(400).send({ success: false, message: "Post not found." });
+//         // }
+
+//         const hasLiked = await prisma.likes.findUnique({
+//             where: {
+//                 postId_whoLikedId: { postId: postId, whoLikedId: req.user.id }
+//             }
+//         });
+
+//         if (!hasLiked)
+//             return res.status(400).send({ success: false, message: "You have not liked this post." });
+
+//         const result = await prisma.likes.delete({
+//             where: {
+//                 postId_whoLikedId: {
+//                     postId: postId,
+//                     whoLikedId: req.user.id
+//                 }
+//             }
+//         });
+
+//         if (!result) {
+//             return res.status(500).send({ success: false });
+//         }
+
+//         return res.send({ success: true, data: result });
+//     } catch (e) {
+//         console.log(e);
+//         throw e;
+//     }
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+async function getSharedPosts(req, res) {
+    try {
+        let condition = { postType: "SHARE" }
+        if (req.query.userId)
+            Object.assign(condition, { authorId: parseInt(req.query.userId) });
+        const userId = req.user.id;
+        const result = await prisma.posts.findMany({
+            where: condition,
+            include: {
+                author: {
+                    omit:
+                    {
+                        password: true,
+                        picture: true,
+                        mime: true,
+                        background: true,
+                        bgmime: true,
+                        createdAt: true
+                    }
+                },
+                originalPost: {
+                    include: {
+                        author: {
+                            omit:
+                            {
+                                password: true,
+                                picture: true,
+                                mime: true,
+                                background: true,
+                                bgmime: true,
+                                createdAt: true
+                            }
+                        },
+                        likes: { where: { whoLikedId: userId }, select: { id: true } },
+                        bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } }
+                    }
+                },
+                likes: { where: { whoLikedId: userId }, select: { id: true } },
+                bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } }
+            }
+        })
+
+        if (!result) {
+            return res.status(500).send({ success: false });
+        }
+
+        return res.send({ success: true, data: result });
+    } catch (e) {
+        console.log(e);
+        throw e;
+    }
+}
+
+async function sharePost(req, res) {
+    try {
+        const postId = parseInt(req.params.postId);
+
+        const exists = await prisma.posts.findUnique({
+            where: {
+                id: postId
+            }
+        });
+
+        if (!exists) {
+            return res.status(400).send({ success: false, message: "Post not found." });
+        }
+
+
+        const hasShared = await prisma.posts.findUnique({
+            where: {
+                id: postId,
+                authorId: req.user.id,
+                postType: "SHARE"
+            }
+        })
+
+        if (hasShared)
+            return res.status(400).send({ success: false, message: "You have already shared this post." });
+
+        const result = await prisma.posts.create({
+            data: {
+                authorId: req.user.id,
+                postType: "SHARE",
+                originalPostId: postId
+            }
+        });
+
+        if (!result) {
+            return res.status(500).send({ success: false });
+        }
+
+        return res.send({ success: true, data: result });
+    } catch (e) {
+        console.log(e);
+        throw e;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// async function getMyComments(req, res) {
+//     try {
+//         const userId = req.user.id;
+//         let condition = {}
+//         if (req.query.userId)
+//             condition = { authorId: parseInt(req.query.userId) };
+//         const result = await prisma.comments.findMany({
+//             where: condition,
+
+//             include: {
+//                 author: {
+//                     omit:
+//                     {
+//                         password: true,
+//                         picture: true,
+//                         mime: true,
+//                         background: true,
+//                         bgmime: true,
+//                         createdAt: true
+//                     }
+//                 },
+//             }
+//         })
+
+//         if (!result) {
+//             return res.status(500).send({ success: false });
+//         }
+
+//         return res.send({ success: true, data: result });
+//     } catch (e) {
+//         console.log(e);
+//         throw e;
+//     }
+// }
+
+async function getMyReplies(req, res) {
+    try {
+        const userId = req.user.id;
+        let condition = { postType: "REPLY" }
+        if (req.query.userId)
+            Object.assign(condition, { authorId: parseInt(req.query.userId) });
+        console.log("condition", condition)
+        const result = await prisma.posts.findMany({
+            where: condition,
+            include: {
+                author: {
+                    omit:
+                    {
+                        password: true,
+                        picture: true,
+                        mime: true,
+                        background: true,
+                        bgmime: true,
+                        createdAt: true
+                    }
+                },
+                originalPost: {
+                    include: {
+                        author: {
+                            omit:
+                            {
+                                password: true,
+                                picture: true,
+                                mime: true,
+                                background: true,
+                                bgmime: true,
+                                createdAt: true
+                            }
+                        }
+                    }
+                }
+            }
+        })
+
+        if (!result) {
+            return res.status(500).send({ success: false });
+        }
+
+        return res.send({ success: true, data: result });
+    } catch (e) {
+        console.log(e);
+        throw e;
+    }
+}
+
+async function makeReplie(req, res) {
+    try {
+        const postId = parseInt(req.params.postId);
+        console.log(req.body)
+        const content = req.body.content;
+
+        const exists = await prisma.posts.findUnique({
+            where: { id: postId }
+        });
+
+        if (!exists) {
+            return res.status(400).send({ success: false, message: "Post not found." });
+        }
+
+        const result = await prisma.posts.create(
+            {
+                data: {
+                    content: content,
+                    authorId: req.user.id,
+                    postType: "REPLY",
+                    originalPostId: postId
+                }
+            }
+        );
+
+        if (!result) {
+            return res.status(500).send({ success: false });
+        }
+
+        return res.status(201).send({ success: true, data: result });
+    } catch (e) {
+        console.log(e);
+        throw e;
+    }
+}
+
+
+// async function makeComment(req, res) {
+//     try {
+//         const postId = parseInt(req.params.postId);
+//         console.log(req.body)
+//         const content = req.body.content;
+
+//         const exists = await prisma.posts.findUnique({
+//             where: { id: postId }
+//         });
+
+//         if (!exists) {
+//             return res.status(400).send({ success: false, message: "Post not found." });
+//         }
+
+//         const result = await prisma.comments.create({
+//             data: {
+//                 content: content,
+//                 postId: postId,
+//                 authorId: req.user.id
+//             }
+//         });
+
+//         if (!result) {
+//             return res.status(500).send({ success: false });
+//         }
+
+//         return res.status(201).send({ success: true, data: result });
+//     } catch (e) {
+//         console.log(e);
+//         throw e;
+//     }
+// }
+
+async function getRepliesOfPost(req, res) {
+    try {
+        const postId = parseInt(req.params.postId);
+
+        const exists = await prisma.posts.findUnique({
+            where: { id: postId }
+        });
+
+        if (!exists) {
+            return res.status(400).send({ success: false, message: "Post not found." });
+        }
+
+        const result = await prisma.comments.findMany({
+            where: { postId: postId },
+            include: {
+                author: {
+                    omit:
+                    {
+                        password: true,
+                        picture: true,
+                        mime: true,
+                        background: true,
+                        bgmime: true,
+                        createdAt: true
+                    }
+                },
+            },
+            orderBy: { createdAt: "desc" }
+        });
+
+        if (!result) {
+            return res.status(500).send({ success: false });
+        }
+
+        return res.status(200).send({ success: true, data: result });
+    } catch (e) {
+        console.log(e);
+        throw e;
+    }
+}
+
+async function deleteReplie(req, res) {
+    try {
+        const commentId = parseInt(req.params.commentId);
+
+        const exists = await prisma.comments.findUnique({
+            where: { id: commentId }
+        });
+
+        if (!exists) {
+            return res.status(400).send({ success: false, message: "Comment not found." });
+        }
+
+        const result = await prisma.comments.delete({
+            where: { id: commentId }
+        });
+
+        if (!result) {
+            return res.status(500).send({ success: false });
+        }
+
+        return res.status(200).send({ success: true });
     } catch (e) {
         console.log(e);
         throw e;
@@ -478,238 +944,6 @@ async function removePostBookmark(req, res) {
 
 
 
-
-
-
-
-
-// async function getMyComments(req, res) {
-//     try {
-//         const userId = req.user.id;
-//         let condition = {}
-//         if (req.query.userId)
-//             condition = { authorId: parseInt(req.query.userId) };
-//         const result = await prisma.comments.findMany({
-//             where: condition,
-
-//             include: {
-//                 author: {
-//                     omit:
-//                     {
-//                         password: true,
-//                         picture: true,
-//                         mime: true,
-//                         background: true,
-//                         bgmime: true,
-//                         createdAt: true
-//                     }
-//                 },
-//             }
-//         })
-
-//         if (!result) {
-//             return res.status(500).send({ success: false });
-//         }
-
-//         return res.send({ success: true, data: result });
-//     } catch (e) {
-//         console.log(e);
-//         throw e;
-//     }
-// }
-
-async function getMyComments(req, res) {
-    try {
-        const userId = req.user.id;
-        let condition = { postType: "REPLY" }
-        if (req.query.userId)
-            Object.assign(condition, { authorId: parseInt(req.query.userId) });
-        console.log("condition", condition)
-        const result = await prisma.posts.findMany({
-            where: condition,
-            include: {
-                author: {
-                    omit:
-                    {
-                        password: true,
-                        picture: true,
-                        mime: true,
-                        background: true,
-                        bgmime: true,
-                        createdAt: true
-                    }
-                },
-                originalPost: {
-                    include: {
-                        author: {
-                            omit:
-                            {
-                                password: true,
-                                picture: true,
-                                mime: true,
-                                background: true,
-                                bgmime: true,
-                                createdAt: true
-                            }
-                        }
-                    }
-                }
-            }
-        })
-
-        if (!result) {
-            return res.status(500).send({ success: false });
-        }
-
-        return res.send({ success: true, data: result });
-    } catch (e) {
-        console.log(e);
-        throw e;
-    }
-}
-
-async function makeComment(req, res) {
-    try {
-        const postId = parseInt(req.params.postId);
-        console.log(req.body)
-        const content = req.body.content;
-
-        const exists = await prisma.posts.findUnique({
-            where: { id: postId }
-        });
-
-        if (!exists) {
-            return res.status(400).send({ success: false, message: "Post not found." });
-        }
-
-        const result = await prisma.posts.create(
-            {
-                data: {
-                    content: content,
-                    authorId: req.user.id,
-                    postType: "REPLY",
-                    originalPostId: postId
-                }
-            }
-        );
-
-        if (!result) {
-            return res.status(500).send({ success: false });
-        }
-
-        return res.status(201).send({ success: true, data: result });
-    } catch (e) {
-        console.log(e);
-        throw e;
-    }
-}
-
-
-// async function makeComment(req, res) {
-//     try {
-//         const postId = parseInt(req.params.postId);
-//         console.log(req.body)
-//         const content = req.body.content;
-
-//         const exists = await prisma.posts.findUnique({
-//             where: { id: postId }
-//         });
-
-//         if (!exists) {
-//             return res.status(400).send({ success: false, message: "Post not found." });
-//         }
-
-//         const result = await prisma.comments.create({
-//             data: {
-//                 content: content,
-//                 postId: postId,
-//                 authorId: req.user.id
-//             }
-//         });
-
-//         if (!result) {
-//             return res.status(500).send({ success: false });
-//         }
-
-//         return res.status(201).send({ success: true, data: result });
-//     } catch (e) {
-//         console.log(e);
-//         throw e;
-//     }
-// }
-
-async function getCommentsOfPost(req, res) {
-    try {
-        const postId = parseInt(req.params.postId);
-
-        const exists = await prisma.posts.findUnique({
-            where: { id: postId }
-        });
-
-        if (!exists) {
-            return res.status(400).send({ success: false, message: "Post not found." });
-        }
-
-        const result = await prisma.comments.findMany({
-            where: { postId: postId },
-            include: {
-                author: {
-                    omit:
-                    {
-                        password: true,
-                        picture: true,
-                        mime: true,
-                        background: true,
-                        bgmime: true,
-                        createdAt: true
-                    }
-                },
-            },
-            orderBy: { createdAt: "desc" }
-        });
-
-        if (!result) {
-            return res.status(500).send({ success: false });
-        }
-
-        return res.status(200).send({ success: true, data: result });
-    } catch (e) {
-        console.log(e);
-        throw e;
-    }
-}
-
-async function deleteComment(req, res) {
-    try {
-        const commentId = parseInt(req.params.commentId);
-
-        const exists = await prisma.comments.findUnique({
-            where: { id: commentId }
-        });
-
-        if (!exists) {
-            return res.status(400).send({ success: false, message: "Comment not found." });
-        }
-
-        const result = await prisma.comments.delete({
-            where: { id: commentId }
-        });
-
-        if (!result) {
-            return res.status(500).send({ success: false });
-        }
-
-        return res.status(200).send({ success: true });
-    } catch (e) {
-        console.log(e);
-        throw e;
-    }
-}
-
-
-
-
-
 export {
     makePost,
     getAllPosts,
@@ -721,12 +955,15 @@ export {
     likePost,
     removeLike,
 
+    getSharedPosts,
+    sharePost,
+
+    getMyReplies,
+    makeReplie,
+    getRepliesOfPost,
+    deleteReplie,
+
     getBookmarkedPosts,
     bookmarkPost,
-    removePostBookmark,
-
-    getMyComments,
-    makeComment,
-    getCommentsOfPost,
-    deleteComment
+    removePostBookmark
 }
