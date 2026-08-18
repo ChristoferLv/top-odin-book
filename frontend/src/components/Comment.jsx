@@ -45,7 +45,7 @@ function Comment({ data }) {
 
     return (
         <>
-            <div className="post">
+            <div className="replie-body">
                 <UserPicture id={postData.author.id} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false}/>
                 <div className="post-data">
                     <div className="post-head">

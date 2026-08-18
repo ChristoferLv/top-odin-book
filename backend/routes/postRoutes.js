@@ -1,7 +1,7 @@
 import Router from 'express';
 import { passport } from "../authUtils.js"
 import { checkUser } from '../utils.js';
-import { bookmarkPost, deletePost, deleteReplie, getAllPosts, getBookmarkedPosts, getLikedPosts, getMyReplies, getPostById, getRepliesOfPost, getSharedPosts, likePost, makePost, makeReplie, removeLike, removePostBookmark, sharePost, updatePost } from '../controllers/postController.js';
+import { bookmarkPost, deletePost, deleteReplie, getAllPosts, getBookmarkedPosts, getLikedPosts, getMyReplies, getPostById, getRepliesOfPost, getSharedPosts, likePost, makePost, makeReplie, removeLike, removePostBookmark, removeShare, sharePost, updatePost } from '../controllers/postController.js';
 
 const postRouter = Router();
 
@@ -15,6 +15,7 @@ postRouter.delete("/:postId/likes", passport.authenticate('jwt', { session: fals
 
 postRouter.post("/:postId/shares", passport.authenticate('jwt', { session: false }), checkUser, sharePost);
 postRouter.get("/shares", passport.authenticate('jwt', { session: false }), checkUser, getSharedPosts);
+postRouter.delete("/:postId/shares", passport.authenticate('jwt', { session: false }), checkUser, removeShare);
 
 postRouter.post("/:postId/replies", passport.authenticate('jwt', { session: false }), checkUser, makeReplie);
 postRouter.get("/:postId/replies", passport.authenticate('jwt', { session: false }), checkUser, getRepliesOfPost);

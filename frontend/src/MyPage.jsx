@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "./AuthContext";
-import { fetchLikedPosts, fetchLikedPostsByUserId, fetchMyPosts, fetchPostsByUserId, fetchSharedPostsByUserId, fetchUserByUsername } from "../api/requests";
+import { fetchLikedPosts, fetchLikedPostsByUserId, fetchMyPosts, fetchPostsByUserId, fetchRepliesByUserId, fetchSharedPostsByUserId, fetchUserByUsername } from "../api/requests";
 import UserPicture from "./components/UserPicture";
 import UserBackground from "./components/UserBackground";
 import PostsList from "./components/PostsList";
@@ -86,7 +86,8 @@ function MyPage() {
             if (active == SeeingOptions.REPLIES) {
                 response = await fetchRepliesByUserId(userData.id);
                 if (response && response.success) {
-                    setMyPosts(response.data.map((item) => { return { ...item, likes: [], bookmarks: [] } }));
+                    setMyPosts(response.data);
+                    // setMyPosts(response.data.map((item) => { return { ...item, likes: [], bookmarks: [] } }));
                 }
             }
 

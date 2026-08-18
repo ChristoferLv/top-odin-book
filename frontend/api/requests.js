@@ -440,7 +440,7 @@ async function fetchMyReplies() {
     }
 }
 
-async function makeComment(data, postId) {
+async function makeReplie(data, postId) {
     console.log(data, postId)
     try {
         const token = localStorage.getItem("token");
@@ -771,7 +771,7 @@ export {
 
     fetchRepliesByUserId,
     fetchMyReplies,
-    makeComment,
+    makeReplie,
     fetchRepliesOfPost,
 
     fetchLikedPostsByUserId,

@@ -303,6 +303,7 @@ async function getLikedPosts(req, res) {
                     }
                 }
             },
+            orderBy: { createdAt: "desc" }
         })
 
         if (!result) {
@@ -536,11 +537,21 @@ async function sharePost(req, res) {
 
         const hasShared = await prisma.posts.findUnique({
             where: {
-                id: postId,
-                authorId: req.user.id,
-                postType: "SHARE"
+                originalPostId_authorId_postType: {
+                    originalPostId: postId,
+                    authorId: req.user.id,
+                    postType: "SHARE"
+                }
             }
-        })
+        });
+
+        // const hasShared = await prisma.posts.findFirst({
+        //     where: {
+        //         originalPostId: postId,
+        //         authorId: req.user.id,
+        //         postType: "SHARE"
+        //     }
+        // })
 
         if (hasShared)
             return res.status(400).send({ success: false, message: "You have already shared this post." });
@@ -564,7 +575,48 @@ async function sharePost(req, res) {
     }
 }
 
+async function removeShare(req, res) {
+    try {
+        const postId = parseInt(req.params.postId);
 
+        const hasShared = await prisma.posts.findUnique({
+            where: {
+                originalPostId_authorId_postType: {
+                    originalPostId: postId,
+                    authorId: req.user.id,
+                    postType: "SHARE"
+                }
+            }
+        })
+
+        // const hasShared = await prisma.posts.findFirst({
+        //     where: {
+        //         authorId: req.user.id,
+        //         originalPostId: postId,
+        //         postType: "SHARE"
+        //     }
+        // });
+
+        if (!hasShared)
+            return res.status(400).send({ success: false, message: "You have not shared this post." });
+
+        const result = await prisma.posts.delete({
+            where: {
+                id: hasShared.id
+            }
+
+        });
+
+        if (!result) {
+            return res.status(500).send({ success: false });
+        }
+
+        return res.send({ success: true, data: result });
+    } catch (e) {
+        console.log(e);
+        throw e;
+    }
+}
 
 
 
@@ -654,7 +706,9 @@ async function getMyReplies(req, res) {
                             }
                         }
                     }
-                }
+                },
+                likes: { where: { whoLikedId: userId }, select: { id: true } },
+                bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } }
             }
         })
 
@@ -751,8 +805,8 @@ async function getRepliesOfPost(req, res) {
             return res.status(400).send({ success: false, message: "Post not found." });
         }
 
-        const result = await prisma.comments.findMany({
-            where: { postId: postId },
+        const result = await prisma.posts.findMany({
+            where: { originalPostId: postId, postType: "REPLY" },
             include: {
                 author: {
                     omit:
@@ -847,6 +901,7 @@ async function getBookmarkedPosts(req, res) {
                     }
                 }
             },
+            orderBy: { createdAt: "desc" }
         })
 
         if (!result) {
@@ -957,6 +1012,7 @@ export {
 
     getSharedPosts,
     sharePost,
+    removeShare,
 
     getMyReplies,
     makeReplie,

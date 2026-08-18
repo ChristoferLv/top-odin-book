@@ -595,6 +595,17 @@ app-root {
     }
 }
 
+.replie-body {
+    display: grid;
+    grid-template-columns: 5fr 90fr;
+    gap: 0 10px;
+
+    color: white;
+    padding: 10px 15px;
+
+    border-bottom: solid 1px var(--main-border-color);
+    cursor: pointer;
+}
 
 
 

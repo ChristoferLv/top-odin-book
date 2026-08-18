@@ -1,6 +1,7 @@
 generator client {
-  provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  provider        = "prisma-client-js"
+  output          = "../generated/prisma"
+  previewFeatures = ["partialIndexes"]
 }
 
 datasource db {
@@ -11,6 +12,7 @@ enum PostType {
   POST
   REPLY
   SHARE
+  SHARE_REPLY
 }
 
 model Users {
@@ -40,13 +42,15 @@ model Posts {
   authorId  Int
   author    Users    @relation(fields: [authorId], references: [id])
 
-  replyPost      Posts? @relation("originlPostReference")
-  originalPostId Int?   @unique
-  originalPost   Posts? @relation("originlPostReference", fields: [originalPostId], references: [id])
+  replyPost      Posts[] @relation("originlPostReference")
+  originalPostId Int?
+  originalPost   Posts?  @relation("originlPostReference", fields: [originalPostId], references: [id])
 
   comments  Comments[]
   likes     Likes[]
   bookmarks Bookmarks[]
+
+  @@unique([originalPostId, authorId, postType], where: raw("\"postType\" IN ('SHARE')"))
 }
 
 model Comments {

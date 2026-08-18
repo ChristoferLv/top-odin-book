@@ -2,7 +2,7 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router";
 import { AuthContext } from "./AuthContext";
 import { formatDate } from "./utils/dateUtils";
-import { fetchPostById } from "../api/requests";
+import { dislikePost, fetchPostById, fetchRepliesOfPost, likePost, makeReplie } from "../api/requests";
 import UserPicture from "./components/UserPicture";
 import { USER_PICTURE_DEFAULT_SIZE } from "./utils/defaults";
 import Post from "./components/Post";
@@ -14,12 +14,12 @@ function PostPage() {
     const navigate = useNavigate();
     const location = useLocation();
     const [postData, setPostData] = useState(null);
-    const [commentContent, setCommentContent] = useState("");
+    const [replieContent, setReplieContent] = useState("");
     const [commentsList, setCommentsList] = useState([]);
 
-    const fetchComments = useCallback(async () => {
+    const fetchReplies = useCallback(async () => {
         try {
-            const result = await fetchCommentsOfPost(postId);
+            const result = await fetchRepliesOfPost(postId);
             if (result && result.success) {
                 setCommentsList(result.data);
             }
@@ -45,22 +45,22 @@ function PostPage() {
     }, []);
 
     useEffect(() => {
-        fetchComments();
+        fetchReplies();
     }, [])
 
     function goToPostAuthor() {
         navigate("/" + postData.author.username);
     }
 
-    function handleCommentChange(e) {
-        setCommentContent(e.target.value);
+    function handleReplieChange(e) {
+        setReplieContent(e.target.value);
     }
 
-    async function postComment() {
-        const result = await makeComment({ content: commentContent }, postId);
+    async function postReplie() {
+        const result = await makeReplie({ content: replieContent }, postId);
         if (result.success) {
-            setCommentContent("");
-            fetchComments();
+            setReplieContent("");
+            fetchReplies();
         }
     }
 
@@ -76,6 +76,22 @@ function PostPage() {
         const result = await likePost(postData.id);
         if (result && result.success) {
             setPostData({ ...postData, likes: [{ id: result.data.id }] });
+        }
+    }
+
+     async function handleShare(e) {
+        e.stopPropagation();
+        if (isMeShare) {
+            const result = await unsharePost(usePostData.id);
+            if (result && result.success) {
+                setIsMeShare(false);
+            }
+            return;
+        }
+
+        const result = await sharePost(usePostData.id);
+        if (result && result.success) {
+            setIsMeShare(true);
         }
     }
 
@@ -138,7 +154,7 @@ function PostPage() {
                                 </svg>
                             </div>
                         </div>
-                        <div className="share-control-button">
+                        <div onClick={handleShare} className="share-control-button">
                             <div>
                                 <svg viewBox="0 0 24 24" aria-hidden="true"><g>
                                     <path d="M4.75 3.79l4.603 4.3-1.706 1.82L6 8.38v7.37c0 .97.784 1.75 1.75 1.75H13V20H7.75c-2.347 0-4.25-1.9-4.25-4.25V8.38L1.853 9.91.147 8.09l4.603-4.3zm11.5 2.71H11V4h5.25c2.347 0 4.25 1.9 4.25 4.25v7.37l1.647-1.53 1.706 1.82-4.603 4.3-4.603-4.3 1.706-1.82L18 15.62V8.25c0-.97-.784-1.75-1.75-1.75z"></path></g>
@@ -162,8 +178,8 @@ function PostPage() {
 
                     <div className="make-comment">
                         <UserPicture id={user.id} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
-                        <textarea name="" id="" value={commentContent} onChange={handleCommentChange}></textarea>
-                        <button onClick={postComment} className="post-comment">Comment</button>
+                        <textarea name="" id="" value={replieContent} onChange={handleReplieChange}></textarea>
+                        <button onClick={postReplie} className="post-comment">Replie</button>
                     </div>
                 </div>
 

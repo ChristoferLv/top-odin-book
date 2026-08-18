@@ -73,7 +73,7 @@ function User({ data }) {
 
     return (
         <>
-            <div className="post">
+            <div className="post-body">
                 <UserPicture id={userData.id} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
                 <div className="post-data">
                     <div className="post-head">

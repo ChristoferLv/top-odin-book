@@ -1,7 +1,7 @@
 import { formatDate } from "../utils/dateUtils";
 import UserPicture from "../components/UserPicture"
 import { PostType, USER_PICTURE_DEFAULT_SIZE } from "../utils/defaults"
-import { bookmarkPost, dislikePost, likePost, removeBookmarkPost, unsharePost } from "../../api/requests";
+import { bookmarkPost, dislikePost, likePost, removeBookmarkPost, sharePost, unsharePost } from "../../api/requests";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 
@@ -42,16 +42,17 @@ function Post({ user, data }) {
     async function handleShare(e) {
         e.stopPropagation();
         if (isMeShare) {
+            console.log("unsharing")
             const result = await unsharePost(usePostData.id);
             if (result && result.success) {
-                setIsMeShare(false)
+                setIsMeShare(false);
             }
             return;
         }
 
         const result = await sharePost(usePostData.id);
         if (result && result.success) {
-            setPostData({ ...usePostData, likes: [{ id: result.data.id }] });
+            setIsMeShare(true);
         }
     }
 
@@ -106,7 +107,7 @@ function Post({ user, data }) {
                                     </svg>
                                 </div>
                             </div>
-                            <div className={`share-control-button ${isMeShare ? "active" : ""}`}>
+                            <div onClick={handleShare} className={`share-control-button ${isMeShare ? "active" : ""}`}>
                                 <div>
                                     <svg viewBox="0 0 24 24" aria-hidden="true"><g>
                                         <path d="M4.75 3.79l4.603 4.3-1.706 1.82L6 8.38v7.37c0 .97.784 1.75 1.75 1.75H13V20H7.75c-2.347 0-4.25-1.9-4.25-4.25V8.38L1.853 9.91.147 8.09l4.603-4.3zm11.5 2.71H11V4h5.25c2.347 0 4.25 1.9 4.25 4.25v7.37l1.647-1.53 1.706 1.82-4.603 4.3-4.603-4.3 1.706-1.82L18 15.62V8.25c0-.97-.784-1.75-1.75-1.75z"></path></g>
