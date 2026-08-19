@@ -299,7 +299,7 @@ async function makePost(postData) {
 
 async function fetchAllPosts() {
     const token = localStorage.getItem("token");
-    const rawReponse = await fetch('http://localhost:3000/posts', {
+    const rawReponse = await fetch('http://localhost:3000/posts?onFeed=true', {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
@@ -319,7 +319,7 @@ async function fetchAllPosts() {
 
 async function fetchPostsByUserId(userId) {
     const token = localStorage.getItem("token");
-    const rawReponse = await fetch('http://localhost:3000/posts?userId=' + userId, {
+    const rawReponse = await fetch('http://localhost:3000/posts?onFeed=false&userId=' + userId, {
         method: 'GET',
         headers: {
             'Accept': 'application/json',

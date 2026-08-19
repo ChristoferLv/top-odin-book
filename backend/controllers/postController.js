@@ -43,8 +43,12 @@ async function getAllPosts(req, res) {
     try {
         const userId = req.user.id;
         let condition = {}
-        if (req.query.userId)
-            condition = { authorId: parseInt(req.query.userId), postType: { in: ["POST"] } };
+        if (req.query.onFeed == 'true') {
+            Object.assign(condition, { NOT: { AND: { authorId: userId, postType: "SHARE" } } })
+        }
+        if (req.query.userId) {
+            Object.assign(condition, { authorId: parseInt(req.query.userId), postType: { in: ["POST"] } });
+        }
         const result = await prisma.posts.findMany({
             where: condition,
             include:
@@ -74,11 +78,13 @@ async function getAllPosts(req, res) {
                             }
                         },
                         likes: { where: { whoLikedId: userId }, select: { id: true } },
-                        bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } }
+                        bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } },
+                        replyPost: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } }
                     }
                 },
                 likes: { where: { whoLikedId: userId }, select: { id: true } },
-                bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } }
+                bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } },
+                replyPost: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } }
             },
             orderBy: { createdAt: "desc" }
         });
@@ -299,7 +305,8 @@ async function getLikedPosts(req, res) {
                             }
                         },
                         likes: { where: { whoLikedId: userId }, select: { id: true } },
-                        bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } }
+                        bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } },
+                        replyPost: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } }
                     }
                 },
             },
@@ -501,11 +508,14 @@ async function getSharedPosts(req, res) {
                             }
                         },
                         likes: { where: { whoLikedId: userId }, select: { id: true } },
-                        bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } }
+                        bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } },
+                        replyPost: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } }
                     }
                 },
                 likes: { where: { whoLikedId: userId }, select: { id: true } },
-                bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } }
+                bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } },
+                replyPost: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } }
+
             }
         })
 
@@ -706,11 +716,13 @@ async function getMyReplies(req, res) {
                             }
                         },
                         likes: { where: { whoLikedId: userId }, select: { id: true } },
-                        bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } }
+                        bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } },
+                        replyPost: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } }
                     }
                 },
                 likes: { where: { whoLikedId: userId }, select: { id: true } },
-                bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } }
+                bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } },
+                replyPost: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } }
             }
         })
 
@@ -899,7 +911,8 @@ async function getBookmarkedPosts(req, res) {
                             }
                         },
                         likes: { where: { whoLikedId: userId }, select: { id: true } },
-                        bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } }
+                        bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } },
+                        replyPost: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } }
                     }
                 }
             },
@@ -920,7 +933,6 @@ async function getBookmarkedPosts(req, res) {
 async function bookmarkPost(req, res) {
     try {
         const postId = parseInt(req.params.postId);
-        console.log("postid", postId)
         const exists = await prisma.posts.findUnique({
             where: {
                 id: postId
