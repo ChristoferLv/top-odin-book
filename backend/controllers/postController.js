@@ -809,6 +809,7 @@ async function makeReplie(req, res) {
 
 async function getRepliesOfPost(req, res) {
     try {
+        const userId = req.user.id;
         const postId = parseInt(req.params.postId);
 
         const exists = await prisma.posts.findUnique({
@@ -833,6 +834,9 @@ async function getRepliesOfPost(req, res) {
                         createdAt: true
                     }
                 },
+                likes: { where: { whoLikedId: userId }, select: { id: true } },
+                bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } },
+                replyPost: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } }
             },
             orderBy: { createdAt: "desc" }
         });

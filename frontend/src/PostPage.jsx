@@ -16,7 +16,7 @@ function PostPage() {
     const [postData, setPostData] = useState(null);
     const [replieContent, setReplieContent] = useState("");
     const [commentsList, setCommentsList] = useState([]);
-
+    
     const fetchReplies = useCallback(async () => {
         try {
             const result = await fetchRepliesOfPost(postId);
@@ -26,7 +26,7 @@ function PostPage() {
         } catch (e) {
             console.log(e);
         }
-    }, []);
+    }, [location.pathname]);
 
     function adjustPostDate(date) {
         const day = date.toDateString().split(" ").slice(1).join(" ");
@@ -42,11 +42,11 @@ function PostPage() {
             }
         }
         getPostData();
-    }, []);
+    }, [location.pathname]);
 
     useEffect(() => {
         fetchReplies();
-    }, [])
+    }, [location.pathname])
 
     function goToPostAuthor() {
         navigate("/" + postData.author.username);
@@ -185,7 +185,7 @@ function PostPage() {
 
                 <div className="comments-list">
                     {commentsList.map((comment) => {
-                        return <Comment key={comment.id} data={comment} />
+                        return <Comment key={comment.id} data={comment} user={user} />
                     })}
                 </div>
             </div>

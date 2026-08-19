@@ -44,7 +44,7 @@ function BookmarksPage() {
                     </div>
                 </div>
                 <div className="my-page-content">
-                    <PostsList postsList={bookmarkedPosts} />
+                    <PostsList postsList={bookmarkedPosts} onUserPage={true} user={user}/>
                 </div>
             </div>
         </>
