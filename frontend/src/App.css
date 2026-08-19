@@ -344,6 +344,13 @@ app-root {
     display: flex;
     flex-direction: column;
     padding-top: 7px;
+
+    .post-content {
+        margin-top: 5px;
+        font-family: sans-serif;
+        font-size: 0.97rem;
+        color: var(--main-white-color);
+    }
 }
 
 .shared-header {
@@ -538,9 +545,9 @@ app-root {
     }
 
     .post-content {
-        margin-top: 10px;
+        margin-top: 5px;
         font-family: sans-serif;
-        font-size: 17px;
+        font-size: 0.97rem;
         color: var(--main-white-color);
     }
 
@@ -551,6 +558,38 @@ app-root {
         margin-top: 10px;
     }
 }
+
+.post-with-comment .original-post .post-body {
+    border: none;
+}
+
+.post-with-comment .post {
+    position: relative;
+}
+
+.post-with-comment .pic-container{
+    z-index: 10;
+
+    .profile-pic{
+        border: solid 4px black;
+    }
+}
+
+.chain {
+    border-left: 3px solid #333639;
+    position: absolute;
+    height: 50%;
+    left: 35.5px;
+}
+
+.chain-top {
+    top: -25%;
+}
+
+.chain-bottom {
+    top: 50%;
+}
+
 
 .make-comment {
     display: flex;
@@ -606,6 +645,8 @@ app-root {
     border-bottom: solid 1px var(--main-border-color);
     cursor: pointer;
 }
+
+
 
 
 

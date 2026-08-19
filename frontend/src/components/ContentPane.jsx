@@ -22,7 +22,7 @@ function ContentPane() {
     return (<>
         <div className="content-pane">
             <NewPost />
-            <PostsList postsList={postsList} user={user}/>
+            <PostsList postsList={postsList} user={user} onUserPage={false}/>
         </div>
     </>)
 }

@@ -1,10 +1,14 @@
+import { PostType } from "../utils/defaults";
 import Post from "./Post";
+import PostWithComment from "./PostWithComment";
 
-function PostsList({user, postsList}) {
+function PostsList({ user, postsList, onUserPage }) {
     return (<>
         <div className="posts-list">
             {postsList.map((post) => {
-                return <Post key={post.id} data={post} user={user}/>
+                if (!onUserPage && post.postType == PostType.REPLY)
+                    return <PostWithComment key={post.id} data={post} user={user} />
+                return <Post key={post.id} data={post} user={user} />
             })}
         </div>
     </>)

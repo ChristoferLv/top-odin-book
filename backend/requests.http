@@ -1,4 +1,4 @@
-@token = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJ1c2VyMSIsImlhdCI6MTc4Njk5MjM4NywiZXhwIjoxNzg3MDc4Nzg3fQ.627x6u7PyMPpDZsTpMmenBhBbKA0k7iRxQUVmqMJdsY
+@token = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJ1c2VyMSIsImlhdCI6MTc4NzA3ODgwNywiZXhwIjoxNzg3MTY1MjA3fQ.mJ-FQ0F2iCwIqH2v0ezJRRMUP47jvaydzdfgIU5RWtg
 
 POST http://localhost:3000/auth/signup
 content-type: application/json
@@ -46,12 +46,17 @@ Authorization: {{token}}
 
 ###########
 
-POST http://localhost:3000/posts/3/share
+POST http://localhost:3000/posts/8/shares
 Authorization: {{token}}
 
 ###
 
 GET http://localhost:3000/posts/shares?userId=1
+Authorization: {{token}}
+
+###
+
+DELETE http://localhost:3000/posts/8/shares
 Authorization: {{token}}
 
 ###########

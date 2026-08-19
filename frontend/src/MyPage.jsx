@@ -21,6 +21,7 @@ function MyPage() {
     console.log(parts)
     const curLocation = parts[2];
     let active = SeeingOptions.POSTS;
+    let showFullReplie = true;
     switch (curLocation) {
         case "":
             active = SeeingOptions.POSTS;
@@ -33,6 +34,7 @@ function MyPage() {
             break;
         case "replies":
             active = SeeingOptions.REPLIES;
+            showFullReplie = false;
             break;
     }
 
@@ -153,7 +155,7 @@ function MyPage() {
                     </div>
                 </div>
                 <div className="my-page-content">
-                    <PostsList key={Date.now()} postsList={myPosts} user={user}/>
+                    <PostsList key={Date.now()} postsList={myPosts} user={user} onUserPage={showFullReplie}/>
                 </div>
             </div>
         </>

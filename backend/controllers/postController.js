@@ -44,7 +44,7 @@ async function getAllPosts(req, res) {
         const userId = req.user.id;
         let condition = {}
         if (req.query.userId)
-            condition = { authorId: parseInt(req.query.userId) };
+            condition = { authorId: parseInt(req.query.userId), postType: { in: ["POST"] } };
         const result = await prisma.posts.findMany({
             where: condition,
             include:
@@ -301,7 +301,7 @@ async function getLikedPosts(req, res) {
                         likes: { where: { whoLikedId: userId }, select: { id: true } },
                         bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } }
                     }
-                }
+                },
             },
             orderBy: { createdAt: "desc" }
         })
@@ -704,7 +704,9 @@ async function getMyReplies(req, res) {
                                 bgmime: true,
                                 createdAt: true
                             }
-                        }
+                        },
+                        likes: { where: { whoLikedId: userId }, select: { id: true } },
+                        bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } }
                     }
                 },
                 likes: { where: { whoLikedId: userId }, select: { id: true } },
