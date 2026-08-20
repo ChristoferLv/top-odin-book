@@ -166,7 +166,7 @@ function PostWithComment({ user, data }) {
                                 <span>@{postData.author.username} - {formatedDate}</span>
                             </div>
                             <div className="post-content">
-                                <textarea readOnly defaultValue={usePostData.content}></textarea>
+                                <textarea readOnly defaultValue={postData.content}></textarea>
                             </div>
                             <div className="post-controls">
                                 <div className="comment-control-button">

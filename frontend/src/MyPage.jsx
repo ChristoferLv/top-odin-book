@@ -76,6 +76,7 @@ function MyPage() {
     }, [])
 
     useEffect(() => {
+        setMyPosts([]);
         async function getPosts() {
             let response = null;
             if (active == SeeingOptions.POSTS) {

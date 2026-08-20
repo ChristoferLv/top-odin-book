@@ -7,6 +7,11 @@ img {
     display: block;
 }
 
+textarea:focus {
+    outline: none;
+}
+
+
 body {
     margin: 0;
     display: flex;
@@ -17,6 +22,8 @@ body {
     --main-background-color: black;
     --main-white-color: #e7e9ea;
     --main-border-color: #2f3336;
+
+    --main-dialog-color: #141414;
 
     --shadowed-text-color: #71767b;
 
@@ -569,20 +576,20 @@ app-root {
         word-break: break-all;
 
         textarea {
-        word-break: break-all;
-        margin: 0;
-        box-shadow: none;
-        border: none;
-        background-color: inherit;
-        outline: none;
-        resize: none;
-        field-sizing: content;
-        font-family: inherit;
-        font-size: inherit;
-        font-weight: inherit;
-        line-height: inherit;
-        color: inherit;
-    }
+            word-break: break-all;
+            margin: 0;
+            box-shadow: none;
+            border: none;
+            background-color: inherit;
+            outline: none;
+            resize: none;
+            field-sizing: content;
+            font-family: inherit;
+            font-size: inherit;
+            font-weight: inherit;
+            line-height: inherit;
+            color: inherit;
+        }
     }
 
     .post-hour {
@@ -1059,6 +1066,180 @@ app-root {
         max-height: 200px;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 5vw;
+    z-index: 1000;
+
+    textarea {
+        border: none;
+        background-color: transparent;
+        padding: 5px 0;
+        /* padding-left: 25px; */
+        padding-right: 40px;
+        flex-grow: 1;
+        flex-shrink: 1;
+        color: var(--main-white-color);
+        font-family: sans-serif;
+        font-size: 14px;
+        resize: none;
+        field-sizing: content;
+        min-height: 1lh;
+        max-height: 5lh;
+    }
+}
+
+
+.replie-dialog {
+    background-color: var(--main-dialog-color);
+    padding: 15px;
+    border-radius: 8px;
+    width: 40%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+    .dialog-header{
+        margin-bottom: 15px;
+    
+        button{
+            width: 20px;
+            height: 20px;
+        }
+    }
+
+
+
+    .post-body {
+        border: none;
+        padding-left: 0;
+    }
+
+    .repliying-to {
+        font-family: Inter;
+        font-size: 14px;
+        margin-top: 10px;
+        color: var(--shadowed-text-color);
+
+        span:nth-of-type(2) {
+            color: #1d9bf0;
+        }
+    }
+
+    .new-reply {
+        display: grid;
+        grid-template-columns: 5fr 90fr;
+        gap: 0 10px;
+        padding-bottom: 10px;
+        padding-top: 10px;
+        padding-right: 15px;
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        textarea {
+            border: none;
+            background-color: transparent;
+            padding: 12px 0;
+            /* padding-left: 25px; */
+            padding-right: 40px;
+            flex-grow: 1;
+            flex-shrink: 1;
+            color: white;
+            font-family: Inter;
+            font-size: large;
+            resize: none;
+            field-sizing: content;
+            min-height: 1lh;
+            max-height: 5lh;
+        }
+
+        textarea::placeholder {
+            color: var(--shadowed-text-color);
+            font-size: large;
+            font-family: Inter;
+        }
+    }
+}
+
+
+.dialog-title {
+    margin-top: 0;
+    font-size: 22px;
+}
+
+.dialog-message {
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+.dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+
+}
+
+.dialog-confirm {
+    align-self: flex-end;
+    padding: 10px 20px;
+    background-color: white;
+    border-radius: 95px;
+    color: black;
+    font-size: 15px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+}
+
+.dialog-confirm:disabled{
+    background-color: #4b4c4c;
+}
+
+.close-dialog {
+  background-color: transparent;
+  border: none;
+  color: #fdfdfe;
+  cursor: pointer;
+
+  svg {
+    display: block;
+  }
+}
+
+
+
+
+
+
+
+
+
 
 
 
