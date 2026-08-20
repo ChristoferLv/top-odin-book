@@ -44,21 +44,21 @@ function PostWithComment({ user, data }) {
     async function handleShare(e, onOriginal) {
         e.stopPropagation();
         const postId = onOriginal ? originalPostData.id : postData.id;
-        console.log(onOriginal, postId)
         const hasShared = onOriginal ? originalPostData.replyPost.length : postData.replyPost.length;
         if (hasShared) {
             const result = await unsharePost(postId);
-            if (onOriginal) {
-                setPostData({ ...postData, originalPost: { ...postData.originalPost, replyPost: [] } });
-            } else {
-                setPostData({ ...postData, replyPost: [] });
+            if (result && result.success) {
+                if (onOriginal) {
+                    setPostData({ ...postData, originalPost: { ...postData.originalPost, replyPost: [] } });
+                } else {
+                    setPostData({ ...postData, replyPost: [] });
+                }
             }
             return;
         }
 
         const result = await sharePost(postId);
         if (result && result.success) {
-            console.log(result)
             if (onOriginal) {
                 setPostData({ ...postData, originalPost: { ...originalPostData, replyPost: [{ id: result.data.id }] } });
             } else {
@@ -67,19 +67,31 @@ function PostWithComment({ user, data }) {
         }
     }
 
-    async function handleBookmark(e) {
+    async function handleBookmark(e, onOriginal) {
         e.stopPropagation();
-        if (originalPostData.bookmarks.length) {
-            const result = await removeBookmarkPost(originalPostData.id);
+        const postId = onOriginal ? originalPostData.id : postData.id;
+        const hasBookmarked = onOriginal ? originalPostData.bookmarks.length : postData.bookmarks.length;
+        if (hasBookmarked) {
+            const result = await removeBookmarkPost(postId);
             if (result && result.success) {
-                setPostData({ ...originalPostData, bookmarks: [] });
+                if (onOriginal) {
+                    setPostData({ ...postData, originalPost: { ...originalPostData, bookmarks: [] } });
+                } else {
+                    setPostData({ ...postData, bookmarks: [] });
+                }
             }
             return;
         }
 
-        const result = await bookmarkPost(originalPostData.id);
+        const result = await bookmarkPost(postId);
         if (result && result.success) {
-            setPostData({ ...originalPostData, bookmarks: [{ id: result.data.id }] });
+            console.log("had success", result)
+            if (onOriginal) {
+                setPostData({ ...postData, originalPost: { ...originalPostData, bookmarks: [{ id: result.data.id }] } });
+            }
+            else {
+                setPostData({ ...postData, bookmarks: [{ id: result.data.id }] });
+            }
         }
     }
 
@@ -123,7 +135,7 @@ function PostWithComment({ user, data }) {
                                         </svg>
                                     </div>
                                 </div>
-                                <div onClick={handleBookmark} className={`bookmark-control-button no-fill ${originalPostData.bookmarks.length ? "active" : ""}`}>
+                                <div onClick={(e) => handleBookmark(e, true)} className={`bookmark-control-button no-fill ${originalPostData.bookmarks.length ? "active" : ""}`}>
                                     <svg viewBox="0 0 24 24" aria-hidden="true"><g>
                                         <path d="M4 4.5C4 3.12 5.119 2 6.5 2h11C18.881 2 20 3.12 20 4.5v18.44l-8-5.71-8 5.71V4.5z"></path></g>
                                     </svg>
@@ -174,7 +186,7 @@ function PostWithComment({ user, data }) {
                                         </svg>
                                     </div>
                                 </div>
-                                <div onClick={handleBookmark} className={`bookmark-control-button no-fill ${postData.bookmarks.length ? "active" : ""}`}>
+                                <div onClick={(e) => handleBookmark(e, false)} className={`bookmark-control-button no-fill ${postData.bookmarks.length ? "active" : ""}`}>
                                     <svg viewBox="0 0 24 24" aria-hidden="true"><g>
                                         <path d="M4 4.5C4 3.12 5.119 2 6.5 2h11C18.881 2 20 3.12 20 4.5v18.44l-8-5.71-8 5.71V4.5z"></path></g>
                                     </svg>
