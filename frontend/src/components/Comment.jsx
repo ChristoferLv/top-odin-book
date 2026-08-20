@@ -72,7 +72,9 @@ function Comment({ user, data }) {
                             <span>{postData.author.name}</span>
                             <span>@{postData.author.username} - {formatedDate}</span>
                         </div>
-                        <div className="post-content">{postData.content}</div>
+                        <div className="post-content">
+                            <textarea readOnly defaultValue={postData.content}></textarea>
+                        </div>
                         <div className="post-controls">
                             <div className="comment-control-button">
                                 <div>

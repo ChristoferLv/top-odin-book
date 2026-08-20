@@ -140,7 +140,9 @@ function PostPage() {
                         </div>
                     </div>
                     <div className="post-view-data">
-                        <div className="post-content">{postData.content}</div>
+                        <div className="post-content">
+                            <textarea readOnly defaultValue={postData.content}></textarea>
+                        </div>
                         <div className="post-hour">
                             {adjustPostDate(new Date(postData.createdAt))}
                         </div>

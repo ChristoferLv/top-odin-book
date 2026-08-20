@@ -112,7 +112,9 @@ function PostWithComment({ user, data }) {
                                 <span>{originalPostData.author.name}</span>
                                 <span>@{originalPostData.author.username} - {formatedDate}</span>
                             </div>
-                            <div className="post-content">{originalPostData.content}</div>
+                            <div className="post-content">
+                                <textarea readOnly defaultValue={originalPostData.content}></textarea>
+                            </div>
                             <div className="post-controls">
                                 <div className="comment-control-button">
                                     <div>
@@ -163,7 +165,9 @@ function PostWithComment({ user, data }) {
                                 <span>{postData.author.name}</span>
                                 <span>@{postData.author.username} - {formatedDate}</span>
                             </div>
-                            <div className="post-content">{postData.content}</div>
+                            <div className="post-content">
+                                <textarea readOnly defaultValue={usePostData.content}></textarea>
+                            </div>
                             <div className="post-controls">
                                 <div className="comment-control-button">
                                     <div>

@@ -85,7 +85,7 @@ function Post({ user, data }) {
     }
 
     function handleSeePost() {
-        navigate(`${usePostData.author.username}/post/${usePostData.id}`);
+        navigate(`/${usePostData.author.username}/post/${usePostData.id}`);
     }
 
     console.log("postdata", usePostData)
@@ -110,7 +110,9 @@ function Post({ user, data }) {
                             <span>@{usePostData.author.username} - {formatedDate}</span>
                         </div>
                         {isReply && <div><p>Original post: {usePostData.originalPostId}</p></div>}
-                        <div className="post-content">{usePostData.content}</div>
+                        <div className="post-content">
+                            <textarea readOnly defaultValue={usePostData.content}></textarea>
+                        </div>
                         <div className="post-controls">
                             <div className="comment-control-button">
                                 <div>

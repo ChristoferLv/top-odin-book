@@ -139,6 +139,9 @@ function MyPage() {
                         <p>{userData.name}</p>
                         <p>@{userData.username}</p>
                     </div>
+                    <div className="user-profile-bio">
+                        <p>{userData.bio}</p>
+                    </div>
                     <div className="view-list-options">
                         <div onClick={handleSeePosts} className={`posts-option ${active == SeeingOptions.POSTS ? "active" : ""}`}>
                             <p>Posts</p>
