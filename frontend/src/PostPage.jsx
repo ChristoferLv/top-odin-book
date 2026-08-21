@@ -2,7 +2,7 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router";
 import { AuthContext } from "./AuthContext";
 import { formatDate } from "./utils/dateUtils";
-import { dislikePost, fetchPostById, fetchRepliesOfPost, likePost, makeReplie } from "../api/requests";
+import { dislikePost, fetchPostById, fetchRepliesOfPost, likePost, makeReply } from "../api/requests";
 import UserPicture from "./components/UserPicture";
 import { USER_PICTURE_DEFAULT_SIZE } from "./utils/defaults";
 import Post from "./components/Post";
@@ -14,7 +14,7 @@ function PostPage() {
     const navigate = useNavigate();
     const location = useLocation();
     const [postData, setPostData] = useState(null);
-    const [replieContent, setReplieContent] = useState("");
+    const [replyContent, setReplyContent] = useState("");
     const [commentsList, setCommentsList] = useState([]);
     
     const fetchReplies = useCallback(async () => {
@@ -52,14 +52,14 @@ function PostPage() {
         navigate("/" + postData.author.username);
     }
 
-    function handleReplieChange(e) {
-        setReplieContent(e.target.value);
+    function handleReplyChange(e) {
+        setReplyContent(e.target.value);
     }
 
-    async function postReplie() {
-        const result = await makeReplie({ content: replieContent }, postId);
+    async function postReply() {
+        const result = await makeReply({ content: replyContent }, postId);
         if (result.success) {
-            setReplieContent("");
+            setReplyContent("");
             fetchReplies();
         }
     }
@@ -180,8 +180,8 @@ function PostPage() {
 
                     <div className="make-comment">
                         <UserPicture id={user.id} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
-                        <textarea name="" id="" value={replieContent} onChange={handleReplieChange}></textarea>
-                        <button onClick={postReplie} className="post-comment">Replie</button>
+                        <textarea name="" id="" value={replyContent} onChange={handleReplyChange}></textarea>
+                        <button onClick={postReply} className="post-comment">Reply</button>
                     </div>
                 </div>
 

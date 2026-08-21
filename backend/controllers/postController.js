@@ -1,5 +1,6 @@
 import { body, matchedData, validationResult } from "express-validator";
 import { prisma } from "../lib/prisma.js";
+import { PostType } from "../generated/prisma/index.js";
 
 const validatePost = [
     body("content")
@@ -19,11 +20,27 @@ const makePost = [
 
         try {
             const { content } = matchedData(req);
+            const originalPostId  = parseInt(req.body.originalPostId);
+
+            if (originalPostId) {
+                const exists = await prisma.posts.findUnique({
+                    where: { id: originalPostId }
+                });
+
+                if (!exists) {
+                    return res.status(400).send({ success: false, message: "Referenced psot not found" });
+                }
+            }
+
+            let referenceId = originalPostId ? originalPostId : null;
+            let postType = originalPostId ? "SHARE_REPLY" : "POST";
 
             const result = await prisma.posts.create({
                 data: {
                     content: content,
                     authorId: req.user.id,
+                    postType: postType,
+                    originalPostId: referenceId
                 }
             });
 
@@ -47,7 +64,7 @@ async function getAllPosts(req, res) {
             Object.assign(condition, { NOT: { AND: { authorId: userId, postType: { in: ["POST", "REPLY"] } } } })
         }
         if (req.query.userId) {
-            Object.assign(condition, { authorId: parseInt(req.query.userId), postType: { in: ["POST"] } });
+            Object.assign(condition, { authorId: parseInt(req.query.userId), postType: { in: ["POST", "SHARE_REPLY"] } });
         }
         const result = await prisma.posts.findMany({
             where: condition,

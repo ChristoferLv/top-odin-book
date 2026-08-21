@@ -2,9 +2,9 @@ import { useState } from "react";
 import { formatDate } from "../utils/dateUtils";
 import { USER_PICTURE_DEFAULT_SIZE } from "../utils/defaults";
 import UserPicture from "./UserPicture";
-import { makeReplie } from "../../api/requests";
+import { makeReply } from "../../api/requests";
 
-function ReplieDialog({ isOpen, user, originalPost, onCancel, onConfirm }) {
+function ReplyDialog({ isOpen, user, originalPost, onCancel, onConfirm }) {
     const [replyContent, setReplyContent] = useState("");
     const [isActive, setIsActive] = useState(false);
 
@@ -17,8 +17,8 @@ function ReplieDialog({ isOpen, user, originalPost, onCancel, onConfirm }) {
         setReplyContent(e.target.value);
     }
 
-    async function postReplie() {
-        const result = await makeReplie({ content: replyContent }, originalPost.id);
+    async function postReply() {
+        const result = await makeReply({ content: replyContent }, originalPost.id);
         if (result.success) {
             setReplyContent("");
             onConfirm();
@@ -64,7 +64,7 @@ function ReplieDialog({ isOpen, user, originalPost, onCancel, onConfirm }) {
                         </div>
                     </div>
                     <div className='dialog-actions'>
-                        <button onClick={postReplie} className='dialog-confirm' disabled={!isActive}>
+                        <button onClick={postReply} className='dialog-confirm' disabled={!isActive}>
                             Replie
                         </button>
                     </div>
@@ -77,4 +77,4 @@ function ReplieDialog({ isOpen, user, originalPost, onCancel, onConfirm }) {
 
 
 
-export default ReplieDialog;
+export default ReplyDialog;

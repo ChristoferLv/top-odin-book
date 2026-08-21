@@ -278,7 +278,7 @@ async function unfollowUser(userId) {
 
 
 
-async function makePost(postData) {
+async function makePost(postData, originalPostId) {
     try {
         const token = localStorage.getItem("token");
         const rawResponse = await fetch('http://localhost:3000/posts', {
@@ -290,7 +290,14 @@ async function makePost(postData) {
             body: postData
         });
 
-        return rawResponse;
+        if (rawResponse.status == 200) {
+            const response = await rawResponse.json();
+            if (response && response.success) {
+                return response;
+            }
+        } else {
+            return null;
+        }
     } catch (error) {
         console.log(error);
         return false;
@@ -299,7 +306,7 @@ async function makePost(postData) {
 
 async function fetchAllPosts() {
     const token = localStorage.getItem("token");
-    const rawReponse = await fetch('http://localhost:3000/posts?onFeed=true', {
+    const rawResponse = await fetch('http://localhost:3000/posts?onFeed=true', {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
@@ -307,8 +314,8 @@ async function fetchAllPosts() {
             'Authorization': token
         }
     });
-    if (rawReponse.status == 200) {
-        const response = await rawReponse.json();
+    if (rawResponse.status == 200) {
+        const response = await rawResponse.json();
         if (response && response.success) {
             return response;
         }
@@ -319,7 +326,7 @@ async function fetchAllPosts() {
 
 async function fetchPostsByUserId(userId) {
     const token = localStorage.getItem("token");
-    const rawReponse = await fetch('http://localhost:3000/posts?onFeed=false&userId=' + userId, {
+    const rawResponse = await fetch('http://localhost:3000/posts?onFeed=false&userId=' + userId, {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
@@ -327,8 +334,8 @@ async function fetchPostsByUserId(userId) {
             'Authorization': token
         }
     });
-    if (rawReponse.ok) {
-        const response = await rawReponse.json();
+    if (rawResponse.ok) {
+        const response = await rawResponse.json();
         if (response && response.success) {
             return response;
         }
@@ -340,7 +347,7 @@ async function fetchPostsByUserId(userId) {
 //CHECK IF BEING USED, IF NOT, REMOVE ==========================================================================
 async function fetchMyPosts() {
     const token = localStorage.getItem("token");
-    const rawReponse = await fetch('http://localhost:3000/posts', {
+    const rawResponse = await fetch('http://localhost:3000/posts', {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
@@ -348,8 +355,8 @@ async function fetchMyPosts() {
             'Authorization': token
         }
     });
-    if (rawReponse.ok) {
-        const response = await rawReponse.json();
+    if (rawResponse.ok) {
+        const response = await rawResponse.json();
         if (response && response.success) {
             return response;
         }
@@ -440,7 +447,7 @@ async function fetchMyReplies() {
     }
 }
 
-async function makeReplie(data, postId) {
+async function makeReply(data, postId) {
     console.log(data, postId)
     try {
         const token = localStorage.getItem("token");
@@ -771,7 +778,7 @@ export {
 
     fetchRepliesByUserId,
     fetchMyReplies,
-    makeReplie,
+    makeReply,
     fetchRepliesOfPost,
 
     fetchLikedPostsByUserId,

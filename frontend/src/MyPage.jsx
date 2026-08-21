@@ -45,18 +45,22 @@ function MyPage() {
     const [count, setCount] = useState(0);
 
     function handleSeePosts() {
+        setMyPosts([]);
         navigate("/" + user.username);
     }
 
     function handleSeeReplies() {
+        setMyPosts([]);
         navigate("/" + user.username + "/replies", { replace: true });
     }
 
     function handleSeeShares() {
+        setMyPosts([]);
         navigate("/" + user.username + "/shares", { replace: true });
     }
 
     function handleSeeLikes() {
+        setMyPosts([]);
         navigate("/" + user.username + "/likes", { replace: true });
     }
 
@@ -76,7 +80,7 @@ function MyPage() {
     }, [])
 
     useEffect(() => {
-        setMyPosts([]);
+        // setMyPosts([]);
         async function getPosts() {
             let response = null;
             if (active == SeeingOptions.POSTS) {
@@ -159,7 +163,7 @@ function MyPage() {
                     </div>
                 </div>
                 <div className="my-page-content">
-                    <PostsList key={Date.now()} postsList={myPosts} user={user} onUserPage={showFullReplie}/>
+                    <PostsList key={Date.now()} postsList={myPosts} user={user} onUserPage={showFullReplie} />
                 </div>
             </div>
         </>
