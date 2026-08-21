@@ -61,7 +61,7 @@ async function getAllPosts(req, res) {
         const userId = req.user.id;
         let condition = {}
         if (req.query.onFeed == 'true') {
-            Object.assign(condition, { NOT: { AND: { authorId: userId, postType: { in: ["POST", "REPLY"] } } } })
+            Object.assign(condition, { NOT: { AND: { authorId: userId, postType: { in: ["POST"] } } } })
         }
         if (req.query.userId) {
             Object.assign(condition, { authorId: parseInt(req.query.userId), postType: { in: ["POST", "SHARE_REPLY"] } });
