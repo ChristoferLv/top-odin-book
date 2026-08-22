@@ -740,7 +740,8 @@ async function getMyReplies(req, res) {
                 likes: { where: { whoLikedId: userId }, select: { id: true } },
                 bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } },
                 replyPost: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } }
-            }
+            },
+            orderBy:{createdAt:"desc"}
         })
 
         if (!result) {

@@ -2,12 +2,16 @@ import { formatDate } from "../utils/dateUtils";
 import UserPicture from "../components/UserPicture"
 import { PostType, USER_PICTURE_DEFAULT_SIZE } from "../utils/defaults"
 import { bookmarkPost, dislikePost, likePost, removeBookmarkPost, sharePost, unsharePost } from "../../api/requests";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import ReplyDialog from "./ReplyDialog";
 
 function PostWithComment({ user, data }) {
     const [postData, setPostData] = useState(data);
     const [isMeShare, setIsMeShare] = useState(data.postType == PostType.SHARE && data.author.id == user.id);
+    const [isOriginalPostDialogOpen, setisOriginalPostDialogOpen] = useState(false);
+    const [isReplyPostDialogOpen, setisReplyPostDialogOpen] = useState(false);
+
     const navigate = useNavigate();
     const originalPostData = postData.originalPost;
     const isReply = data.postType == PostType.REPLY;
@@ -95,9 +99,38 @@ function PostWithComment({ user, data }) {
         }
     }
 
+    function handleReply(e, onOriginal) {
+        e.stopPropagation();
+        handleCloseDialog();
+        if (onOriginal) {
+            setisOriginalPostDialogOpen(true);
+        } else {
+            setisReplyPostDialogOpen(true);
+        }
+    }
+
+    function handleCloseDialog() {
+        setisOriginalPostDialogOpen(false);
+        setisReplyPostDialogOpen(false);
+
+    };
+
     function handleSeePost() {
         navigate(`${originalPostData.author.username}/post/${originalPostData.id}`);
     }
+
+    useEffect(() => {
+        const handleEsc = (event) => {
+            if (event.key === 'Escape') {
+                handleCloseDialog();
+            }
+        };
+        window.addEventListener('keydown', handleEsc);
+
+        return () => {
+            window.removeEventListener('keydown', handleEsc);
+        };
+    }, []);
 
     console.log("postwithCOmment", postData)
 
@@ -116,7 +149,7 @@ function PostWithComment({ user, data }) {
                                 <textarea readOnly defaultValue={originalPostData.content}></textarea>
                             </div>
                             <div className="post-controls">
-                                <div className="comment-control-button">
+                                <div onClick={(e) => handleReply(e, true)} className="comment-control-button">
                                     <div>
                                         <svg viewBox="0 0 24 24" aria-hidden="true"><g>
                                             <path d="M1.751 10c0-4.42 3.584-8 8.005-8h4.366c4.49 0 8.129 3.64 8.129 8.13 0 2.96-1.607 5.68-4.196 7.11l-8.054 4.46v-3.69h-.067c-4.49.1-8.183-3.51-8.183-8.01zm8.005-6c-3.317 0-6.005 2.69-6.005 6 0 3.37 2.77 6.08 6.138 6.01l.351-.01h1.761v2.3l5.087-2.81c1.951-1.08 3.163-3.13 3.163-5.36 0-3.39-2.744-6.13-6.129-6.13H9.756z"></path></g>
@@ -169,7 +202,7 @@ function PostWithComment({ user, data }) {
                                 <textarea readOnly defaultValue={postData.content}></textarea>
                             </div>
                             <div className="post-controls">
-                                <div className="comment-control-button">
+                                <div onClick={(e) => handleReply(e, false)} className="comment-control-button">
                                     <div>
                                         <svg viewBox="0 0 24 24" aria-hidden="true"><g>
                                             <path d="M1.751 10c0-4.42 3.584-8 8.005-8h4.366c4.49 0 8.129 3.64 8.129 8.13 0 2.96-1.607 5.68-4.196 7.11l-8.054 4.46v-3.69h-.067c-4.49.1-8.183-3.51-8.183-8.01zm8.005-6c-3.317 0-6.005 2.69-6.005 6 0 3.37 2.77 6.08 6.138 6.01l.351-.01h1.761v2.3l5.087-2.81c1.951-1.08 3.163-3.13 3.163-5.36 0-3.39-2.744-6.13-6.129-6.13H9.756z"></path></g>
@@ -199,7 +232,9 @@ function PostWithComment({ user, data }) {
                         </div>
                     </div>
                 </div>
-            </div >
+            </div>
+            <ReplyDialog isOpen={isOriginalPostDialogOpen} originalPost={originalPostData} user={user} onCancel={handleCloseDialog} onConfirm={handleCloseDialog} />
+            <ReplyDialog isOpen={isReplyPostDialogOpen} originalPost={postData} user={user} onCancel={handleCloseDialog} onConfirm={handleCloseDialog} />
         </>
     );
 }
