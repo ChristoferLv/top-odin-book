@@ -5,12 +5,17 @@ import { bookmarkPost, dislikePost, likePost, removeBookmarkPost, sharePost, uns
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import ReplyDialog from "./ReplyDialog";
+import ShareOrReplyDialog from "./ShareOrReplyDialog";
+import ShareWithComment from "./ShareWithReplyDialog";
 
 function PostWithComment({ user, data }) {
     const [postData, setPostData] = useState(data);
     const [isMeShare, setIsMeShare] = useState(data.postType == PostType.SHARE && data.author.id == user.id);
     const [isOriginalPostDialogOpen, setisOriginalPostDialogOpen] = useState(false);
     const [isReplyPostDialogOpen, setisReplyPostDialogOpen] = useState(false);
+    const [isShareOrReplyOpen, setIsShareOrReplyOpen] = useState(0);
+    const [isOriginalShareDialogOpen, setisOriginalShareDialogOpen] = useState(false);
+    const [isReplyShareDialogOpen, setisReplyShareDialogOpen] = useState(false);
 
     const navigate = useNavigate();
     const originalPostData = postData.originalPost;
@@ -46,7 +51,6 @@ function PostWithComment({ user, data }) {
     }
 
     async function handleShare(e, onOriginal) {
-        e.stopPropagation();
         const postId = onOriginal ? originalPostData.id : postData.id;
         const hasShared = onOriginal ? originalPostData.replyPost.length : postData.replyPost.length;
         if (hasShared) {
@@ -99,6 +103,36 @@ function PostWithComment({ user, data }) {
         }
     }
 
+    function openShareOrReply(e, onOriginal) {
+        e.stopPropagation();
+        if (onOriginal) {
+            if (originalPostData.replyPost.length) {
+                handleShare(e, onOriginal);
+                return;
+            }
+            setIsShareOrReplyOpen(1);
+        }
+
+        if (!onOriginal) {
+            if (postData.replyPost.length) {
+                handleShare(e, onOriginal);
+                return;
+            }
+            setIsShareOrReplyOpen(2);
+        }
+    }
+
+    function selectShare(e) {
+        e.stopPropagation();
+        handleCloseDialog(e);
+        if (isShareOrReplyOpen == 1) {
+            handleShare(e, true);
+        }
+        if (isShareOrReplyOpen == 2) {
+            handleShare(e, false);
+        }
+    }
+
     function handleReply(e, onOriginal) {
         e.stopPropagation();
         handleCloseDialog();
@@ -109,10 +143,25 @@ function PostWithComment({ user, data }) {
         }
     }
 
-    function handleCloseDialog() {
+    function handleShareReplyDialog(e) {
+        e.stopPropagation();
+        if (isShareOrReplyOpen == 1) {
+            setisOriginalShareDialogOpen(true);
+        }
+        if (isShareOrReplyOpen == 2) {
+            setisReplyShareDialogOpen(true);
+        }
+        setIsShareOrReplyOpen(0);
+    }
+
+    function handleCloseDialog(e) {
+        console.log("closing everythong");
+        e.stopPropagation();
         setisOriginalPostDialogOpen(false);
         setisReplyPostDialogOpen(false);
-
+        setisOriginalShareDialogOpen(false);
+        setisReplyShareDialogOpen(false);
+        setIsShareOrReplyOpen(0);
     };
 
     function handleSeePost() {
@@ -122,7 +171,8 @@ function PostWithComment({ user, data }) {
     useEffect(() => {
         const handleEsc = (event) => {
             if (event.key === 'Escape') {
-                handleCloseDialog();
+                console.log("called here")
+                handleCloseDialog(event);
             }
         };
         window.addEventListener('keydown', handleEsc);
@@ -156,12 +206,13 @@ function PostWithComment({ user, data }) {
                                         </svg>
                                     </div>
                                 </div>
-                                <div onClick={(e) => handleShare(e, true)} className={`share-control-button ${originalPostData.replyPost.length ? "active" : ""}`}>
+                                <div onClick={(e) => openShareOrReply(e, true)} className={`share-control-button ${originalPostData.replyPost.length ? "active" : ""}`}>
                                     <div>
                                         <svg viewBox="0 0 24 24" aria-hidden="true"><g>
                                             <path d="M4.75 3.79l4.603 4.3-1.706 1.82L6 8.38v7.37c0 .97.784 1.75 1.75 1.75H13V20H7.75c-2.347 0-4.25-1.9-4.25-4.25V8.38L1.853 9.91.147 8.09l4.603-4.3zm11.5 2.71H11V4h5.25c2.347 0 4.25 1.9 4.25 4.25v7.37l1.647-1.53 1.706 1.82-4.603 4.3-4.603-4.3 1.706-1.82L18 15.62V8.25c0-.97-.784-1.75-1.75-1.75z"></path></g>
                                         </svg>
                                     </div>
+                                    {isShareOrReplyOpen == 1 && <ShareOrReplyDialog onClose={handleCloseDialog} selectShare={selectShare} selectShareReply={handleShareReplyDialog} />}
                                 </div>
                                 <div onClick={(e) => handleLike(e, true)} className={`like-control-button no-fill ${originalPostData.likes.length ? "active" : ""}`}>
                                     <div>
@@ -209,12 +260,13 @@ function PostWithComment({ user, data }) {
                                         </svg>
                                     </div>
                                 </div>
-                                <div onClick={(e) => handleShare(e, false)} className={`share-control-button ${postData.replyPost.length ? "active" : ""}`}>
+                                <div onClick={(e) => openShareOrReply(e, false)} className={`share-control-button ${postData.replyPost.length ? "active" : ""}`}>
                                     <div>
                                         <svg viewBox="0 0 24 24" aria-hidden="true"><g>
                                             <path d="M4.75 3.79l4.603 4.3-1.706 1.82L6 8.38v7.37c0 .97.784 1.75 1.75 1.75H13V20H7.75c-2.347 0-4.25-1.9-4.25-4.25V8.38L1.853 9.91.147 8.09l4.603-4.3zm11.5 2.71H11V4h5.25c2.347 0 4.25 1.9 4.25 4.25v7.37l1.647-1.53 1.706 1.82-4.603 4.3-4.603-4.3 1.706-1.82L18 15.62V8.25c0-.97-.784-1.75-1.75-1.75z"></path></g>
                                         </svg>
                                     </div>
+                                    {isShareOrReplyOpen == 2 && <ShareOrReplyDialog onClose={handleCloseDialog} selectShare={selectShare} selectShareReply={handleShareReplyDialog} />}
                                 </div>
                                 <div onClick={(e) => handleLike(e, false)} className={`like-control-button no-fill ${postData.likes.length ? "active" : ""}`}>
                                     <div>
@@ -235,6 +287,8 @@ function PostWithComment({ user, data }) {
             </div>
             <ReplyDialog isOpen={isOriginalPostDialogOpen} originalPost={originalPostData} user={user} onCancel={handleCloseDialog} onConfirm={handleCloseDialog} />
             <ReplyDialog isOpen={isReplyPostDialogOpen} originalPost={postData} user={user} onCancel={handleCloseDialog} onConfirm={handleCloseDialog} />
+            <ShareWithComment isOpen={isOriginalShareDialogOpen} originalPost={originalPostData} user={user} onCancel={handleCloseDialog} onConfirm={handleCloseDialog} />
+            <ShareWithComment isOpen={isReplyShareDialogOpen} originalPost={postData} user={user} onCancel={handleCloseDialog} onConfirm={handleCloseDialog} />
         </>
     );
 }

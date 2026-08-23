@@ -6,16 +6,18 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import ReplyDialog from "./ReplyDialog";
 import ShareWithComment from "./ShareWithReplyDialog";
+import ShareOrReplyDialog from "./ShareOrReplyDialog";
 
 function Post({ user, data }) {
     const [postData, setPostData] = useState(data);
     const [isMeShare, setIsMeShare] = useState(data.postType == PostType.SHARE && data.author.id == user.id);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+    const [isShareOrReplyOpen, setIsShareOrReplyOpen] = useState(false);
     const navigate = useNavigate();
     const isReply = data.postType == PostType.REPLY;
     const isShare = data.postType == PostType.SHARE;
-    const hasShared = isShare ? postData.originalPost.replyPost.length : postData.replyPost.length;
+    const hasShared = postData.replyPost.length;
     console.log("checking original", postData.originalPost)
     // const isMeShare = data.postType == PostType.SHARE && data.author.id == user.id;
     const usePostData = isShare ? postData.originalPost : postData;
@@ -46,7 +48,8 @@ function Post({ user, data }) {
     }
 
     async function handleShare(e) {
-        e.stopPropagation();
+        // e.stopPropagation();
+        console.log("selected share")
         if (hasShared) {
             console.log("unsharing")
             const result = await unsharePost(usePostData.id);
@@ -93,13 +96,32 @@ function Post({ user, data }) {
         setIsDialogOpen(true);
     }
 
-    function handleCloseDialog() {
+    function handleCloseDialog(e) {
+        e.stopPropagation();
         setIsDialogOpen(false);
         setIsShareDialogOpen(false);
+        setIsShareOrReplyOpen(false);
     };
+
+    function openShareOrReply(e) {
+        console.log("called openshareorreply")
+        e.stopPropagation();
+        if (hasShared) {
+            handleShare(e);
+            return;
+        }
+        setIsShareOrReplyOpen(true);
+    }
+
+    function selectShare(e) {
+        e.stopPropagation();
+        handleCloseDialog(e);
+        handleShare();
+    }
 
     function handleShareReplyDialog(e) {
         e.stopPropagation();
+        handleCloseDialog(e);
         setIsShareDialogOpen(true);
     }
 
@@ -110,7 +132,7 @@ function Post({ user, data }) {
     useEffect(() => {
         const handleEsc = (event) => {
             if (event.key === 'Escape') {
-                handleCloseDialog();
+                handleCloseDialog(event);
             }
         };
         window.addEventListener('keydown', handleEsc);
@@ -153,12 +175,13 @@ function Post({ user, data }) {
                                     </svg>
                                 </div>
                             </div>
-                            <div onClick={handleShareReplyDialog} className={`share-control-button ${hasShared ? "active" : ""}`}>
+                            <div onClick={openShareOrReply} className={`share-control-button ${hasShared ? "active" : ""}`}>
                                 <div>
                                     <svg viewBox="0 0 24 24" aria-hidden="true"><g>
                                         <path d="M4.75 3.79l4.603 4.3-1.706 1.82L6 8.38v7.37c0 .97.784 1.75 1.75 1.75H13V20H7.75c-2.347 0-4.25-1.9-4.25-4.25V8.38L1.853 9.91.147 8.09l4.603-4.3zm11.5 2.71H11V4h5.25c2.347 0 4.25 1.9 4.25 4.25v7.37l1.647-1.53 1.706 1.82-4.603 4.3-4.603-4.3 1.706-1.82L18 15.62V8.25c0-.97-.784-1.75-1.75-1.75z"></path></g>
                                     </svg>
                                 </div>
+                                {isShareOrReplyOpen && <ShareOrReplyDialog onClose={handleCloseDialog} selectShare={selectShare} selectShareReply={handleShareReplyDialog} />}
                             </div>
                             <div onClick={handleLike} className={`like-control-button no-fill ${usePostData.likes.length ? "active" : ""}`}>
                                 <div>

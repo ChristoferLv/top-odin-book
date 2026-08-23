@@ -14,7 +14,7 @@ function ShareWithComment({ isOpen, user, originalPost, onCancel, onConfirm }) {
             setIsActive(true);
         else
             setIsActive(false);
-        
+
         setReplyContent(e.target.value);
     }
 
@@ -31,10 +31,14 @@ function ShareWithComment({ isOpen, user, originalPost, onCancel, onConfirm }) {
 
         const result = await makePost(payload);
         if (result && result.success) {
-            onConfirm();
+            onConfirm(e);
         }
 
         setReplyContent("");
+    }
+
+    function preventClose(e) {
+        e.stopPropagation();
     }
 
 
@@ -43,8 +47,8 @@ function ShareWithComment({ isOpen, user, originalPost, onCancel, onConfirm }) {
 
     return (
         <>
-            <div className="overlay">
-                <div className='replie-dialog' role="alertdialog" aria-modal="true">
+            <div onClick={onCancel} id="overlay" className="overlay">
+                <div onClick={preventClose} className='replie-dialog' role="alertdialog" aria-modal="true">
                     <div className="dialog-header">
                         <button className='close-dialog' onClick={onCancel}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 20 20" fill="none">

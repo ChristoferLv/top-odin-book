@@ -447,6 +447,7 @@ app-root {
 
     .comment-control-button,
     .share-control-button {
+        position: relative;
         fill: #656a6e;
     }
 
@@ -470,7 +471,7 @@ app-root {
             fill: #00a76f;
         }
 
-        :hover {
+        &>div:first-child:hover {
             path {
                 fill: #00a76f;
             }
@@ -526,7 +527,7 @@ app-root {
 
     padding: 10px;
     margin-top: 5px;
-    
+
     border: solid 1px var(--main-border-color);
     border-radius: 10px;
 
@@ -538,7 +539,7 @@ app-root {
         word-break: break-all;
     }
 
-    .post-body{
+    .post-body {
         border: none;
     }
 
@@ -1155,11 +1156,10 @@ app-root {
     padding-top: 5vw;
     z-index: 1000;
 
-    textarea {
+    /* textarea {
         border: none;
         background-color: transparent;
         padding: 5px 0;
-        /* padding-left: 25px; */
         padding-right: 40px;
         flex-grow: 1;
         flex-shrink: 1;
@@ -1170,7 +1170,7 @@ app-root {
         field-sizing: content;
         min-height: 1lh;
         max-height: 5lh;
-    }
+    } */
 }
 
 
@@ -1208,6 +1208,28 @@ app-root {
         }
     }
 
+     textarea {
+            border: none;
+            background-color: transparent;
+            padding: 5px 0;
+            padding-right: 40px;
+            flex-grow: 1;
+            flex-shrink: 1;
+            color: var(--main-white-color);
+            font-family: sans-serif;
+            font-size: 14px;
+            resize: none;
+            field-sizing: content;
+            min-height: 1lh;
+            max-height: 5lh;
+        }
+
+        textarea::placeholder {
+            color: var(--shadowed-text-color);
+            font-size: large;
+            font-family: Inter;
+        }
+
     .new-reply {
         display: grid;
         grid-template-columns: 5fr 90fr;
@@ -1219,29 +1241,6 @@ app-root {
         form {
             display: flex;
             flex-direction: column;
-        }
-
-        textarea {
-            border: none;
-            background-color: transparent;
-            padding: 12px 0;
-            /* padding-left: 25px; */
-            padding-right: 40px;
-            flex-grow: 1;
-            flex-shrink: 1;
-            color: white;
-            font-family: Inter;
-            font-size: large;
-            resize: none;
-            field-sizing: content;
-            min-height: 1lh;
-            max-height: 5lh;
-        }
-
-        textarea::placeholder {
-            color: var(--shadowed-text-color);
-            font-size: large;
-            font-family: Inter;
         }
     }
 }
@@ -1291,7 +1290,63 @@ app-root {
     }
 }
 
+.transparent-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 5vw;
+}
 
+.share-or-reply {
+    position: absolute;
+    background-color: var(--main-dialog-color);
+    width: max-content;
+    height: fit-content;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    overflow: hidden;
+    z-index: 9999;
+
+
+    .option {
+        box-sizing: border-box;
+        display: flex;
+        gap: 0 15px;
+        width: 100%;
+        padding: 15px 20px;
+        background-color: var(--main-dialog-color);
+    }
+
+    .icon {
+        width: 20px;
+        height: 20px;
+
+        path {
+            fill: var(--main-white-color);
+            stroke-width: 1px;
+        }
+    }
+
+    &>div:hover {
+        background-color: #1b1b1b;
+    }
+
+
+    p {
+        margin: 0;
+        font-family: Inter;
+        font-weight: bold;
+        color: var(--main-white-color);
+    }
+}
 
 
 
