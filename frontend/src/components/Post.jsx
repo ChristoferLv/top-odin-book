@@ -19,10 +19,10 @@ function Post({ user, data }) {
     const isReply = data.postType == PostType.REPLY;
     const isShare = data.postType == PostType.SHARE;
     const hasShared = postData.replyPost.length;
-    const hasMidia = postData.hasMidia;
     console.log("checking original", postData.originalPost)
     // const isMeShare = data.postType == PostType.SHARE && data.author.id == user.id;
     const usePostData = isShare ? postData.originalPost : postData;
+    const hasMidia = usePostData.hasMidia;
     const formatedDate = formatDate(postData.createdAt);
 
     async function handleLike(e) {
@@ -168,7 +168,7 @@ function Post({ user, data }) {
                         {/* {isReply && <div><p>Original post: {usePostData.originalPostId}</p></div>} */}
                         <div className="post-content">
                             <textarea readOnly defaultValue={usePostData.content}></textarea>
-                            {hasMidia && <PostMidia postId={postData.id} />}
+                            {hasMidia && <PostMidia postId={usePostData.id} />}
                         </div>
                         <div className="post-controls">
                             <div onClick={handleReply} className="comment-control-button">

@@ -10,6 +10,7 @@ import Comment from "./components/Comment";
 import ReplyDialog from "./components/ReplyDialog";
 import ShareWithComment from "./components/ShareWithReplyDialog";
 import ShareOrReplyDialog from "./components/ShareOrReplyDialog";
+import PostMidia from "./components/PostMidia";
 
 function PostPage() {
     const { user, isLoading } = useContext(AuthContext);
@@ -25,6 +26,8 @@ function PostPage() {
     const [isShareOrReplyOpen, setIsShareOrReplyOpen] = useState(false);
 
     const hasShared = postData?.replyPost.length;
+    const hasMidia = postData?.hasMidia;
+
 
     const fetchReplies = useCallback(async () => {
         try {
@@ -153,6 +156,10 @@ function PostPage() {
         setIsShareDialogOpen(true);
     }
 
+    function goToPicturePage(){
+        navigate(`/${postData.author.username}/post/${postData.id}/photo`);
+    }
+
     if (!postData) return <><div className="loading">
         <p>&nbsp;</p>
     </div></>;
@@ -187,6 +194,7 @@ function PostPage() {
                     <div className="post-view-data">
                         <div className="post-content">
                             <textarea readOnly defaultValue={postData.content}></textarea>
+                            {hasMidia && <PostMidia postId={postData.id} seePhoto={goToPicturePage}/>}
                         </div>
                         <div className="post-hour">
                             {adjustPostDate(new Date(postData.createdAt))}
@@ -226,7 +234,7 @@ function PostPage() {
 
                     <div className="make-comment">
                         <UserPicture id={user.id} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
-                        <textarea name="" id="" value={replyContent} onChange={handleReplyChange}></textarea>
+                        <textarea name="" id="" value={replyContent} onChange={handleReplyChange} placeholder="Post your reply"></textarea>
                         <button onClick={postReply} className="post-comment">Reply</button>
                     </div>
                 </div>

@@ -1,14 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import { fetchPostMidia } from "../../api/requests";
 
-function PostMidia({ postId }) {
+function PostMidia({ postId, seePhoto }) {
     const [midiaBuff, setMidia] = useState(null);
     const [mime, setMime] = useState(null);
     const [modal, setModal] = useState(false);
 
     function handleSeePicture(e) {
         e.stopPropagation();
-        setModal(true);
+        seePhoto();
+        // setModal(true);
     }
 
     function handleCloseModal(e) {

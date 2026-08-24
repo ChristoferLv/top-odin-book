@@ -349,41 +349,41 @@ app-root {
 }
 
 .new-post-controls {
-        display: flex;
-        align-items: center;
-        margin-top: 10px;
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
     width: 100%;
 
 
-        .midia-btn {
-            padding: 8px;
-            border-radius: 999px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: transform 0.2s ease, background-color 0.2s ease;
-            cursor: pointer;
-        }
+    .midia-btn {
+        padding: 8px;
+        border-radius: 999px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: transform 0.2s ease, background-color 0.2s ease;
+        cursor: pointer;
+    }
 
-        .midia-btn:hover {
-            background-color: #1a1a1a;
-            transform: scale(1.1);
-            transition: transform 0.2s ease;
+    .midia-btn:hover {
+        background-color: #1a1a1a;
+        transform: scale(1.1);
+        transition: transform 0.2s ease;
 
-            path {
-                fill: #b2bdc7;
-            }
-        }
-
-        svg {
-            width: 23px;
-            height: 23px;
-
-            path {
-                fill: #7b8289;
-            }
+        path {
+            fill: #b2bdc7;
         }
     }
+
+    svg {
+        width: 23px;
+        height: 23px;
+
+        path {
+            fill: #7b8289;
+        }
+    }
+}
 
 .post {
     display: flex;
@@ -884,8 +884,6 @@ app-root {
     /* border-bottom: 1px solid white; */
 }
 
-
-
 .my-page-controls {
     display: flex;
     justify-content: space-between;
@@ -972,6 +970,9 @@ app-root {
     }
 
 }
+
+
+
 
 
 
@@ -1437,6 +1438,243 @@ dialog {
     }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.see-picture-page {
+    display: grid;
+    grid-template-columns: 75% 25%;
+    height: 100%;
+    background-color: #000000;
+
+
+    .main-container {
+        display: flex;
+        flex-direction: column;
+        /* grid-template-rows: 85% 15%; */
+        border-right: solid 1px var(--main-border-color);
+    }
+
+    .picture-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+    }
+
+    .close-button {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background-color: transparent;
+        border: none;
+        color: #fdfdfe;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 8px;
+        border-radius: 99px;
+
+        svg {
+            display: block;
+        }
+
+        &:hover {
+            background-color: #5c5c5c;  
+        }
+    }
+
+    .side-container {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .actions-container {
+        border-bottom: 1px solid var(--main-border-color);
+    }
+
+    .actions-container-controls,
+    .main-container-controls {
+        display: flex;
+        justify-content: space-between;
+
+        .comment-control-button,
+        .share-control-button {
+            position: relative;
+            fill: #656a6e;
+        }
+
+        .like-control-button,
+        .bookmark-control-button {
+            stroke: #656a6e;
+            stroke-width: 2px;
+        }
+
+        .comment-control-button {
+            :hover {
+                path {
+                    fill: #1a8bd8;
+                }
+            }
+        }
+
+        .share-control-button {
+            &.active {
+                stroke: transparent;
+                fill: #00a76f;
+            }
+
+            &>div:first-child:hover {
+                path {
+                    fill: #00a76f;
+                }
+            }
+        }
+
+        .like-control-button {
+            &.active {
+                stroke: transparent;
+                fill: #f91880;
+            }
+
+            :hover {
+                path {
+                    stroke: #f91880;
+                }
+            }
+        }
+
+        .bookmark-control-button {
+            &.active {
+                stroke: transparent;
+                fill: #1a8bd8;
+            }
+
+            :hover {
+                path {
+                    stroke: #1a8bd8;
+                }
+            }
+        }
+    }
+
+    .main-container-controls {
+        margin: 0 30%;
+        margin-bottom: 20px;
+        margin-top: auto;
+
+        .comment-control-button,
+        .share-control-button {
+            position: relative;
+            fill: white;
+        }
+
+        .like-control-button,
+        .bookmark-control-button {
+            stroke: white;
+            stroke-width: 2px;
+        }
+    }
+
+    .actions-container-controls {
+        margin: 0 1%;
+        margin-top: 10px;
+    }
+
+    .actions-container-controls>div,
+    .main-container-controls>div {
+        width: 23px;
+        height: 23px;
+        cursor: pointer;
+        border-radius: 99px;
+    }
+
+    .actions-container {
+        display: flex;
+        flex-direction: column;
+        padding: 10px 15px;
+    }
+
+    .actions-container-header {
+        display: flex;
+        gap: 0 10px;
+        cursor: pointer;
+        width: fit-content;
+
+        span {
+            width: fit-content;
+        }
+    }
+
+    .actions-container-user-data {
+        display: flex;
+        flex-direction: column;
+        margin-top: 3px;
+
+        span:nth-of-type(1) {
+            color: var(--main-white-color);
+            font-weight: bold;
+            font-family: sans-serif;
+            font-size: 0.9rem
+        }
+
+        span:nth-of-type(2) {
+            color: var(--shadowed-text-color);
+        }
+    }
+
+    .actions-container-post-content {
+        textarea {
+            border: none;
+            background-color: transparent;
+            padding: 12px 0;
+            /* padding-left: 25px; */
+            padding-right: 40px;
+            flex-grow: 1;
+            flex-shrink: 1;
+            color: white;
+            font-family: Inter;
+            font-size: large;
+            resize: none;
+            field-sizing: content;
+            min-height: 1lh;
+            max-height: 5lh;
+        }
+
+        textarea:focus {
+            outline: none;
+        }
+    }
+
+    .post-hour {
+        font-family: Inter;
+        font-size: 14px;
+        color: var(--shadowed-text-color);
+        margin-top: 10px;
+        margin-bottom: -5px;
+    }
+
+    .actions-container-controls {
+        display: flex;
+        margin-bottom: -12px;
+    }
+
+    .replies-container {}
+}
 
 
 

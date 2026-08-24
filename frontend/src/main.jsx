@@ -13,11 +13,13 @@ import BookmarksPage from './BookmarksPage.jsx';
 import EditProfile from './components/EditProfile.jsx';
 import PostPage from './PostPage.jsx';
 import UsersPage from './UsersPage.jsx';
+import SeeingPicturePage from './SeeingPicturePage.jsx';
 
 
 const router = createBrowserRouter([
   { path: "/login", element: <LoginPage /> },
   { path: "/register", element: <RegisterPage /> },
+  { path: "/:username/post/:postId/photo", element: <SeeingPicturePage /> },
   {
     path: "/",
     element: <MainPage />,
@@ -25,6 +27,7 @@ const router = createBrowserRouter([
       { path: "/users", element: <UsersPage /> },
       { path: "/settings/profile", element: <EditProfile /> },
       { path: "/bookmarks", element: <BookmarksPage /> },
+      { path: "/:username/post/:postId/photo", element: <SeeingPicturePage /> },
       { path: "/:username/post/:postId", element: <PostPage /> },
       { path: "/:username/replies", element: <MyPage /> },
       { path: "/:username/shares", element: <MyPage /> },
