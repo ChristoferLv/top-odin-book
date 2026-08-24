@@ -7,6 +7,7 @@ import { useNavigate } from "react-router";
 import ReplyDialog from "./ReplyDialog";
 import ShareOrReplyDialog from "./ShareOrReplyDialog";
 import ShareWithComment from "./ShareWithReplyDialog";
+import PostMidia from "./PostMidia";
 
 function PostWithComment({ user, data }) {
     const [postData, setPostData] = useState(data);
@@ -19,6 +20,8 @@ function PostWithComment({ user, data }) {
 
     const navigate = useNavigate();
     const originalPostData = postData.originalPost;
+    const originalHasMidia = originalPostData.hasMidia;
+    const replyHasMidia = postData.hasMidia;
     const isReply = data.postType == PostType.REPLY;
     const isShare = data.postType == PostType.SHARE;
     // const isMeShare = data.postType == PostType.SHARE && data.author.id == user.id;
@@ -197,6 +200,7 @@ function PostWithComment({ user, data }) {
                             </div>
                             <div className="post-content">
                                 <textarea readOnly defaultValue={originalPostData.content}></textarea>
+                                {originalHasMidia && <PostMidia postId={originalPostData.id} />}
                             </div>
                             <div className="post-controls">
                                 <div onClick={(e) => handleReply(e, true)} className="comment-control-button">
@@ -251,6 +255,7 @@ function PostWithComment({ user, data }) {
                             </div>
                             <div className="post-content">
                                 <textarea readOnly defaultValue={postData.content}></textarea>
+                                {replyHasMidia && <PostMidia postId={postData.id} />}
                             </div>
                             <div className="post-controls">
                                 <div onClick={(e) => handleReply(e, false)} className="comment-control-button">

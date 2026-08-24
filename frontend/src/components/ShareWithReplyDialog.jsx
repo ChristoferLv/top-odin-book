@@ -29,11 +29,11 @@ function ShareWithComment({ isOpen, user, originalPost, onCancel, onConfirm }) {
         e.preventDefault();
         const formData = new FormData();
         formData.append("picture", fileInputRef.current.files[0]);
-        formData.append("content", postContent)
+        formData.append("content", replyContent)
         formData.append("originalPostId", originalPost.id);
-        const check = Object.fromEntries(payload.entries());
+        // const check = Object.fromEntries(payload.entries());
         console.log(replyContent)
-        if (replyContent.length < 1) {
+        if (replyContent.length < 1 && !fileInputRef.current.files[0]) {
             return;
         }
 

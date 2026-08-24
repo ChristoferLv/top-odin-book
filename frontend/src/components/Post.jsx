@@ -165,7 +165,7 @@ function Post({ user, data }) {
                             <span>{usePostData.author.name}</span>
                             <span>@{usePostData.author.username} • {formatedDate}</span>
                         </div>
-                        {isReply && <div><p>Original post: {usePostData.originalPostId}</p></div>}
+                        {/* {isReply && <div><p>Original post: {usePostData.originalPostId}</p></div>} */}
                         <div className="post-content">
                             <textarea readOnly defaultValue={usePostData.content}></textarea>
                             {hasMidia && <PostMidia postId={postData.id} />}

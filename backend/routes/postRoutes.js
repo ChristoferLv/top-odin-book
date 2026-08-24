@@ -1,7 +1,7 @@
 import Router from 'express';
 import { passport } from "../authUtils.js"
 import { checkUser } from '../utils.js';
-import { bookmarkPost, deletePost, deleteReplie, getAllPosts, getBookmarkedPosts, getLikedPosts, getMyReplies, getPostById, getPostMidia, getRepliesOfPost, getSharedPosts, likePost, makePost, makeReplie, removeLike, removePostBookmark, removeShare, sharePost, updatePost } from '../controllers/postController.js';
+import { bookmarkPost, deletePost, deleteReplie, getAllPosts, getBookmarkedPosts, getLikedPosts, getMyReplies, getPostById, getPostMidia, getRepliesOfPost, getSharedPosts, likePost, makePost, makeReply, removeLike, removePostBookmark, removeShare, sharePost, updatePost } from '../controllers/postController.js';
 import multer from 'multer';
 
 const postRouter = Router();
@@ -19,7 +19,7 @@ postRouter.post("/:postId/shares", passport.authenticate('jwt', { session: false
 postRouter.get("/shares", passport.authenticate('jwt', { session: false }), checkUser, getSharedPosts);
 postRouter.delete("/:postId/shares", passport.authenticate('jwt', { session: false }), checkUser, removeShare);
 
-postRouter.post("/:postId/replies", upload.single("picture"), passport.authenticate('jwt', { session: false }), checkUser, makeReplie);
+postRouter.post("/:postId/replies", upload.single("picture"), passport.authenticate('jwt', { session: false }), checkUser, makeReply);
 postRouter.get("/:postId/replies", passport.authenticate('jwt', { session: false }), checkUser, getRepliesOfPost);
 postRouter.delete("/replies/:commentId", passport.authenticate('jwt', { session: false }), checkUser, deleteReplie);
 postRouter.get("/replies", passport.authenticate('jwt', { session: false }), checkUser, getMyReplies);

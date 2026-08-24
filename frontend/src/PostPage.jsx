@@ -2,11 +2,14 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router";
 import { AuthContext } from "./AuthContext";
 import { formatDate } from "./utils/dateUtils";
-import { dislikePost, fetchPostById, fetchRepliesOfPost, likePost, makeReply } from "../api/requests";
+import { dislikePost, fetchPostById, fetchRepliesOfPost, likePost, makeReply, sharePost, unsharePost } from "../api/requests";
 import UserPicture from "./components/UserPicture";
 import { USER_PICTURE_DEFAULT_SIZE } from "./utils/defaults";
 import Post from "./components/Post";
 import Comment from "./components/Comment";
+import ReplyDialog from "./components/ReplyDialog";
+import ShareWithComment from "./components/ShareWithReplyDialog";
+import ShareOrReplyDialog from "./components/ShareOrReplyDialog";
 
 function PostPage() {
     const { user, isLoading } = useContext(AuthContext);
@@ -16,7 +19,13 @@ function PostPage() {
     const [postData, setPostData] = useState(null);
     const [replyContent, setReplyContent] = useState("");
     const [commentsList, setCommentsList] = useState([]);
-    
+
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+    const [isShareOrReplyOpen, setIsShareOrReplyOpen] = useState(false);
+
+    const hasShared = postData?.replyPost.length;
+
     const fetchReplies = useCallback(async () => {
         try {
             const result = await fetchRepliesOfPost(postId);
@@ -79,19 +88,19 @@ function PostPage() {
         }
     }
 
-     async function handleShare(e) {
+    async function handleShare(e) {
         e.stopPropagation();
-        if (isMeShare) {
-            const result = await unsharePost(usePostData.id);
+        if (hasShared) {
+            const result = await unsharePost(postData.id);
             if (result && result.success) {
-                setIsMeShare(false);
+                setPostData({ ...postData, replyPost: [] });
             }
             return;
         }
 
-        const result = await sharePost(usePostData.id);
+        const result = await sharePost(postData.id);
         if (result && result.success) {
-            setIsMeShare(true);
+            setIsMeShare({ ...postData, replyPost: [{ id: result.data.id }] });
         }
     }
 
@@ -110,9 +119,45 @@ function PostPage() {
         }
     }
 
+    function handleReply(e) {
+        e.stopPropagation();
+        setIsDialogOpen(true);
+    }
+
+    function handleCloseDialog(e) {
+        e.stopPropagation();
+        setIsDialogOpen(false);
+        setIsShareDialogOpen(false);
+        setIsShareOrReplyOpen(false);
+    };
+
+    function openShareOrReply(e) {
+        console.log("called openshareorreply")
+        e.stopPropagation();
+        if (hasShared) {
+            handleShare(e);
+            return;
+        }
+        setIsShareOrReplyOpen(true);
+    }
+
+    function selectShare(e) {
+        e.stopPropagation();
+        handleCloseDialog(e);
+        handleShare();
+    }
+
+    function handleShareReplyDialog(e) {
+        e.stopPropagation();
+        handleCloseDialog(e);
+        setIsShareDialogOpen(true);
+    }
+
     if (!postData) return <><div className="loading">
         <p>&nbsp;</p>
     </div></>;
+
+    console.log(postData)
 
     const formatedDate = formatDate(postData.createdAt);
     return (
@@ -156,12 +201,13 @@ function PostPage() {
                                 </svg>
                             </div>
                         </div>
-                        <div onClick={handleShare} className="share-control-button">
+                        <div onClick={openShareOrReply} className={`share-control-button ${hasShared ? "active" : ""}`}>
                             <div>
                                 <svg viewBox="0 0 24 24" aria-hidden="true"><g>
                                     <path d="M4.75 3.79l4.603 4.3-1.706 1.82L6 8.38v7.37c0 .97.784 1.75 1.75 1.75H13V20H7.75c-2.347 0-4.25-1.9-4.25-4.25V8.38L1.853 9.91.147 8.09l4.603-4.3zm11.5 2.71H11V4h5.25c2.347 0 4.25 1.9 4.25 4.25v7.37l1.647-1.53 1.706 1.82-4.603 4.3-4.603-4.3 1.706-1.82L18 15.62V8.25c0-.97-.784-1.75-1.75-1.75z"></path></g>
                                 </svg>
                             </div>
+                            {isShareOrReplyOpen && <ShareOrReplyDialog onClose={handleCloseDialog} selectShare={selectShare} selectShareReply={handleShareReplyDialog} />}
                         </div>
                         <div onClick={handleLike} className={`like-control-button no-fill ${postData.likes.length ? "active" : ""}`}>
                             <div>
@@ -187,10 +233,12 @@ function PostPage() {
 
                 <div className="comments-list">
                     {commentsList.map((comment) => {
-                        return <Comment key={comment.id} data={comment} user={user} />
+                        return <Post key={comment.id} data={comment} user={user} />
                     })}
                 </div>
             </div>
+            <ReplyDialog isOpen={isDialogOpen} originalPost={postData} user={user} onCancel={handleCloseDialog} onConfirm={handleCloseDialog} />
+            <ShareWithComment isOpen={isShareDialogOpen} originalPost={postData} user={user} onCancel={handleCloseDialog} onConfirm={handleCloseDialog} />
         </>
     )
 }

@@ -7,9 +7,10 @@ import { makeReply } from "../../api/requests";
 function ReplyDialog({ isOpen, user, originalPost, onCancel, onConfirm }) {
     const [replyContent, setReplyContent] = useState("");
     const [isActive, setIsActive] = useState(false);
+    const fileInputRef = useRef(null);
 
     function handleReplyContentChange(e) {
-        if (e.target.value.length > 0)
+        if (e.target.value.length > 0 || fileInputRef.current.files[0].length > 0)
             setIsActive(true);
         else
             setIsActive(false);
@@ -17,13 +18,12 @@ function ReplyDialog({ isOpen, user, originalPost, onCancel, onConfirm }) {
         setReplyContent(e.target.value);
     }
 
-    const fileInputRef = useRef(null);
 
     function handleClickAttach(e) {
         fileInputRef.current.click();
     }
 
-    async function postReply() {
+    async function postReply(e) {
         console.log(fileInputRef.current, fileInputRef.current.files)
         const formData = new FormData();
         formData.append("picture", fileInputRef.current.files[0]);
@@ -31,7 +31,7 @@ function ReplyDialog({ isOpen, user, originalPost, onCancel, onConfirm }) {
         const result = await makeReply(formData, originalPost.id);
         if (result.success) {
             setReplyContent("");
-            onConfirm();
+            onConfirm(e);
         }
     }
 

@@ -476,7 +476,7 @@ async function makeReply(data, postId) {
             headers: {
                 'Authorization': token,
             },
-            body: JSON.stringify(data)
+            body: data
         });
 
         if (rawResponse.ok) {

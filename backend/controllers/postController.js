@@ -170,6 +170,7 @@ async function getPostById(req, res) {
                 },
                 likes: { where: { whoLikedId: req.user.id }, select: { id: true } },
                 bookmarks: { where: { whoBookmarkedId: req.user.id }, select: { id: true } },
+                replyPost: { where: { authorId: req.user.id, postType: "SHARE" }, select: { id: true } },
                 _count: {
                     select: {
                         likes: {
@@ -804,7 +805,7 @@ async function getMyReplies(req, res) {
     }
 }
 
-async function makeReplie(req, res) {
+async function makeReply(req, res) {
     try {
         const postId = parseInt(req.params.postId);
         console.log(req.body)
@@ -1137,7 +1138,7 @@ export {
     removeShare,
 
     getMyReplies,
-    makeReplie,
+    makeReply,
     getRepliesOfPost,
     deleteReplie,
 

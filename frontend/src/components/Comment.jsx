@@ -4,11 +4,18 @@ import { PostType, USER_PICTURE_DEFAULT_SIZE } from "../utils/defaults"
 import { bookmarkPost, dislikePost, likePost, removeBookmarkPost, sharePost, unsharePost } from "../../api/requests";
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import PostMidia from "./PostMidia";
+import ReplyDialog from "./ReplyDialog";
+import ShareWithComment from "./ShareWithReplyDialog";
 
 function Comment({ user, data }) {
     const [postData, setPostData] = useState(data);
     const navigate = useNavigate();
     const formatedDate = formatDate(postData.createdAt);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+    const [isShareOrReplyOpen, setIsShareOrReplyOpen] = useState(false);
+    const hasMidia = postData.hasMidia;
 
     async function handleLike(e) {
         e.stopPropagation();
@@ -58,6 +65,40 @@ function Comment({ user, data }) {
         }
     }
 
+    function handleReply(e) {
+        e.stopPropagation();
+        setIsDialogOpen(true);
+    }
+
+    function handleCloseDialog(e) {
+        e.stopPropagation();
+        setIsDialogOpen(false);
+        setIsShareDialogOpen(false);
+        setIsShareOrReplyOpen(false);
+    };
+
+    function openShareOrReply(e) {
+        console.log("called openshareorreply")
+        e.stopPropagation();
+        if (hasShared) {
+            handleShare(e);
+            return;
+        }
+        setIsShareOrReplyOpen(true);
+    }
+
+    function selectShare(e) {
+        e.stopPropagation();
+        handleCloseDialog(e);
+        handleShare();
+    }
+
+    function handleShareReplyDialog(e) {
+        e.stopPropagation();
+        handleCloseDialog(e);
+        setIsShareDialogOpen(true);
+    }
+
     function handleSeePost() {
         navigate(`/${postData.author.username}/post/${postData.id}`);
     }
@@ -74,21 +115,23 @@ function Comment({ user, data }) {
                         </div>
                         <div className="post-content">
                             <textarea readOnly defaultValue={postData.content}></textarea>
+                            {hasMidia && <PostMidia postId={postData.id} />}
                         </div>
                         <div className="post-controls">
-                            <div className="comment-control-button">
+                            <div onClick={handleReply} className="comment-control-button">
                                 <div>
                                     <svg viewBox="0 0 24 24" aria-hidden="true"><g>
                                         <path d="M1.751 10c0-4.42 3.584-8 8.005-8h4.366c4.49 0 8.129 3.64 8.129 8.13 0 2.96-1.607 5.68-4.196 7.11l-8.054 4.46v-3.69h-.067c-4.49.1-8.183-3.51-8.183-8.01zm8.005-6c-3.317 0-6.005 2.69-6.005 6 0 3.37 2.77 6.08 6.138 6.01l.351-.01h1.761v2.3l5.087-2.81c1.951-1.08 3.163-3.13 3.163-5.36 0-3.39-2.744-6.13-6.129-6.13H9.756z"></path></g>
                                     </svg>
                                 </div>
                             </div>
-                            <div onClick={handleShare} className={`share-control-button ${postData.replyPost.length ? "active" : ""}`}>
+                            <div onClick={openShareOrReply} className={`share-control-button ${postData.replyPost.length ? "active" : ""}`}>
                                 <div>
                                     <svg viewBox="0 0 24 24" aria-hidden="true"><g>
                                         <path d="M4.75 3.79l4.603 4.3-1.706 1.82L6 8.38v7.37c0 .97.784 1.75 1.75 1.75H13V20H7.75c-2.347 0-4.25-1.9-4.25-4.25V8.38L1.853 9.91.147 8.09l4.603-4.3zm11.5 2.71H11V4h5.25c2.347 0 4.25 1.9 4.25 4.25v7.37l1.647-1.53 1.706 1.82-4.603 4.3-4.603-4.3 1.706-1.82L18 15.62V8.25c0-.97-.784-1.75-1.75-1.75z"></path></g>
                                     </svg>
                                 </div>
+                                {isShareOrReplyOpen && <ShareOrReplyDialog onClose={handleCloseDialog} selectShare={selectShare} selectShareReply={handleShareReplyDialog} />}
                             </div>
                             <div onClick={handleLike} className={`like-control-button no-fill ${postData.likes.length ? "active" : ""}`}>
                                 <div>
@@ -105,7 +148,9 @@ function Comment({ user, data }) {
                         </div>
                     </div>
                 </div>
-            </div >
+            </div>
+            <ReplyDialog isOpen={isDialogOpen} originalPost={postData} user={user} onCancel={handleCloseDialog} onConfirm={handleCloseDialog} />
+            <ShareWithComment isOpen={isShareDialogOpen} originalPost={postData} user={user} onCancel={handleCloseDialog} onConfirm={handleCloseDialog} />
         </>
     )
 }
