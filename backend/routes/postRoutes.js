@@ -1,12 +1,14 @@
 import Router from 'express';
 import { passport } from "../authUtils.js"
 import { checkUser } from '../utils.js';
-import { bookmarkPost, deletePost, deleteReplie, getAllPosts, getBookmarkedPosts, getLikedPosts, getMyReplies, getPostById, getRepliesOfPost, getSharedPosts, likePost, makePost, makeReplie, removeLike, removePostBookmark, removeShare, sharePost, updatePost } from '../controllers/postController.js';
+import { bookmarkPost, deletePost, deleteReplie, getAllPosts, getBookmarkedPosts, getLikedPosts, getMyReplies, getPostById, getPostMidia, getRepliesOfPost, getSharedPosts, likePost, makePost, makeReplie, removeLike, removePostBookmark, removeShare, sharePost, updatePost } from '../controllers/postController.js';
+import multer from 'multer';
 
 const postRouter = Router();
 
 
-
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 
 postRouter.get("/likes", passport.authenticate('jwt', { session: false }), checkUser, getLikedPosts)
@@ -17,7 +19,7 @@ postRouter.post("/:postId/shares", passport.authenticate('jwt', { session: false
 postRouter.get("/shares", passport.authenticate('jwt', { session: false }), checkUser, getSharedPosts);
 postRouter.delete("/:postId/shares", passport.authenticate('jwt', { session: false }), checkUser, removeShare);
 
-postRouter.post("/:postId/replies", passport.authenticate('jwt', { session: false }), checkUser, makeReplie);
+postRouter.post("/:postId/replies", upload.single("picture"), passport.authenticate('jwt', { session: false }), checkUser, makeReplie);
 postRouter.get("/:postId/replies", passport.authenticate('jwt', { session: false }), checkUser, getRepliesOfPost);
 postRouter.delete("/replies/:commentId", passport.authenticate('jwt', { session: false }), checkUser, deleteReplie);
 postRouter.get("/replies", passport.authenticate('jwt', { session: false }), checkUser, getMyReplies);
@@ -26,11 +28,12 @@ postRouter.get("/bookmarks", passport.authenticate('jwt', { session: false }), c
 postRouter.post("/:postId/bookmarks", passport.authenticate('jwt', { session: false }), checkUser, bookmarkPost);
 postRouter.delete("/:postId/bookmarks", passport.authenticate('jwt', { session: false }), checkUser, removePostBookmark);
 
-postRouter.post("/", passport.authenticate('jwt', { session: false }), checkUser, makePost);
+postRouter.post("/", upload.single("picture"), passport.authenticate('jwt', { session: false }), checkUser, makePost);
 postRouter.get("/", passport.authenticate('jwt', { session: false }), checkUser, getAllPosts);
-postRouter.get("/:postId",passport.authenticate('jwt', { session: false }), getPostById);
+postRouter.get("/:postId", passport.authenticate('jwt', { session: false }), getPostById);
 postRouter.put("/:postId", checkUser, updatePost);
 postRouter.delete("/:postId", checkUser, deletePost);
+postRouter.get("/:postId/midia", passport.authenticate('jwt', { session: false }), getPostMidia);
 
 
 export default postRouter;

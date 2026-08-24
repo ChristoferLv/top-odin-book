@@ -20,7 +20,7 @@ const makePost = [
 
         try {
             const { content } = matchedData(req);
-            const originalPostId  = parseInt(req.body.originalPostId);
+            const originalPostId = parseInt(req.body.originalPostId);
 
             if (originalPostId) {
                 const exists = await prisma.posts.findUnique({
@@ -34,14 +34,41 @@ const makePost = [
 
             let referenceId = originalPostId ? originalPostId : null;
             let postType = originalPostId ? "SHARE_REPLY" : "POST";
+            let hasMidia = req.file?.size > 0;
 
-            const result = await prisma.posts.create({
-                data: {
-                    content: content,
-                    authorId: req.user.id,
-                    postType: postType,
-                    originalPostId: referenceId
+
+            const result = await prisma.$transaction(async (tx) => {
+                const postResult = await tx.posts.create({
+                    data: {
+                        authorId: req.user.id,
+                        hasMidia: hasMidia,
+                        postType: postType,
+                        originalPostId: referenceId,
+                        content: content
+                    }
+                });
+
+                if (!postResult) {
+                    throw new Error("Fail to create new post.");
                 }
+
+                if (!hasMidia) {
+                    return postResult;
+                }
+
+                const midiaResult = await tx.midias.create({
+                    data: {
+                        mime: req.file.mimetype,
+                        content: req.file.buffer,
+                        ownerId: req.user.id,
+                        postId: postResult.id
+                    }
+                });
+
+                if (!midiaResult)
+                    throw new Error("Fail to create new post.");
+
+                return postResult;
             });
 
             if (!result) {
@@ -51,7 +78,7 @@ const makePost = [
             return res.send({ success: true, data: result });
         } catch (e) {
             console.log(e);
-            throw e;
+            return res.status(500).send({ success: false });
         }
     }
 ];
@@ -81,6 +108,7 @@ async function getAllPosts(req, res) {
                         createdAt: true
                     }
                 },
+                midia: false,
                 originalPost: {
                     include: {
                         author: {
@@ -96,7 +124,8 @@ async function getAllPosts(req, res) {
                         },
                         likes: { where: { whoLikedId: userId }, select: { id: true } },
                         bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } },
-                        replyPost: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } }
+                        replyPost: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } },
+                        midia: false
                     }
                 },
                 likes: { where: { whoLikedId: userId }, select: { id: true } },
@@ -241,7 +270,27 @@ async function deletePost(req, res) {
     }
 }
 
+async function getPostMidia(req, res) {
+    const postId = parseInt(req.params.postId);
+    try {
+        const result = await prisma.midias.findUnique({
+            where: { postId: postId },
+        });
 
+        if (!result)
+            return res.status(400).send({
+                success: false, message: "Midia not found"
+            });
+
+        let newbuffer = null;
+        if (result.content)
+            newbuffer = Buffer.from(result.content, result.content.byteOffset, result.content.byteLength)
+        return res.status(200).send({ success: true, data: { ...result, content: newbuffer } });
+    } catch (e) {
+        console.log(e);
+        res.status(500).send({ success: false });
+    }
+}
 
 
 
@@ -741,7 +790,7 @@ async function getMyReplies(req, res) {
                 bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } },
                 replyPost: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } }
             },
-            orderBy:{createdAt:"desc"}
+            orderBy: { createdAt: "desc" }
         })
 
         if (!result) {
@@ -769,16 +818,52 @@ async function makeReplie(req, res) {
             return res.status(400).send({ success: false, message: "Post not found." });
         }
 
-        const result = await prisma.posts.create(
-            {
+        let hasMidia = req.file?.size > 0;
+
+        const result = await prisma.$transaction(async (tx) => {
+            const postResult = await tx.posts.create({
                 data: {
-                    content: content,
                     authorId: req.user.id,
+                    hasMidia: hasMidia,
                     postType: "REPLY",
-                    originalPostId: postId
+                    originalPostId: postId,
+                    content: content
                 }
+            });
+
+            if (!postResult) {
+                throw new Error("Fail to create new post.");
             }
-        );
+
+            if (!hasMidia) {
+                return postResult;
+            }
+
+            const midiaResult = await tx.midias.create({
+                data: {
+                    mime: req.file.mimetype,
+                    content: req.file.buffer,
+                    ownerId: req.user.id,
+                    postId: postResult.id
+                }
+            });
+
+            if (!midiaResult)
+                throw new Error("Fail to create new post.");
+
+            return postResult;
+        });
+
+        // const result = await prisma.posts.create(
+        //     {
+        //         data: {
+        //             content: content,
+        //             authorId: req.user.id,
+        //             postType: "REPLY",
+        //             originalPostId: postId
+        //         }
+        //     }
+        // );
 
         if (!result) {
             return res.status(500).send({ success: false });
@@ -1041,6 +1126,7 @@ export {
     getPostById,
     updatePost,
     deletePost,
+    getPostMidia,
 
     getLikedPosts,
     likePost,

@@ -32,6 +32,7 @@ model Users {
   followedBy Follows[]   @relation("followedBy")
   following  Follows[]   @relation("following")
   bookmarks  Bookmarks[]
+  midias     Midias[]
 }
 
 model Posts {
@@ -49,6 +50,9 @@ model Posts {
   comments  Comments[]
   likes     Likes[]
   bookmarks Bookmarks[]
+
+  hasMidia Boolean? @default(false)
+  midia    Midias?
 
   @@unique([originalPostId, authorId, postType], where: raw("\"postType\" IN ('SHARE')"))
 }
@@ -94,4 +98,14 @@ model Follows {
   following    Users    @relation("following", fields: [followingId], references: [id])
 
   @@unique([followingId, followedById])
+}
+
+model Midias {
+  id      Int    @id @default(autoincrement())
+  content Bytes
+  mime    String
+  ownerId Int
+  owner   Users  @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  postId  Int    @unique
+  post    Posts  @relation(fields: [postId], references: [id], onDelete: Cascade)
 }

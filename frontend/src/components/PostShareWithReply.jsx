@@ -2,12 +2,13 @@ import { formatDate } from "../utils/dateUtils";
 import UserPicture from "../components/UserPicture"
 import { PostType, USER_PICTURE_DEFAULT_SIZE } from "../utils/defaults"
 import { bookmarkPost, dislikePost, likePost, removeBookmarkPost, sharePost, unsharePost } from "../../api/requests";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import CompactPost from "./CompactPost";
 import ReplyDialog from "./ReplyDialog";
 import ShareWithComment from "./ShareWithReplyDialog";
 import ShareOrReplyDialog from "./ShareOrReplyDialog";
+import PostMidia from "./PostMidia";
 
 function PostShareWithReply({ user, data }) {
     const [postData, setPostData] = useState(data);
@@ -20,6 +21,7 @@ function PostShareWithReply({ user, data }) {
     const isReply = data.postType == PostType.REPLY;
     const isShare = data.postType == PostType.SHARE_REPLY;
     const hasShared = isShare ? postData.originalPost.replyPost.length : postData.replyPost.length;
+    const hasMidia = postData.hasMidia;
     // const isMeShare = data.postType == PostType.SHARE && data.author.id == user.id;
     const usePostData = isReply ? postData.originalPost : postData;
     const formatedDate = formatDate(postData.createdAt);
@@ -140,6 +142,19 @@ function PostShareWithReply({ user, data }) {
         navigate(`${originalPostData.author.username}/post/${originalPostData.id}`);
     }
 
+    useEffect(() => {
+        const handleEsc = (event) => {
+            if (event.key === 'Escape') {
+                handleCloseDialog(event);
+            }
+        };
+        window.addEventListener('keydown', handleEsc);
+
+        return () => {
+            window.removeEventListener('keydown', handleEsc);
+        };
+    }, []);
+
     console.log("postwithCOmment", postData)
 
     return (
@@ -154,6 +169,7 @@ function PostShareWithReply({ user, data }) {
                         </div>
                         <div className="post-content">
                             <textarea readOnly defaultValue={postData.content}></textarea>
+                            {hasMidia && <PostMidia postId={postData.id} />}
                         </div>
                         <CompactPost user={user} data={originalPostData} />
                         <div className="post-controls">
@@ -164,7 +180,7 @@ function PostShareWithReply({ user, data }) {
                                     </svg>
                                 </div>
                             </div>
-                            <div onClick={openShareOrReply}className={`share-control-button ${postData.replyPost.length ? "active" : ""}`}>
+                            <div onClick={openShareOrReply} className={`share-control-button ${postData.replyPost.length ? "active" : ""}`}>
                                 <div>
                                     <svg viewBox="0 0 24 24" aria-hidden="true"><g>
                                         <path d="M4.75 3.79l4.603 4.3-1.706 1.82L6 8.38v7.37c0 .97.784 1.75 1.75 1.75H13V20H7.75c-2.347 0-4.25-1.9-4.25-4.25V8.38L1.853 9.91.147 8.09l4.603-4.3zm11.5 2.71H11V4h5.25c2.347 0 4.25 1.9 4.25 4.25v7.37l1.647-1.53 1.706 1.82-4.603 4.3-4.603-4.3 1.706-1.82L18 15.62V8.25c0-.97-.784-1.75-1.75-1.75z"></path></g>

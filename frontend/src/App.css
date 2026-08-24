@@ -336,6 +336,7 @@ app-root {
     }
 
     input[type='submit'] {
+        margin-left: auto;
         align-self: flex-end;
         padding: 10px 20px;
         background-color: white;
@@ -346,6 +347,43 @@ app-root {
         border: none;
     }
 }
+
+.new-post-controls {
+        display: flex;
+        align-items: center;
+        margin-top: 10px;
+    width: 100%;
+
+
+        .midia-btn {
+            padding: 8px;
+            border-radius: 999px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            cursor: pointer;
+        }
+
+        .midia-btn:hover {
+            background-color: #1a1a1a;
+            transform: scale(1.1);
+            transition: transform 0.2s ease;
+
+            path {
+                fill: #b2bdc7;
+            }
+        }
+
+        svg {
+            width: 23px;
+            height: 23px;
+
+            path {
+                fill: #7b8289;
+            }
+        }
+    }
 
 .post {
     display: flex;
@@ -1208,27 +1246,27 @@ app-root {
         }
     }
 
-     textarea {
-            border: none;
-            background-color: transparent;
-            padding: 5px 0;
-            padding-right: 40px;
-            flex-grow: 1;
-            flex-shrink: 1;
-            color: var(--main-white-color);
-            font-family: sans-serif;
-            font-size: 14px;
-            resize: none;
-            field-sizing: content;
-            min-height: 1lh;
-            max-height: 5lh;
-        }
+    textarea {
+        border: none;
+        background-color: transparent;
+        padding: 5px 0;
+        padding-right: 40px;
+        flex-grow: 1;
+        flex-shrink: 1;
+        color: var(--main-white-color);
+        font-family: sans-serif;
+        font-size: 14px;
+        resize: none;
+        field-sizing: content;
+        min-height: 1lh;
+        max-height: 5lh;
+    }
 
-        textarea::placeholder {
-            color: var(--shadowed-text-color);
-            font-size: large;
-            font-family: Inter;
-        }
+    textarea::placeholder {
+        color: var(--shadowed-text-color);
+        font-size: large;
+        font-family: Inter;
+    }
 
     .new-reply {
         display: grid;
@@ -1258,13 +1296,12 @@ app-root {
 
 .dialog-actions {
     display: flex;
-    justify-content: flex-end;
     gap: 12px;
-
 }
 
 .dialog-confirm {
     align-self: flex-end;
+    margin-left: auto;
     padding: 10px 20px;
     background-color: white;
     border-radius: 95px;
@@ -1347,6 +1384,61 @@ app-root {
         color: var(--main-white-color);
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+dialog {
+    border: none;
+    border-radius: 10px;
+    position: absolute;
+    top: 20%;
+    left: 20%;
+    transform: translateX(20%);
+    margin: 0;
+    background-color: var(--secondary-background-color);
+}
+
+.modal-image {
+    width: 50vw;
+    height: 25vw;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: fill;
+    }
+}
+
+.midia {
+    width: 100%;
+    height: auto;
+    cursor: pointer;
+    margin-bottom: 5px;
+
+    border-radius: 15px;
+    border: 1px solid var(--main-border-color);
+    overflow: hidden;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: fill;
+    }
+}
+
+
+
 
 
 

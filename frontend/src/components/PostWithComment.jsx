@@ -135,7 +135,7 @@ function PostWithComment({ user, data }) {
 
     function handleReply(e, onOriginal) {
         e.stopPropagation();
-        handleCloseDialog();
+        handleCloseDialog(e);
         if (onOriginal) {
             setisOriginalPostDialogOpen(true);
         } else {

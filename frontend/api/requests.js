@@ -278,14 +278,14 @@ async function unfollowUser(userId) {
 
 
 
-async function makePost(postData, originalPostId) {
+async function makePost(postData) {
+    console.log("makingpost")
     try {
         const token = localStorage.getItem("token");
         const rawResponse = await fetch('http://localhost:3000/posts', {
             method: 'POST',
             headers: {
-                'Authorization': token,
-                'Content-type': 'application/x-www-form-urlencoded'
+                'Authorization': token
             },
             body: postData
         });
@@ -386,6 +386,27 @@ async function fetchPostById(postId) {
     }
 }
 
+async function fetchPostMidia(postId) {
+    try {
+        const token = localStorage.getItem("token");
+        const request = await fetch(`http://localhost:3000/posts/${postId}/midia`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': token
+            }
+        });
+        if (request.ok) {
+            const midia = await request.json();
+            return midia;
+        }
+    } catch (e) {
+        console.log(e);
+        throw e;
+    }
+}
+
 
 
 
@@ -448,15 +469,12 @@ async function fetchMyReplies() {
 }
 
 async function makeReply(data, postId) {
-    console.log(data, postId)
     try {
         const token = localStorage.getItem("token");
         const rawResponse = await fetch(`http://localhost:3000/posts/${postId}/replies`, {
             method: 'POST',
             headers: {
                 'Authorization': token,
-                'Accept': 'application/json',
-                'Content-type': 'application/json'
             },
             body: JSON.stringify(data)
         });
@@ -766,6 +784,7 @@ export {
     fetchUserBackground,
     fetchAllUsers,
     fetchUserByUsername,
+    fetchPostMidia,
 
     followUser,
     unfollowUser,

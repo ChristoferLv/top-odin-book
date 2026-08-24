@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import ReplyDialog from "./ReplyDialog";
 import ShareWithComment from "./ShareWithReplyDialog";
+import PostMidia from "./PostMidia";
 
 function CompactPost({ user, data }) {
     const [postData, setPostData] = useState(data);
@@ -16,6 +17,7 @@ function CompactPost({ user, data }) {
     const isReply = data.postType == PostType.REPLY;
     const isShare = data.postType == PostType.SHARE;
     const hasShared = isShare ? postData.originalPost.replyPost.length : postData.replyPost.length;
+    const hasMidia = postData.hasMidia;
     console.log("checking original", postData.originalPost)
     // const isMeShare = data.postType == PostType.SHARE && data.author.id == user.id;
     const usePostData = isShare ? postData.originalPost : postData;
@@ -133,6 +135,7 @@ function CompactPost({ user, data }) {
                 <div className="compact-post-body">
                     <div className="post-content">
                         <textarea readOnly defaultValue={usePostData.content}></textarea>
+                        {hasMidia && <PostMidia postId={postData.id} />}
                     </div>
                 </div>
             </div >
