@@ -11,16 +11,12 @@ import PostMidia from "./PostMidia";
 
 function Post({ user, data }) {
     const [postData, setPostData] = useState(data);
-    const [isMeShare, setIsMeShare] = useState(data.postType == PostType.SHARE && data.author.id == user.id);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
     const [isShareOrReplyOpen, setIsShareOrReplyOpen] = useState(false);
     const navigate = useNavigate();
-    const isReply = data.postType == PostType.REPLY;
     const isShare = data.postType == PostType.SHARE;
     const hasShared = postData.replyPost.length;
-    console.log("checking original", postData.originalPost)
-    // const isMeShare = data.postType == PostType.SHARE && data.author.id == user.id;
     const usePostData = isShare ? postData.originalPost : postData;
     const hasMidia = usePostData.hasMidia;
     const formatedDate = formatDate(postData.createdAt);
@@ -61,7 +57,6 @@ function Post({ user, data }) {
                 } else {
                     setPostData({ ...postData, replyPost: [] });
                 }
-                setIsMeShare(false);
             }
             return;
         }
@@ -73,7 +68,6 @@ function Post({ user, data }) {
             } else {
                 setPostData({ ...postData, replyPost: [{ id: result.data.id }] });
             }
-            setIsMeShare(true);
         }
     }
 
@@ -106,7 +100,6 @@ function Post({ user, data }) {
     };
 
     function openShareOrReply(e) {
-        console.log("called openshareorreply")
         e.stopPropagation();
         if (hasShared) {
             handleShare(e);
