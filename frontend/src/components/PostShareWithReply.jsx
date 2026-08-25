@@ -139,7 +139,7 @@ function PostShareWithReply({ user, data }) {
     }
 
     function handleSeePost() {
-        navigate(`${originalPostData.author.username}/post/${originalPostData.id}`);
+        navigate(`${postData.author.username}/post/${postData.id}`);
     }
 
     useEffect(() => {
@@ -159,7 +159,7 @@ function PostShareWithReply({ user, data }) {
 
     return (
         <>
-            <div className="post">
+            <div className="post" onClick={handleSeePost}>
                 <div className="post-body">
                     <UserPicture id={postData.author.id} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
                     <div className="post-data">

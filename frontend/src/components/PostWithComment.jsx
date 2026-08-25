@@ -167,8 +167,11 @@ function PostWithComment({ user, data }) {
         setIsShareOrReplyOpen(0);
     };
 
-    function handleSeePost() {
-        navigate(`${originalPostData.author.username}/post/${originalPostData.id}`);
+    function handleSeePost(onOriginal) {
+        if (onOriginal)
+            navigate(`${originalPostData.author.username}/post/${originalPostData.id}`);
+        else
+            navigate(`${postData.author.username}/post/${postData.id}`);
     }
 
     useEffect(() => {
@@ -189,8 +192,8 @@ function PostWithComment({ user, data }) {
 
     return (
         <>
-            <div className="post-with-comment" onClick={handleSeePost}>
-                <div className="original-post post">
+            <div className="post-with-comment">
+                <div className="original-post post" onClick={() => handleSeePost(true)}>
                     <div className="post-body">
                         <UserPicture id={originalPostData.author.id} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
                         <div className="post-data">
@@ -235,7 +238,7 @@ function PostWithComment({ user, data }) {
                     </div>
                     <div className="chain chain-bottom"></div>
                 </div>
-                <div className="replying-post post">
+                <div className="replying-post post" onClick={() => handleSeePost(false)}>
                     <div className="chain chain-top"></div>
                     {isShare && < div className="shared-header">
                         <div className="share-icon">

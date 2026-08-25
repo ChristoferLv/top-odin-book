@@ -105,7 +105,8 @@ function CompactPost({ user, data }) {
         setIsShareDialogOpen(true);
     }
 
-    function handleSeePost() {
+    function handleSeePost(e) {
+        e.stopPropagation();
         navigate(`/${usePostData.author.username}/post/${usePostData.id}`);
     }
 
