@@ -16,8 +16,8 @@ function Post({ user, data }) {
     const [isShareOrReplyOpen, setIsShareOrReplyOpen] = useState(false);
     const navigate = useNavigate();
     const isShare = data.postType == PostType.SHARE;
-    const hasShared = postData.replyPost.length;
     const usePostData = isShare ? postData.originalPost : postData;
+    const hasShared = usePostData.replyPost.length;
     const hasMidia = usePostData.hasMidia;
     const formatedDate = formatDate(postData.createdAt);
 
@@ -124,6 +124,11 @@ function Post({ user, data }) {
         navigate(`/${usePostData.author.username}/post/${usePostData.id}`);
     }
 
+    function handleSeeAuthor(e) {
+        e.stopPropagation();
+        navigate(`/${usePostData.author.username}`);
+    }
+
     useEffect(() => {
         const handleEsc = (event) => {
             if (event.key === 'Escape') {
@@ -152,9 +157,11 @@ function Post({ user, data }) {
                 </div>
                 }
                 <div className="post-body">
-                    <UserPicture id={usePostData.author.id} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
+                    <div className="pic-space" onClick={handleSeeAuthor}>
+                        <UserPicture id={usePostData.author.id} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
+                    </div>
                     <div className="post-data">
-                        <div className="post-head">
+                        <div className="post-head" onClick={handleSeeAuthor}>
                             <span>{usePostData.author.name}</span>
                             <span>@{usePostData.author.username} • {formatedDate}</span>
                         </div>

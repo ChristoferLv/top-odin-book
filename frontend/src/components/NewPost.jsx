@@ -30,8 +30,8 @@ function NewPost() {
         formData.append("picture", fileInputRef.current.files[0]);
         formData.append("content", postContent)
         // const check = Object.fromEntries(payload.entries());
-// return;
-        if (postContent.length < 1) {
+        // return;
+        if (postContent.length < 1 && fileInputRef.current.files[0].length == 0) {
             return;
         }
 
@@ -54,7 +54,7 @@ function NewPost() {
                         accept="image/*"
                         name="midia"
                         style={{ display: "none" }}
-                        // onChange={handleUploadImage}
+                    // onChange={handleUploadImage}
                     />
                     <textarea name="content" placeholder="What is happening?" onChange={handlePostContentChange} value={postContent}></textarea>
                     <div className="new-post-controls">

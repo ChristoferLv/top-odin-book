@@ -158,7 +158,6 @@ function PostWithComment({ user, data }) {
     }
 
     function handleCloseDialog(e) {
-        console.log("closing everythong");
         e.stopPropagation();
         setisOriginalPostDialogOpen(false);
         setisReplyPostDialogOpen(false);
@@ -172,6 +171,14 @@ function PostWithComment({ user, data }) {
             navigate(`${originalPostData.author.username}/post/${originalPostData.id}`);
         else
             navigate(`${postData.author.username}/post/${postData.id}`);
+    }
+
+    function handleSeeAuthor(e, onOriginal) {
+        e.stopPropagation();
+        if (onOriginal)
+            navigate(`/${originalPostData.author.username}`);
+        else
+            navigate(`/${postData.author.username}`);
     }
 
     useEffect(() => {
@@ -197,13 +204,13 @@ function PostWithComment({ user, data }) {
                     {/* <div className="chain"></div> */}
                     <div className="post-body">
                         <div className="left-side">
-                            <div className="picture-space">
+                            <div className="picture-space" onClick={(e) => {handleSeeAuthor(e, true)}}>
                                 <UserPicture id={originalPostData.author.id} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
                             </div>
                             <div className="chain"></div>
                         </div>
                         <div className="post-data">
-                            <div className="post-head">
+                            <div className="post-head" onClick={(e) => {handleSeeAuthor(e, true)}}>
                                 <span>{originalPostData.author.name}</span>
                                 <span>@{originalPostData.author.username} - {formatedDate}</span>
                             </div>
@@ -261,11 +268,11 @@ function PostWithComment({ user, data }) {
                         </div>
                         }
                         <div className="post-body">
-                            <div className="picture-space">
+                            <div className="picture-space" onClick={(e) => {handleSeeAuthor(e, false)}}>
                                 <UserPicture id={postData.author.id} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
                             </div>
                             <div className="post-data">
-                                <div className="post-head">
+                                <div className="post-head" onClick={(e) => {handleSeeAuthor(e, false)}}>
                                     <span>{postData.author.name}</span>
                                     <span>@{postData.author.username} - {formatedDate}</span>
                                 </div>
