@@ -702,34 +702,95 @@ app-root {
     border: none;
 }
 
-.post-with-comment .post {
-    position: relative;
-}
 
-.post-with-comment .pic-container {
-    z-index: 10;
+/* Make chain inspired on how twitter layout do*/
+.post-with-comment {
+    .left-side {
+        display: flex;
+        flex-direction: column;
+    }
 
+    .chain {
+        margin-left: auto;
+        margin-right: auto;
+        width: 2px;
+        flex-grow: 1;
+        /* height: 100%; */
+    }
 
-    .profile-pic {
-        outline: solid 4px black;
+    .replying-post-container {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .top-space {
+        display: flex;
+        flex-direction: row;
+        align-items: stretch;
+        flex-basis: auto;
+    }
+
+    .chain-box {
+        flex-basis: 68px;
+        flex-grow: 0;
+        margin-bottom: 2px;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .space {
+        padding-top: 12px;
+        flex-basis: 0px;
+        flex-grow: 1;
+    }
+
+    .replying-post {
+        padding-top: 0;
+    }
+
+    .replying-post .post-body {
+        padding-top: 0;
+    }
+
+    .originl-post {
+        padding-bottom: 0;
+    }
+
+    .original-post .post-body {
+        padding-bottom: 0;
     }
 }
 
 .chain {
     border-left: 3px solid #333639;
+    /* height: 100%; */
+}
+
+/* make chain with position absolute, alternative, só precisa de um div chain dentro de "original-post post"
+.post-with-comment .post {
+    position: relative;
+}
+
+.chain {
+    border-left: 3px solid #333639;
     position: absolute;
-    height: 50%;
+    height: 100%;
     left: 33px;
-}
+    top: 30px;
+} */
 
-.chain-top {
-    top: -25%;
-}
+.picture-space {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 
-.chain-bottom {
-    top: 45%;
+    .pic-container {
+        flex-grow: 0;
+        flex-shrink: 0;
+        flex-basis: 0;
+    }
 }
-
 
 .make-comment {
     display: flex;
