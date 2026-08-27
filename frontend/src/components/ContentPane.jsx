@@ -5,7 +5,7 @@ import { fetchAllPosts } from "../../api/requests";
 import { AuthContext } from "../AuthContext";
 
 function ContentPane() {
-        const { user, setUser } = useContext(AuthContext);
+    const { user, setUser } = useContext(AuthContext);
     const [postsList, setPostsList] = useState([]);
 
     useEffect(() => {
@@ -22,7 +22,7 @@ function ContentPane() {
     return (<>
         <div className="content-pane">
             <NewPost />
-            <PostsList postsList={postsList} user={user} onUserPage={false}/>
+            <PostsList postsList={postsList} user={user} onUserPage={false} />
         </div>
     </>)
 }
