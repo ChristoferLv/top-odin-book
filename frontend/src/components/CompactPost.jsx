@@ -138,7 +138,7 @@ function CompactPost({ user, data }) {
         <>
             <div className="compact-post" onClick={handleSeePost}>
                 <div className="compact-post-head" onClick={handleSeeAuthor}>
-                    <UserPicture id={usePostData.author.id} size={20} useBorder={false} />
+                    <UserPicture id={usePostData.author.id} size={20} useBorder={true} />
                     <span>{usePostData.author.name}</span>
                     <span>@{usePostData.author.username} • {formatedDate}</span>
                 </div>

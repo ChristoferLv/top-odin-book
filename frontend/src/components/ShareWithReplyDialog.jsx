@@ -122,7 +122,6 @@ function ShareWithComment({ isOpen, user, originalPost, onCancel, onConfirm }) {
                                 <img src={imageUrl} alt="" />
                             </div>}
                             <CompactPost data={originalPost} user={user} />
-
                         </div>
                         {/* <UserPicture id={originalPost.author.id} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
                         <div className="post-data">

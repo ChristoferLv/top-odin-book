@@ -13,7 +13,7 @@ function ReplyDialog({ isOpen, user, originalPost, onCancel, onConfirm }) {
     const fileInputRef = useRef(null);
 
     function handleReplyContentChange(e) {
-        if (e.target.value.length > 0 || fileInputRef.current.files[0].length > 0)
+        if (e.target.value.length > 0 || fileInputRef.current.files[0]?.length > 0)
             setIsActive(true);
         else
             setIsActive(false);
@@ -75,7 +75,7 @@ function ReplyDialog({ isOpen, user, originalPost, onCancel, onConfirm }) {
     return (
         <>
             <div onClick={onCancel} className="overlay">
-                <div onClick={preventClose} className='replie-dialog' role="alertdialog" aria-modal="true">
+                <div onClick={preventClose} className='reply-dialog' role="alertdialog" aria-modal="true">
                     <div className="dialog-header">
                         <button className='close-dialog' onClick={onCancel}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 20 20" fill="none">
@@ -83,9 +83,10 @@ function ReplyDialog({ isOpen, user, originalPost, onCancel, onConfirm }) {
                             </svg>
                         </button>
                     </div>
-                    <div className="post-body">
-                        <UserPicture id={originalPost.author.id} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
-                        <div className="post-data">
+                    <div className="reply-body">
+                        <di className="chain"></di>
+                        <UserPicture id={originalPost.author.id} size={USER_PICTURE_DEFAULT_SIZE} useBorder={true} />
+                        <div className="reply-content">
                             <div className="post-head">
                                 <span>{originalPost.author.name}</span>
                                 <span>@{originalPost.author.username} · {formatedDate}</span>
@@ -101,7 +102,7 @@ function ReplyDialog({ isOpen, user, originalPost, onCancel, onConfirm }) {
                     </div>
                     <div className="reply">
                         <div className="new-reply">
-                            <UserPicture id={user.id} size={USER_PICTURE_DEFAULT_SIZE} />
+                            <UserPicture id={user.id} size={USER_PICTURE_DEFAULT_SIZE} useBorder={true} />
                             <form>
                                 <input
                                     ref={fileInputRef}

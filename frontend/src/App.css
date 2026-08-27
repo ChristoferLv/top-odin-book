@@ -359,27 +359,27 @@ app-root {
 }
 
 .remove-picture {
-        position: absolute;
-        top: 5px;
-        right: 5px;
-        background-color: rgba(15, 20, 25, 0.75);
-        border: none;
-        color: #fdfdfe;
-        cursor: pointer;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 8px;
-        border-radius: 99px;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: rgba(15, 20, 25, 0.75);
+    border: none;
+    color: #fdfdfe;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8px;
+    border-radius: 99px;
 
-        svg {
-            display: block;
-        }
-
-        &:hover {
-            background-color: rgba(39, 44, 48, 0.75);
-        }
+    svg {
+        display: block;
     }
+
+    &:hover {
+        background-color: rgba(39, 44, 48, 0.75);
+    }
+}
 
 .new-post-controls {
     display: flex;
@@ -720,7 +720,7 @@ app-root {
             resize: none;
             field-sizing: content;
             word-break: break-all;
-        overflow-wrap: anywhere;
+            overflow-wrap: anywhere;
             font-family: inherit;
             font-size: inherit;
             font-weight: inherit;
@@ -1397,7 +1397,7 @@ app-root {
     }
 }
 
-.replie-dialog {
+.reply-dialog {
     background-color: var(--main-dialog-color);
     padding: 15px;
     border-radius: 8px;
@@ -1416,10 +1416,28 @@ app-root {
     }
 
     .reply-body {
+        position: relative;
         display: flex;
         border: none;
         padding-left: 0;
         width: 100%;
+    }
+
+    .chain {
+        border-left: 3px solid #333639;
+        position: absolute;
+        height: 100%;
+        left: 18px;
+        top: 30px;
+    }
+
+    .pic-container{
+        z-index: 1;
+    }
+
+    .pic-border {
+        z-index: 1;
+        outline: 4px solid #141414;
     }
 
     .midia {
@@ -1466,17 +1484,24 @@ app-root {
     }
 
     .new-reply {
-        /* display: grid;
-        grid-template-columns: 5fr 90fr;
-        gap: 0 10px; */
-        padding-bottom: 10px;
-        padding-top: 10px;
+        margin-top: 20px;
+        display: flex;
+        border: none;
+        padding-left: 0;
+        width: 100%;
 
         form {
             display: flex;
             flex-direction: column;
+            gap: 15px 0;
+            width: 100%;
+            margin-left: 10px;
         }
     }
+
+
+
+
 }
 
 
