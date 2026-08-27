@@ -43,7 +43,12 @@ function SeeingPicturePage() {
             setMime(midia.data.mime);
         }
         getMidia();
-    }, []);
+        return () => {
+            setMidia(null);
+            setMime(null);
+            setPostData(null);
+        }
+    }, [location.pathname]);
 
 
     const fetchReplies = useCallback(async () => {

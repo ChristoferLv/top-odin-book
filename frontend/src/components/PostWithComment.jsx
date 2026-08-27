@@ -181,6 +181,13 @@ function PostWithComment({ user, data }) {
             navigate(`/${postData.author.username}`);
     }
 
+    function goToPicturePage(e, onOriginal) {
+        if (onOriginal)
+            navigate(`/${originalPostData.author.username}/post/${originalPostData.id}/photo`);
+        else
+            navigate(`/${postData.author.username}/post/${postData.id}/photo`);
+    }
+
     useEffect(() => {
         const handleEsc = (event) => {
             if (event.key === 'Escape') {
@@ -204,19 +211,19 @@ function PostWithComment({ user, data }) {
                     {/* <div className="chain"></div> */}
                     <div className="post-body">
                         <div className="left-side">
-                            <div className="picture-space" onClick={(e) => {handleSeeAuthor(e, true)}}>
+                            <div className="picture-space" onClick={(e) => { handleSeeAuthor(e, true) }}>
                                 <UserPicture id={originalPostData.author.id} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
                             </div>
                             <div className="chain"></div>
                         </div>
                         <div className="post-data">
-                            <div className="post-head" onClick={(e) => {handleSeeAuthor(e, true)}}>
+                            <div className="post-head" onClick={(e) => { handleSeeAuthor(e, true) }}>
                                 <span>{originalPostData.author.name}</span>
                                 <span>@{originalPostData.author.username} - {formatedDate}</span>
                             </div>
                             <div className="post-content">
                                 <textarea readOnly defaultValue={originalPostData.content}></textarea>
-                                {originalHasMidia && <PostMidia postId={originalPostData.id} />}
+                                {originalHasMidia && <PostMidia postId={originalPostData.id} seePhoto={(e) => goToPicturePage(e, true)} />}
                             </div>
                             <div className="post-controls">
                                 <div onClick={(e) => handleReply(e, true)} className="comment-control-button">
@@ -268,17 +275,17 @@ function PostWithComment({ user, data }) {
                         </div>
                         }
                         <div className="post-body">
-                            <div className="picture-space" onClick={(e) => {handleSeeAuthor(e, false)}}>
+                            <div className="picture-space" onClick={(e) => { handleSeeAuthor(e, false) }}>
                                 <UserPicture id={postData.author.id} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
                             </div>
                             <div className="post-data">
-                                <div className="post-head" onClick={(e) => {handleSeeAuthor(e, false)}}>
+                                <div className="post-head" onClick={(e) => { handleSeeAuthor(e, false) }}>
                                     <span>{postData.author.name}</span>
                                     <span>@{postData.author.username} - {formatedDate}</span>
                                 </div>
                                 <div className="post-content">
                                     <textarea readOnly defaultValue={postData.content}></textarea>
-                                    {replyHasMidia && <PostMidia postId={postData.id} />}
+                                    {replyHasMidia && <PostMidia postId={postData.id} seePhoto={(e) => goToPicturePage(e, false)} />}
                                 </div>
                                 <div className="post-controls">
                                     <div onClick={(e) => handleReply(e, false)} className="comment-control-button">

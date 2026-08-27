@@ -115,6 +115,10 @@ function CompactPost({ user, data }) {
         navigate(`/${usePostData.author.username}`);
     }
 
+    function goToPicturePage() {
+        navigate(`/${usePostData.author.username}/post/${usePostData.id}/photo`);
+    }
+
     useEffect(() => {
         const handleEsc = (event) => {
             if (event.key === 'Escape') {
@@ -141,7 +145,7 @@ function CompactPost({ user, data }) {
                 <div className="compact-post-body">
                     <div className="post-content">
                         <textarea readOnly defaultValue={usePostData.content}></textarea>
-                        {hasMidia && <PostMidia postId={postData.id} />}
+                        {hasMidia && <PostMidia postId={postData.id} seePhoto={goToPicturePage} />}
                     </div>
                 </div>
             </div >

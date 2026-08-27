@@ -129,6 +129,10 @@ function Post({ user, data }) {
         navigate(`/${usePostData.author.username}`);
     }
 
+    function goToPicturePage() {
+        navigate(`/${usePostData.author.username}/post/${usePostData.id}/photo`);
+    }
+
     useEffect(() => {
         const handleEsc = (event) => {
             if (event.key === 'Escape') {
@@ -168,7 +172,7 @@ function Post({ user, data }) {
                         {/* {isReply && <div><p>Original post: {usePostData.originalPostId}</p></div>} */}
                         <div className="post-content">
                             <textarea readOnly defaultValue={usePostData.content}></textarea>
-                            {hasMidia && <PostMidia postId={usePostData.id} />}
+                            {hasMidia && <PostMidia postId={usePostData.id} seePhoto={goToPicturePage} />}
                         </div>
                         <div className="post-controls">
                             <div onClick={handleReply} className="comment-control-button">

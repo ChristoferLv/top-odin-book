@@ -307,29 +307,6 @@ app-root {
         position: relative;
     }
 
-    .remove-picture {
-        position: absolute;
-        top: 5px;
-        right: 5px;
-        background-color: rgba(15, 20, 25, 0.75);
-        border: none;
-        color: #fdfdfe;
-        cursor: pointer;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 8px;
-        border-radius: 99px;
-
-        svg {
-            display: block;
-        }
-
-        &:hover {
-            background-color: rgba(39, 44, 48, 0.75);
-        }
-    }
-
     form {
         display: flex;
         flex-direction: column;
@@ -340,7 +317,6 @@ app-root {
         background-color: transparent;
         padding: 12px 0;
         /* padding-left: 25px; */
-        padding-right: 40px;
         flex-grow: 1;
         flex-shrink: 1;
         color: white;
@@ -348,6 +324,8 @@ app-root {
         font-size: large;
         resize: none;
         field-sizing: content;
+        word-break: break-all;
+        overflow-wrap: anywhere;
         min-height: 1lh;
         max-height: 5lh;
     }
@@ -379,6 +357,29 @@ app-root {
         background-color: rgb(215, 219, 220);
     }
 }
+
+.remove-picture {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background-color: rgba(15, 20, 25, 0.75);
+        border: none;
+        color: #fdfdfe;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 8px;
+        border-radius: 99px;
+
+        svg {
+            display: block;
+        }
+
+        &:hover {
+            background-color: rgba(39, 44, 48, 0.75);
+        }
+    }
 
 .new-post-controls {
     display: flex;
@@ -439,6 +440,8 @@ app-root {
         outline: none;
         resize: none;
         field-sizing: content;
+        word-break: break-all;
+        overflow-wrap: anywhere;
         font-family: inherit;
         font-size: inherit;
         font-weight: inherit;
@@ -594,7 +597,7 @@ app-root {
 .compact-post {
     display: flex;
     flex-direction: column;
-
+    /* width: 100%; */
     padding: 10px;
     margin-top: 5px;
 
@@ -622,6 +625,8 @@ app-root {
         outline: none;
         resize: none;
         field-sizing: content;
+        word-break: break-all;
+        overflow-wrap: anywhere;
         font-family: inherit;
         font-size: inherit;
         font-weight: inherit;
@@ -714,6 +719,8 @@ app-root {
             outline: none;
             resize: none;
             field-sizing: content;
+            word-break: break-all;
+        overflow-wrap: anywhere;
             font-family: inherit;
             font-size: inherit;
             font-weight: inherit;
@@ -842,6 +849,8 @@ app-root {
         font-size: large;
         resize: none;
         field-sizing: content;
+        word-break: break-all;
+        overflow-wrap: anywhere;
         min-height: 1lh;
     }
 
@@ -1306,12 +1315,14 @@ app-root {
 }
 
 
-.replie-dialog {
+.share-replie-dialog {
     background-color: var(--main-dialog-color);
     padding: 15px;
     border-radius: 8px;
     width: 40%;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
 
     .dialog-header {
         margin-bottom: 15px;
@@ -1322,11 +1333,20 @@ app-root {
         }
     }
 
-
-
-    .post-body {
+    .reply-body {
+        display: flex;
         border: none;
         padding-left: 0;
+        width: 100%;
+    }
+
+    .midia {
+        position: relative;
+    }
+
+    .reply-content {
+        width: 100%;
+        margin-left: 10px;
     }
 
     .repliying-to {
@@ -1344,14 +1364,15 @@ app-root {
         border: none;
         background-color: transparent;
         padding: 5px 0;
-        padding-right: 40px;
         flex-grow: 1;
         flex-shrink: 1;
         color: var(--main-white-color);
         font-family: sans-serif;
-        font-size: 14px;
+        font-size: large;
         resize: none;
         field-sizing: content;
+        word-break: break-all;
+        overflow-wrap: anywhere;
         min-height: 1lh;
         max-height: 5lh;
     }
@@ -1363,12 +1384,93 @@ app-root {
     }
 
     .new-reply {
-        display: grid;
+        /* display: grid;
         grid-template-columns: 5fr 90fr;
-        gap: 0 10px;
+        gap: 0 10px; */
         padding-bottom: 10px;
         padding-top: 10px;
-        padding-right: 15px;
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+    }
+}
+
+.replie-dialog {
+    background-color: var(--main-dialog-color);
+    padding: 15px;
+    border-radius: 8px;
+    width: 40%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+
+    .dialog-header {
+        margin-bottom: 15px;
+
+        button {
+            width: 20px;
+            height: 20px;
+        }
+    }
+
+    .reply-body {
+        display: flex;
+        border: none;
+        padding-left: 0;
+        width: 100%;
+    }
+
+    .midia {
+        position: relative;
+    }
+
+    .reply-content {
+        width: 100%;
+        margin-left: 10px;
+    }
+
+    .repliying-to {
+        font-family: Inter;
+        font-size: 14px;
+        margin-top: 10px;
+        color: var(--shadowed-text-color);
+
+        span:nth-of-type(2) {
+            color: #1d9bf0;
+        }
+    }
+
+    textarea {
+        border: none;
+        background-color: transparent;
+        padding: 5px 0;
+        flex-grow: 1;
+        flex-shrink: 1;
+        color: var(--main-white-color);
+        font-family: sans-serif;
+        font-size: large;
+        resize: none;
+        field-sizing: content;
+        word-break: break-all;
+        overflow-wrap: anywhere;
+        min-height: 1lh;
+        max-height: 5lh;
+    }
+
+    textarea::placeholder {
+        color: var(--shadowed-text-color);
+        font-size: large;
+        font-family: Inter;
+    }
+
+    .new-reply {
+        /* display: grid;
+        grid-template-columns: 5fr 90fr;
+        gap: 0 10px; */
+        padding-bottom: 10px;
+        padding-top: 10px;
 
         form {
             display: flex;
@@ -1492,7 +1594,7 @@ app-root {
 
 
 
-dialog {
+.picture-dialog {
     border: none;
     border-radius: 10px;
     position: absolute;
@@ -1773,6 +1875,8 @@ dialog {
             font-size: large;
             resize: none;
             field-sizing: content;
+            word-break: break-all;
+            overflow-wrap: anywhere;
             min-height: 1lh;
             max-height: 5lh;
         }
