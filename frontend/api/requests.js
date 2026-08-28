@@ -217,6 +217,26 @@ async function fetchUserByUsername(username) {
     }
 }
 
+async function searchUsers(searchParam) {
+    try {
+        const token = localStorage.getItem("token");
+        const request = await fetch('http://localhost:3000/users/search?q=' + searchParam, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': token
+            }
+        });
+        if (request.ok) {
+            const result = await request.json();
+            return result;
+        }
+    } catch (e) {
+        console.log(e);
+        throw e;
+    }
+}
 
 async function followUser(userId) {
     console.log("follow user")
@@ -385,6 +405,27 @@ async function fetchPostById(postId) {
         return null;
     }
 }
+
+async function searchPosts(searchParam) {
+    const token = localStorage.getItem("token");
+    const rawResponse = await fetch('http://localhost:3000/posts/search?q=' + searchParam, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': token
+        }
+    });
+    if (rawResponse.ok) {
+        const response = await rawResponse.json();
+        if (response && response.success) {
+            return response;
+        }
+    } else {
+        return null;
+    }
+}
+
 
 async function fetchPostMidia(postId) {
     try {
@@ -784,6 +825,7 @@ export {
     fetchUserBackground,
     fetchAllUsers,
     fetchUserByUsername,
+    searchUsers,
     fetchPostMidia,
 
     followUser,
@@ -794,6 +836,7 @@ export {
     fetchPostsByUserId,
     fetchMyPosts,
     fetchPostById,
+    searchPosts,
 
     fetchRepliesByUserId,
     fetchMyReplies,

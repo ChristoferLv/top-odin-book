@@ -293,7 +293,69 @@ async function getPostMidia(req, res) {
     }
 }
 
+async function searchPosts(req, res) {
+    try {
+        const userId = req.user.id;
+        const searchTerm = req.query.q;
+        let condition = {};
+        let order = [{ likes: { _count: "desc" }}, {createdAt: "desc" }];
+        if (searchTerm.length > 0) {
+            condition = { content: { contains: searchTerm, mode: "insensitive" } };
+            order = [{ createdAt: "desc" }];
+        }
 
+        const result = await prisma.posts.findMany({
+            where: condition,
+            include:
+            {
+                author: {
+                    omit:
+                    {
+                        password: true,
+                        picture: true,
+                        mime: true,
+                        background: true,
+                        bgmime: true,
+                        createdAt: true
+                    }
+                },
+                midia: false,
+                originalPost: {
+                    include: {
+                        author: {
+                            omit:
+                            {
+                                password: true,
+                                picture: true,
+                                mime: true,
+                                background: true,
+                                bgmime: true,
+                                createdAt: true
+                            }
+                        },
+                        likes: { where: { whoLikedId: userId }, select: { id: true } },
+                        bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } },
+                        replyPost: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } },
+                        midia: false
+                    }
+                },
+                likes: { where: { whoLikedId: userId }, select: { id: true } },
+                bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } },
+                replyPost: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } }
+            },
+            orderBy: order
+        });
+
+        if (!result) {
+            return res.status(500).send({ success: false });
+        }
+
+        return res.send({ success: true, data: result });
+    } catch (e) {
+        console.log(e);
+        throw e;
+    }
+}
 
 
 
@@ -1127,6 +1189,7 @@ export {
     updatePost,
     deletePost,
     getPostMidia,
+    searchPosts,
 
     getLikedPosts,
     likePost,

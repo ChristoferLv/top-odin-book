@@ -18,7 +18,6 @@ function CompactPost({ user, data }) {
     const isShare = data.postType == PostType.SHARE;
     const hasShared = isShare ? postData.originalPost.replyPost.length : postData.replyPost.length;
     const hasMidia = postData.hasMidia;
-    console.log("checking original", postData.originalPost)
     // const isMeShare = data.postType == PostType.SHARE && data.author.id == user.id;
     const usePostData = isShare ? postData.originalPost : postData;
     const formatedDate = formatDate(postData.createdAt);
@@ -131,8 +130,6 @@ function CompactPost({ user, data }) {
             window.removeEventListener('keydown', handleEsc);
         };
     }, []);
-
-    console.log("postdata", usePostData)
 
     return (
         <>

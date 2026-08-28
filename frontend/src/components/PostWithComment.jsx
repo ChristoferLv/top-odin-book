@@ -202,8 +202,6 @@ function PostWithComment({ user, data }) {
         };
     }, []);
 
-    console.log("postwithCOmment", postData)
-
     return (
         <>
             <div className="post-with-comment">

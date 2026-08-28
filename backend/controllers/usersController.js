@@ -34,7 +34,7 @@ async function getUserByUsername(req, res) {
                 name: true,
                 bio: true,
                 createdAt: true,
-                following: { select: { id:true}, where: { followedById: req.user.id } },
+                following: { select: { id: true }, where: { followedById: req.user.id } },
                 _count: {
                     /*Here what it is counting is the number of entries on the tabble "Follows" 
                         where the number of following is the id of the current user got on where
@@ -78,6 +78,33 @@ async function getUserById(req, res) {
             return res.status(200).send({ success: false, data: null })
 
         res.status(200).send({ success: true, data: user });
+    } catch (e) {
+        console.log(e);
+    }
+}
+
+async function searchUsers(req, res) {
+    const userId = req.user.id;
+    const searchTerm = req.query.q;
+
+    try {
+        const users = await prisma.users.findMany({
+            where: {
+                NOT: { id: userId },
+                OR: [
+                    { username: { contains: searchTerm, mode: "insensitive" } },
+                    { name: { contains: searchTerm, mode: "insensitive" } }
+                ]
+            },
+            select: {
+                id: true,
+                username: true,
+                name: true,
+                following: { where: { followedById: userId, }, select: { id: true } }
+            }
+        });
+
+        res.status(200).send({ success: true, data: users });
     } catch (e) {
         console.log(e);
     }
@@ -270,6 +297,7 @@ export {
     getAllUsers,
     getUserByUsername,
     getUserById,
+    searchUsers,
     updateUserProfile,
     followUser,
     unfollowUser,

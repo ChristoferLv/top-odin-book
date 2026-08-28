@@ -155,8 +155,6 @@ function PostShareWithReply({ user, data }) {
         };
     }, []);
 
-    console.log("postwithCOmment", postData)
-
     return (
         <>
             <div className="post" onClick={handleSeePost}>

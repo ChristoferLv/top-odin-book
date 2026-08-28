@@ -1,9 +1,11 @@
 import { useContext, useEffect, useState } from "react";
 import NewPost from "./NewPost";
 import PostsList from "./PostsList";
-import { fetchAllPosts } from "../../api/requests";
+import { fetchAllPosts, searchPosts, searchUsers } from "../../api/requests";
 import { AuthContext } from "../AuthContext";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate, useSearchParams } from "react-router";
+import UsersList from "./UsersList";
+
 
 function SearchPane() {
     const SearchOptions = Object.freeze({
@@ -12,13 +14,20 @@ function SearchPane() {
     });
 
     const { user, setUser } = useContext(AuthContext);
+    const location = useLocation();
     const navigate = useNavigate();
-    const [searchOption, setSearchOption] = useState(SearchOptions.POSTS);
+    const [searchParams, setSearchParams] = useSearchParams();
+    // const [searchOption, setSearchOption] = useState(SearchOptions.POSTS);
     const [searchTerm, setSearchTerm] = useState("");
     const [postsList, setPostsList] = useState([]);
+    let searchOption = SearchOptions.POSTS;
+    if (searchParams.get("f") == "people") searchOption = SearchOptions.PEOPLE;
 
-    function handleCHangePostOption(option) {
-        setSearchOption(option);
+    function handleChangeSearchOption(option) {
+        if (option == searchOption) return;
+        setPostsList([]);
+        // setSearchOption(option);
+        setSearchParams({ q: searchTerm, f: option.toLowerCase() });
     }
 
     function handleSearchTerm(e) {
@@ -27,20 +36,54 @@ function SearchPane() {
 
     function handleSearch(e) {
         e.preventDefault();
+        if (searchTerm.length == 0) return;
+        if (searchOption == SearchOptions.POSTS) {
+            setSearchParams({ q: searchTerm, f: "posts" });
+        } else {
+            setSearchParams({ q: searchTerm, f: "users" });
+        }
     }
 
     useEffect(() => {
-        async function getPosts() {
-            const result = await fetchAllPosts();
+        // const f = searchParams.get("f");
+        // const q = searchParams.get("q");
+        // if (!f || (f != "posts" && f != "users") || !q)
+        //     setSearchParams({});
+        // if (f == "users") {
+        //     // setSearchOption(SearchOptions.PEOPLE);
+        // }
+    }, [location.search]);
+
+    useEffect(() => {
+        async function getPosts(searchTerm) {
+            const result = await searchPosts(searchTerm);
             if (result && result.success) {
                 setPostsList(result.data)
             }
         }
 
-        getPosts();
-    }, []);
+        async function getUsers() {
+            const result = await searchUsers(searchParams.get("q"));
+            if (result && result.success) {
+                setPostsList(result.data)
+            }
+        }
 
-    console.log(searchOption == SearchOptions.POSTS)
+        if (searchParams.get("f") == "people") {
+            console.log("here")
+            getUsers();
+        }
+        if (!searchParams.get("f") || searchParams.get("f") == "posts") {
+            if (!searchParams.get("q")) {
+                getPosts("");
+            } else {
+                getPosts(searchParams.get("q"));
+            }
+        }
+
+        return () => { setPostsList([]) }
+
+    }, [location.pathname + location.search]);
 
     return (<>
         <div className="search-pane">
@@ -56,21 +99,21 @@ function SearchPane() {
                     </div>
                     <div className="search-field">
                         <div className="search-icon">
-                            <svg viewBox="0 0 24 24" aria-hidden="true" class="r-4qtqp9 r-yyyyoo r-dnmrzs r-bnwqim r-lrvibr r-m6rgpd r-1tjplnt r-1bwzh9t r-10ptun7 r-2dysd3 r-1janqcz"><g><path d="M10.25 3.75c-3.59 0-6.5 2.91-6.5 6.5s2.91 6.5 6.5 6.5c1.795 0 3.419-.726 4.596-1.904 1.178-1.177 1.904-2.801 1.904-4.596 0-3.59-2.91-6.5-6.5-6.5zm-8.5 6.5c0-4.694 3.806-8.5 8.5-8.5s8.5 3.806 8.5 8.5c0 1.986-.682 3.815-1.824 5.262l4.781 4.781-1.414 1.414-4.781-4.781c-1.447 1.142-3.276 1.824-5.262 1.824-4.694 0-8.5-3.806-8.5-8.5z"></path></g></svg>
+                            <svg viewBox="0 0 24 24" aria-hidden="true" className="r-4qtqp9 r-yyyyoo r-dnmrzs r-bnwqim r-lrvibr r-m6rgpd r-1tjplnt r-1bwzh9t r-10ptun7 r-2dysd3 r-1janqcz"><g><path d="M10.25 3.75c-3.59 0-6.5 2.91-6.5 6.5s2.91 6.5 6.5 6.5c1.795 0 3.419-.726 4.596-1.904 1.178-1.177 1.904-2.801 1.904-4.596 0-3.59-2.91-6.5-6.5-6.5zm-8.5 6.5c0-4.694 3.806-8.5 8.5-8.5s8.5 3.806 8.5 8.5c0 1.986-.682 3.815-1.824 5.262l4.781 4.781-1.414 1.414-4.781-4.781c-1.447 1.142-3.276 1.824-5.262 1.824-4.694 0-8.5-3.806-8.5-8.5z"></path></g></svg>
                         </div>
-                        <form action="">
+                        <form action="" onSubmit={handleSearch}>
                             <input type="text" placeholder="Search" value={searchTerm} onChange={handleSearchTerm} />
                         </form>
                     </div>
                 </div>
                 <div className="search-options">
-                    <div className={`search-option-btn ${searchOption == SearchOptions.POSTS ? "active" : ""}`} onClick={(e) => handleCHangePostOption(SearchOptions.POSTS)}>
+                    <div className={`search-option-btn ${searchOption == SearchOptions.POSTS ? "active" : ""}`} onClick={(e) => handleChangeSearchOption(SearchOptions.POSTS)}>
                         <div className="search-option-content">
                             <span>Posts</span>
                             <div className={`option-indicator ${searchOption == SearchOptions.POSTS ? "active" : ""}`}></div>
                         </div>
                     </div>
-                    <div className={`search-option-btn ${searchOption == SearchOptions.PEOPLE ? "active" : ""}`} onClick={(e) => handleCHangePostOption(SearchOptions.PEOPLE)}>
+                    <div className={`search-option-btn ${searchOption == SearchOptions.PEOPLE ? "active" : ""}`} onClick={(e) => handleChangeSearchOption(SearchOptions.PEOPLE)}>
                         <div className="search-option-content">
                             <span>People</span>
                             <div className={`option-indicator ${searchOption == SearchOptions.PEOPLE ? "active" : ""}`}></div>
@@ -78,7 +121,8 @@ function SearchPane() {
                     </div>
                 </div>
             </div>
-            <PostsList postsList={postsList} user={user} onUserPage={false} />
+            {postsList.length != 0 && searchOption == SearchOptions.POSTS && <PostsList postsList={postsList} user={user} onUserPage={false} />}
+            {postsList.length != 0 && searchOption == SearchOptions.PEOPLE && <UsersList usersList={postsList} />}
         </div >
     </>)
 }

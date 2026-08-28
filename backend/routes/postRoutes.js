@@ -1,7 +1,7 @@
 import Router from 'express';
 import { passport } from "../authUtils.js"
 import { checkUser } from '../utils.js';
-import { bookmarkPost, deletePost, deleteReplie, getAllPosts, getBookmarkedPosts, getLikedPosts, getMyReplies, getPostById, getPostMidia, getRepliesOfPost, getSharedPosts, likePost, makePost, makeReply, removeLike, removePostBookmark, removeShare, sharePost, updatePost } from '../controllers/postController.js';
+import { bookmarkPost, deletePost, deleteReplie, getAllPosts, getBookmarkedPosts, getLikedPosts, getMyReplies, getPostById, getPostMidia, getRepliesOfPost, getSharedPosts, likePost, makePost, makeReply, removeLike, removePostBookmark, removeShare, searchPosts, sharePost, updatePost } from '../controllers/postController.js';
 import multer from 'multer';
 
 const postRouter = Router();
@@ -28,12 +28,13 @@ postRouter.get("/bookmarks", passport.authenticate('jwt', { session: false }), c
 postRouter.post("/:postId/bookmarks", passport.authenticate('jwt', { session: false }), checkUser, bookmarkPost);
 postRouter.delete("/:postId/bookmarks", passport.authenticate('jwt', { session: false }), checkUser, removePostBookmark);
 
-postRouter.post("/", upload.single("picture"), passport.authenticate('jwt', { session: false }), checkUser, makePost);
-postRouter.get("/", passport.authenticate('jwt', { session: false }), checkUser, getAllPosts);
+postRouter.get("/search", passport.authenticate('jwt', { session: false }), searchPosts);
+postRouter.get("/:postId/midia", passport.authenticate('jwt', { session: false }), getPostMidia);
 postRouter.get("/:postId", passport.authenticate('jwt', { session: false }), getPostById);
 postRouter.put("/:postId", checkUser, updatePost);
 postRouter.delete("/:postId", checkUser, deletePost);
-postRouter.get("/:postId/midia", passport.authenticate('jwt', { session: false }), getPostMidia);
+postRouter.post("/", upload.single("picture"), passport.authenticate('jwt', { session: false }), checkUser, makePost);
+postRouter.get("/", passport.authenticate('jwt', { session: false }), checkUser, getAllPosts);
 
 
 export default postRouter;

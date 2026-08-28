@@ -146,7 +146,6 @@ function Post({ user, data }) {
         };
     }, []);
 
-    console.log("postdata", usePostData)
 
     return (
         <>
