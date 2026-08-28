@@ -217,7 +217,7 @@ async function fetchUserByUsername(username) {
     }
 }
 
-async function searchUsers(searchParam) {
+async function searchUsers(searchParam, signal) {
     try {
         const token = localStorage.getItem("token");
         const request = await fetch('http://localhost:3000/users/search?q=' + searchParam, {
@@ -226,7 +226,8 @@ async function searchUsers(searchParam) {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
                 'Authorization': token
-            }
+            },
+            signal: signal
         });
         if (request.ok) {
             const result = await request.json();
@@ -406,23 +407,28 @@ async function fetchPostById(postId) {
     }
 }
 
-async function searchPosts(searchParam) {
-    const token = localStorage.getItem("token");
-    const rawResponse = await fetch('http://localhost:3000/posts/search?q=' + searchParam, {
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': token
+async function searchPosts(searchParam, signal) {
+    try {
+        const token = localStorage.getItem("token");
+        const rawResponse = await fetch('http://localhost:3000/posts/search?q=' + searchParam, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': token
+            },
+            signal: signal
+        });
+        if (rawResponse.ok) {
+            const response = await rawResponse.json();
+            if (response && response.success) {
+                return response;
+            }
+        } else {
+            return null;
         }
-    });
-    if (rawResponse.ok) {
-        const response = await rawResponse.json();
-        if (response && response.success) {
-            return response;
-        }
-    } else {
-        return null;
+    } catch (e) {
+        console.log(e)
     }
 }
 

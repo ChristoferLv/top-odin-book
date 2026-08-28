@@ -20,12 +20,14 @@ function SearchPane() {
     // const [searchOption, setSearchOption] = useState(SearchOptions.POSTS);
     const [searchTerm, setSearchTerm] = useState("");
     const [postsList, setPostsList] = useState([]);
+    const [usersList, setUsersList] = useState([]);
     let searchOption = SearchOptions.POSTS;
     if (searchParams.get("f") == "people") searchOption = SearchOptions.PEOPLE;
 
     function handleChangeSearchOption(option) {
         if (option == searchOption) return;
         setPostsList([]);
+        setUsersList([]);
         // setSearchOption(option);
         setSearchParams({ q: searchTerm, f: option.toLowerCase() });
     }
@@ -55,25 +57,36 @@ function SearchPane() {
     }, [location.search]);
 
     useEffect(() => {
+        const controller = new AbortController();
+
         async function getPosts(searchTerm) {
-            const result = await searchPosts(searchTerm);
-            if (result && result.success) {
-                setPostsList(result.data)
+            try {
+                const result = await searchPosts(searchTerm, controller.signal);
+                if (result && result.success) {
+                    setPostsList(result.data)
+                }
+            } catch (e) {
+                if (controller.signal.aborted)
+                    return;
             }
         }
 
         async function getUsers() {
-            const result = await searchUsers(searchParams.get("q"));
-            if (result && result.success) {
-                setPostsList(result.data)
+            try {
+                const result = await searchUsers(searchParams.get("q"), controller.signal);
+                if (result && result.success) {
+                    setUsersList(result.data)
+                }
+            } catch (e) {
+                if (controller.signal.aborted)
+                    return;
             }
         }
 
         if (searchParams.get("f") == "people") {
             console.log("here")
             getUsers();
-        }
-        if (!searchParams.get("f") || searchParams.get("f") == "posts") {
+        } else if (!searchParams.get("f") || searchParams.get("f") == "posts") {
             if (!searchParams.get("q")) {
                 getPosts("");
             } else {
@@ -81,7 +94,7 @@ function SearchPane() {
             }
         }
 
-        return () => { setPostsList([]) }
+        return () => { setPostsList([]); setUsersList([]); controller.abort("cancel"); }
 
     }, [location.pathname + location.search]);
 
@@ -122,7 +135,7 @@ function SearchPane() {
                 </div>
             </div>
             {postsList.length != 0 && searchOption == SearchOptions.POSTS && <PostsList postsList={postsList} user={user} onUserPage={false} />}
-            {postsList.length != 0 && searchOption == SearchOptions.PEOPLE && <UsersList usersList={postsList} />}
+            {usersList.length != 0 && searchOption == SearchOptions.PEOPLE && <UsersList usersList={usersList} />}
         </div >
     </>)
 }

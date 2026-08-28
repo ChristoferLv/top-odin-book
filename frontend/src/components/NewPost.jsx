@@ -111,7 +111,7 @@ function NewPost() {
                 closeModal={handleCloseModal}
             >
                 <div className="modal-image">
-                    <img src={imageUrl} alt="" />
+                    {imageUrl != "" && <img src={imageUrl} alt="" />}
                 </div>
             </PictureDialog >
         </>
