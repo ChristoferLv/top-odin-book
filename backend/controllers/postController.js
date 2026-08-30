@@ -298,7 +298,7 @@ async function searchPosts(req, res) {
         const userId = req.user.id;
         const searchTerm = req.query.q;
         let condition = {};
-        let order = [{ likes: { _count: "desc" }}, {createdAt: "desc" }];
+        let order = [{ likes: { _count: "desc" } }, { createdAt: "desc" }];
         if (searchTerm.length > 0) {
             condition = { content: { contains: searchTerm, mode: "insensitive" } };
             order = [{ createdAt: "desc" }];
@@ -934,6 +934,7 @@ async function makeReply(req, res) {
         return res.status(201).send({ success: true, data: result });
     } catch (e) {
         console.log(e);
+        res.status(500).send({ success: false });
         throw e;
     }
 }

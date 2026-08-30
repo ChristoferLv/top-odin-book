@@ -2081,6 +2081,128 @@ app-root {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.notifications-pane {
+    display: flex;
+    flex-direction: column;
+    background-color: #000000;
+    color: var(--main-white-color);
+    font-family: sans-serif;
+    
+    .profile-pic{
+        margin: 0;
+    }
+
+    p {
+        margin: 0;
+    }
+
+    span{
+        color: var(--shadowed-text-color);
+    }
+
+    .notifications-pane-header {
+        display: flex;
+        border-bottom: solid 1px var(--main-border-color);
+        padding: 12px 0;
+
+        p {
+            font-family: Inter;
+            font-size: 18px;
+            letter-spacing: 0.6px;
+        }
+    }
+
+    .notifications-list {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .notification-item {
+        display: flex;
+        gap: 0 10px;
+        padding: 10px 0;
+        border-bottom: solid 1px var(--main-border-color);
+    }
+
+
+    .notification-type {
+        flex-grow: 0;
+        flex-shrink: 0;
+        margin-left: 25px;
+    }
+
+    .notification-icon {
+        width: 30px;
+        height: 30px;
+    }
+
+    .notification-body {
+        display: flex;
+        flex-direction: column;
+        gap: 10px 0;
+    }
+
+     .notification-content {
+        display: flex;
+        flex-direction: column;
+        gap: 1px 0;
+     }
+
+    .post-content{
+        color: var(--shadowed-text-color);
+        font-size: 16px;
+    }
+
+   
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 .loading {
     background-color: #000000;
 }

@@ -15,6 +15,12 @@ enum PostType {
   SHARE_REPLY
 }
 
+enum NotificationType {
+  LIKE
+  REPLY
+  SHARE
+}
+
 model Users {
   id         Int         @id @default(autoincrement())
   name       String
@@ -33,6 +39,9 @@ model Users {
   following  Follows[]   @relation("following")
   bookmarks  Bookmarks[]
   midias     Midias[]
+
+  notificationsAuthor   Notifications[] @relation("notificationsAuthor")
+  notificationsReceived Notifications[] @relation("notificationsReceived")
 }
 
 model Posts {
@@ -53,6 +62,8 @@ model Posts {
 
   hasMidia Boolean? @default(false)
   midia    Midias?
+
+  notifications Notifications[]
 
   @@unique([originalPostId, authorId, postType], where: raw("\"postType\" IN ('SHARE')"))
 }
@@ -108,4 +119,18 @@ model Midias {
   owner   Users  @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   postId  Int    @unique
   post    Posts  @relation(fields: [postId], references: [id], onDelete: Cascade)
+}
+
+model Notifications {
+  id         Int              @id @default(autoincrement())
+  type       NotificationType
+  read       Boolean          @default(false)
+  createdAt  DateTime         @default(now()) @db.Timestamptz(6)
+  readAt     DateTime?        @db.Timestamptz(6)
+  receiverId Int
+  receiver   Users            @relation("notificationsReceived", fields: [receiverId], references: [id])
+  authorId   Int
+  author     Users            @relation("notificationsAuthor", fields: [authorId], references: [id])
+  postId     Int
+  post       Posts            @relation(fields: [postId], references: [id])
 }

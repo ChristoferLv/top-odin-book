@@ -7,6 +7,7 @@ import cors from 'cors'
 import jwt from 'jsonwebtoken';
 import userRoutes from './routes/userRoutes.js';
 import postRouter from './routes/postRoutes.js';
+import notificationRouter from './routes/notificationRoutes.js';
 
 
 const app = express();
@@ -43,6 +44,7 @@ app.use((req, res, next) => {
 
 app.use("/posts", postRouter)
 app.use("/users", userRoutes);
+app.use("/notifications", notificationRouter);
 app.use("/auth", authRouter);
 app.use("/", (req, res) => res.status(200).send({ message: "Ok" }))
 

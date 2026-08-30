@@ -474,6 +474,54 @@ async function fetchPostMidia(postId) {
 
 
 
+
+
+async function fetchNotifications() {
+    try {
+        const token = localStorage.getItem("token");
+        const request = await fetch(`http://localhost:3000/notifications`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': token
+            }
+        });
+        if (request.ok) {
+            const midia = await request.json();
+            return midia;
+        }
+    } catch (e) {
+        console.log(e);
+        throw e;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 async function fetchRepliesByUserId(userId) {
     const token = localStorage.getItem("token");
     const rawReponse = await fetch('http://localhost:3000/posts/replies?userId=' + userId, {
@@ -832,18 +880,20 @@ export {
     fetchAllUsers,
     fetchUserByUsername,
     searchUsers,
-    fetchPostMidia,
-
+    
     followUser,
     unfollowUser,
-
+    
     makePost,
     fetchAllPosts,
     fetchPostsByUserId,
     fetchMyPosts,
     fetchPostById,
     searchPosts,
-
+    fetchPostMidia,
+    
+    fetchNotifications,
+    
     fetchRepliesByUserId,
     fetchMyReplies,
     makeReply,
