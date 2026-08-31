@@ -19,6 +19,7 @@ enum NotificationType {
   LIKE
   REPLY
   SHARE
+  FOLLOW
 }
 
 model Users {
@@ -131,6 +132,6 @@ model Notifications {
   receiver   Users            @relation("notificationsReceived", fields: [receiverId], references: [id])
   authorId   Int
   author     Users            @relation("notificationsAuthor", fields: [authorId], references: [id])
-  postId     Int
-  post       Posts            @relation(fields: [postId], references: [id])
+  postId     Int?
+  post       Posts?           @relation(fields: [postId], references: [id])
 }

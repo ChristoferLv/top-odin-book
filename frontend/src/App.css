@@ -185,6 +185,31 @@ app-root {
         background-color: #202020;
     }
 
+    .navigation-icon.notifications{
+        position: relative;
+    }
+
+    .notifications-count{
+        transform: rotate3d();
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        right: -1px;
+        top: -2px;
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        border-radius: 999px;
+        background-color: var(--main-blue-color);
+        outline: black solid 1px;
+
+        p{
+            margin: 0;
+            font-size: x-small;
+            color: white;
+        }
+    }
+
     .navigation-icon {
         display: flex;
         align-self: center;
@@ -2182,6 +2207,9 @@ app-root {
         font-size: 16px;
     }
 
+    .unread{
+        background-color: #041622;
+    }
    
 
 

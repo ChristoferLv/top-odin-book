@@ -26,7 +26,7 @@ const router = createBrowserRouter([
     path: "/",
     element: <MainPage />,
     children: [
-      { path: "/notifications", element: <NotificationsPane /> },
+      { path: "/notifications", element: <NotificationsPane/> },
       { path: "/search", element: <SearchPane /> },
       { path: "/users", element: <UsersPage /> },
       { path: "/settings/profile", element: <EditProfile /> },

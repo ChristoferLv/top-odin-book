@@ -1,10 +1,58 @@
 import { prisma } from "../lib/prisma.js";
 
+async function getMyNotificationsCount(req, res) {
+    try {
+        const count = await prisma.notifications.count({
+            where: {
+                receiverId: req.user.id,
+                readAt: null
+            }
+        })
+
+        return res.status(200).send({ success: true, data: count });
+    } catch (e) {
+        console.log(e);
+        res.status(500).send({ success: false });
+        throw e;
+    }
+}
+
 async function getMyNotifications(req, res) {
+    try {
+        const notifications = await prisma.notifications.findMany({
+            where: { receiverId: req.user.id },
+            include: {
+                author: {
+                    select: {
+                        id: true,
+                        name: true,
+                        username: true
+                    }
+                },
+                post: {
+                    select: {
+                        id: true,
+                        content: true,
+                        postType: true
+                    }
+                }
+            },
+            orderBy: { createdAt: "desc" }
+        });
+
+        return res.status(200).send({ success: true, data: notifications });
+    } catch (e) {
+        console.log(e);
+        res.status(500).send({ success: false });
+        throw e;
+    }
+}
+
+async function markNotificationsAsRead(req, res) {
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-    try {
 
+    try {
         const result = await prisma.$transaction(async (tx) => {
             const deletingResult = await tx.notifications.deleteMany({
                 where: {
@@ -13,55 +61,30 @@ async function getMyNotifications(req, res) {
                 }
             });
 
-            const setRead = await tx.notifications.updateMany({
+            console.log("deleting olds", deletingResult);
+
+            const setRead = await tx.notifications.updateManyAndReturn({
                 where: {
                     receiverId: req.user.id
                 },
                 data: {
-                    read: true
+                    read: true,
+                    readAt: new Date()
                 }
             });
-
-            const notifications = await tx.notifications.findMany({
-                where: { receiverId: req.user.id },
-                include: {
-                    author: {
-                        select: {
-                            id: true,
-                            name: true
-                        }
-                    },
-                    post: {
-                        select: {
-                            id: true,
-                            content: true,
-                            postType: true
-                        }
-                    }
-                },
-            });
-
-            console.log("found", notifications, req.user.id)
-
-            if (!notifications)
-                throw new Error("Fail to get notifications.");
-
-            return notifications
+            console.log("setted as read", setRead);
         });
 
-        if (!result) {
-            return res.status(500).send({ success: false });
-        }
-
-        return res.status(200).send({ success: true, data: result });
+        return res.status(204);
     } catch (e) {
         console.log(e);
-        res.status(500).send({ success: false });
-        throw e;
     }
+
 }
 
 
 export {
-    getMyNotifications
+    getMyNotificationsCount,
+    getMyNotifications,
+    markNotificationsAsRead
 }

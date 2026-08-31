@@ -474,18 +474,16 @@ async function fetchPostMidia(postId) {
 
 
 
-
-
-async function fetchNotifications() {
-    try {
+async function fetchNotificationsCount() {
+     try {
         const token = localStorage.getItem("token");
-        const request = await fetch(`http://localhost:3000/notifications`, {
+        const request = await fetch(`http://localhost:3000/notifications/count`, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
                 'Authorization': token
-            }
+            },
         });
         if (request.ok) {
             const midia = await request.json();
@@ -496,6 +494,50 @@ async function fetchNotifications() {
         throw e;
     }
 }
+
+async function fetchNotifications() {
+    try {
+        const token = localStorage.getItem("token");
+        const request = await fetch(`http://localhost:3000/notifications`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': token
+            },
+        });
+        if (request.ok) {
+            const midia = await request.json();
+            return midia;
+        }
+    } catch (e) {
+        console.log(e);
+        throw e;
+    }
+}
+
+async function markNotificationsAsRead(signal) {
+    try {
+        const token = localStorage.getItem("token");
+        const request = await fetch(`http://localhost:3000/notifications`, {
+            method: 'PATCH',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': token
+            },
+            signal:signal
+        });
+        if (request.ok) {
+            const midia = await request.json();
+            return midia;
+        }
+    } catch (e) {
+        console.log(e);
+        throw e;
+    }
+}
+
 
 
 
@@ -892,7 +934,9 @@ export {
     searchPosts,
     fetchPostMidia,
     
+    fetchNotificationsCount,
     fetchNotifications,
+    markNotificationsAsRead,
     
     fetchRepliesByUserId,
     fetchMyReplies,
