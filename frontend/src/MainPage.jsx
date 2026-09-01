@@ -4,6 +4,7 @@ import NewPost from "./components/NewPost";
 import { Navigate, Outlet, useLocation, useNavigate, useParams } from "react-router";
 import UserToast from "./components/UserToast";
 import NotificationsCount from "./components/NotificationsCount";
+import WhoToFollow from "./components/WhoToFollow";
 
 function MainPage() {
     const ActivePage = Object.freeze({
@@ -138,6 +139,7 @@ function MainPage() {
             <div className="master-pane">
                 <Outlet />
                 <div className="right-pane">
+                    <WhoToFollow />
                     <p>3</p>
                     <div>
                         <p>1</p>

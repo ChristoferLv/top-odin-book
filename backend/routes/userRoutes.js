@@ -8,23 +8,23 @@ import multer from "multer";
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
-const userRoutes = Router();
+const userRouter = Router();
 
 
 
-userRoutes.post("/:userId/follows", passport.authenticate('jwt', { session: false }), checkUser, followUser);
-userRoutes.delete("/:userId/follows", passport.authenticate('jwt', { session: false }), checkUser, unfollowUser);
+userRouter.post("/:userId/follows", passport.authenticate('jwt', { session: false }), checkUser, followUser);
+userRouter.delete("/:userId/follows", passport.authenticate('jwt', { session: false }), checkUser, unfollowUser);
 
-userRoutes.get("/picture/:userId", passport.authenticate('jwt', { session: false }), checkUser, getPicture);
-userRoutes.post("/picture", upload.single("picture"), passport.authenticate('jwt', { session: false }), checkUser, uploadPicture);
+userRouter.get("/picture/:userId", passport.authenticate('jwt', { session: false }), checkUser, getPicture);
+userRouter.post("/picture", upload.single("picture"), passport.authenticate('jwt', { session: false }), checkUser, uploadPicture);
 
-userRoutes.get("/background/:userId", passport.authenticate('jwt', { session: false }), checkUser, getBackground);
-userRoutes.post("/background", upload.single("background"), passport.authenticate('jwt', { session: false }), checkUser, uploadBackground);
+userRouter.get("/background/:userId", passport.authenticate('jwt', { session: false }), checkUser, getBackground);
+userRouter.post("/background", upload.single("background"), passport.authenticate('jwt', { session: false }), checkUser, uploadBackground);
 
-userRoutes.get("/search", passport.authenticate('jwt', { session: false }), searchUsers);
-userRoutes.get("/find/:username", passport.authenticate('jwt', { session: false }), getUserByUsername);
-userRoutes.get("/:userId", passport.authenticate('jwt', { session: false }), getUserById);
-userRoutes.get("/", passport.authenticate('jwt', { session: false }), getAllUsers);
-userRoutes.put("/", passport.authenticate('jwt', { session: false }), checkUser, updateUserProfile);
+userRouter.get("/search", passport.authenticate('jwt', { session: false }), searchUsers);
+userRouter.get("/find/:username", passport.authenticate('jwt', { session: false }), getUserByUsername);
+userRouter.get("/:userId", passport.authenticate('jwt', { session: false }), getUserById);
+userRouter.get("/", passport.authenticate('jwt', { session: false }), getAllUsers);
+userRouter.put("/", passport.authenticate('jwt', { session: false }), checkUser, updateUserProfile);
 
-export default userRoutes;
+export default userRouter;

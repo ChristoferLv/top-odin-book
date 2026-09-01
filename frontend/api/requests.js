@@ -284,7 +284,26 @@ async function unfollowUser(userId) {
     }
 }
 
-
+async function getFollowSuggestions() {
+    try {
+        const token = localStorage.getItem("token");
+        const request = await fetch('http://localhost:3000/follows', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': token
+            }
+        });
+        if (request.ok) {
+            const result = await request.json();
+            return result;
+        }
+    } catch (e) {
+        console.log(e);
+        throw e;
+    }
+}
 
 
 
@@ -475,7 +494,7 @@ async function fetchPostMidia(postId) {
 
 
 async function fetchNotificationsCount() {
-     try {
+    try {
         const token = localStorage.getItem("token");
         const request = await fetch(`http://localhost:3000/notifications/count`, {
             method: 'GET',
@@ -526,7 +545,7 @@ async function markNotificationsAsRead(signal) {
                 'Content-Type': 'application/json',
                 'Authorization': token
             },
-            signal:signal
+            signal: signal
         });
         if (request.ok) {
             const midia = await request.json();
@@ -922,10 +941,11 @@ export {
     fetchAllUsers,
     fetchUserByUsername,
     searchUsers,
-    
+
     followUser,
     unfollowUser,
-    
+    getFollowSuggestions,
+
     makePost,
     fetchAllPosts,
     fetchPostsByUserId,
@@ -933,11 +953,11 @@ export {
     fetchPostById,
     searchPosts,
     fetchPostMidia,
-    
+
     fetchNotificationsCount,
     fetchNotifications,
     markNotificationsAsRead,
-    
+
     fetchRepliesByUserId,
     fetchMyReplies,
     makeReply,

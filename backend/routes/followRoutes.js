@@ -1,12 +1,10 @@
 import { Router } from "express";
-import { followUser, removeFollower, unfollowUser } from "../controllers/followController.js";
-
+import { getWhoToFollow } from "../controllers/followController.js";
+import { passport } from "../authUtils.js";
+import { checkUser } from "../utils.js";
 
 const followRouter = Router();
 
-followRouter.post("/follow/:userId", passport.authenticate('jwt', { session: false }), checkUser, followUser);
-followRouter.delete("/unfollow/:userId", passport.authenticate('jwt', { session: false }), checkUser, unfollowUser);
-followRouter.delete("/remove/:userId", passport.authenticate('jwt', { session: false }), checkUser, removeFollower);
-
+followRouter.get("/", passport.authenticate('jwt', { session: false }), checkUser, getWhoToFollow);
 
 export default followRouter;

@@ -5,11 +5,12 @@ import authRouter from "./routes/authRoutes.js";
 import { prisma } from "./lib/prisma.js";
 import cors from 'cors'
 import jwt from 'jsonwebtoken';
-import userRoutes from './routes/userRoutes.js';
 import postRouter from './routes/postRoutes.js';
 import notificationRouter from './routes/notificationRoutes.js';
 import http from 'http'
 import { Server } from 'socket.io'
+import followRouter from './routes/followRoutes.js';
+import userRouter from './routes/userRoutes.js';
 
 const app = express();
 const server = http.createServer(app);
@@ -51,7 +52,8 @@ app.use((req, res, next) => {
 });
 
 app.use("/posts", postRouter)
-app.use("/users", userRoutes);
+app.use("/users", userRouter);
+app.use("/follows", followRouter);
 app.use("/notifications", notificationRouter);
 app.use("/auth", authRouter);
 app.get("/socket", (req, res) => {
