@@ -1,25 +1,61 @@
-import { useEffect, useState } from "react"
+import { useCallback, useContext, useEffect, useState } from "react"
 import { fetchNotificationsCount } from "../../api/requests";
+import socketIO from "../../socket";
+import { AuthContext } from "../AuthContext";
+import { MainContext } from "./MainContext";
 
-function NotificationsCount({ user }) {
-    const [count, setCount] = useState(0);
+
+
+function NotificationsCount() {
+    const { user, isLoading } = useContext(AuthContext);
+    const { notificationCount, notificationSetter } = useContext(MainContext);
+    const [socket, setSocket] = useState(null);
+
+    const getNotificationsCount = useCallback(async () => {
+        const result = await fetchNotificationsCount();
+        if (result && result.success) {
+            if (result.data != 0)
+                notificationSetter(result.data);
+        }
+    })
 
     useEffect(() => {
-        async function getNotificationCount() {
-            const result = await fetchNotificationsCount();
-            if (result && result.success) {
-                setCount(result.data);
-            }
+        getNotificationsCount();
+    }, []);
+
+
+
+    useEffect(() => {
+        function reloadNotifications() {
+            getNotificationsCount();
         }
 
-        getNotificationCount();
-    });
+        if (socket) {
+            socket.on('notification', reloadNotifications);
+        }
+        return () => {
+            if (socket) {
+                socket.off('notification', reloadNotifications);
+            }
+        };
+    }, [socket]);
 
-    if (count == 0) return null;
+    useEffect(() => {
+        if (user && !isLoading) {
+            const storagedToken = localStorage.getItem('token');
+            socketIO.auth = { token: storagedToken }
+            const connection = socketIO.connect();
+            setSocket(connection);
+        }
+    }, [user, isLoading]);
+
+
+    if (!user) return null;
+    if (notificationCount == 0) return null;
 
     return (<>
         <div className="notifications-count">
-            <p>{count}</p>
+            <p>{notificationCount}</p>
         </div>
     </>
     );

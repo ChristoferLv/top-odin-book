@@ -16,6 +16,7 @@ import UsersPage from './UsersPage.jsx';
 import SeeingPicturePage from './SeeingPicturePage.jsx';
 import SearchPane from './components/SearchPane.jsx';
 import NotificationsPane from './components/NotificationsPane.jsx';
+import MainContextProvider from './components/MainContext.jsx';
 
 
 const router = createBrowserRouter([
@@ -26,7 +27,7 @@ const router = createBrowserRouter([
     path: "/",
     element: <MainPage />,
     children: [
-      { path: "/notifications", element: <NotificationsPane/> },
+      { path: "/notifications", element: <NotificationsPane /> },
       { path: "/search", element: <SearchPane /> },
       { path: "/users", element: <UsersPage /> },
       { path: "/settings/profile", element: <EditProfile /> },
@@ -46,7 +47,9 @@ const router = createBrowserRouter([
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <AuthProvider>
-      <RouterProvider router={router} />
+      <MainContextProvider>
+        <RouterProvider router={router} />
+      </MainContextProvider>
     </AuthProvider>
   </StrictMode>,
 )

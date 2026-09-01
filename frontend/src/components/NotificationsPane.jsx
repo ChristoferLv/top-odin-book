@@ -4,10 +4,12 @@ import { useLocation, useNavigate, useSearchParams } from "react-router";
 import { fetchNotifications, markNotificationsAsRead } from '../../api/requests'
 import UserPicture from './UserPicture';
 import { formatDate } from "../utils/dateUtils";
+import { MainContext } from "./MainContext";
 
 
 function NotificationsPane() {
     const { user, setUser } = useContext(AuthContext);
+    const { notificationSetter } = useContext(MainContext);
     const location = useLocation();
     const navigate = useNavigate();
     const [notificationsList, setNotificationsList] = useState([]);
@@ -29,15 +31,12 @@ function NotificationsPane() {
         }
 
         if (!canFetch.current) {
+            notificationSetter(0);
             markNotificationsAsRead(controller.signal);
         }
         return () => controller.abort("abort");
 
     }, []);
-
-    console.log("run first");
-
-    console.log(notificationsList)
 
     return (<>
         <div className="notifications-pane">

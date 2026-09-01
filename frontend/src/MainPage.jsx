@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 import { AuthContext } from "./AuthContext";
 import NewPost from "./components/NewPost";
 import { Navigate, Outlet, useLocation, useNavigate, useParams } from "react-router";
@@ -26,6 +26,8 @@ function MainPage() {
             active = ActivePage.PROFILE;
             break;
     }
+
+
 
 
     const { user, isLoading } = useContext(AuthContext);

@@ -1,6 +1,38 @@
 import { body, matchedData, validationResult } from "express-validator";
 import { prisma } from "../lib/prisma.js";
 
+async function createNotificationAndNotify(req, authorId, receiverId) {
+    try {
+        const exists = await prisma.notifications.findFirst({
+            where: {
+                authorId: authorId,
+                postId: null,
+                type: "FOLLOW",
+                receiverId: receiverId
+            }
+        });
+
+        if (exists) return;
+
+        const notificationResult = await prisma.notifications.create({
+            data: {
+                authorId: authorId,
+                postId: null,
+                type: "FOLLOW",
+                receiverId: receiverId
+            }
+        });
+
+        if (!notificationResult)
+            return;
+
+        req.socketIo.to(`user:${receiverId}`).emit("notification");
+
+    } catch (e) {
+        console.log(e);
+    }
+}
+
 async function getAllUsers(req, res) {
     const userId = req.user.id;
     try {
@@ -175,6 +207,12 @@ async function followUser(req, res) {
             followingId: toFollow
         }
     });
+
+    if (!result) {
+        return res.status(500).send({ success: false });
+    }
+
+    createNotificationAndNotify(req, req.user.id, toFollow);
 
     return res.status(201).send({ success: true, data: result });
 }

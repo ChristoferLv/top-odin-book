@@ -91,8 +91,7 @@ function PostPage() {
         }
     }
 
-    async function handleShare(e) {
-        e.stopPropagation();
+    async function handleShare() {
         if (hasShared) {
             const result = await unsharePost(postData.id);
             if (result && result.success) {
@@ -103,7 +102,7 @@ function PostPage() {
 
         const result = await sharePost(postData.id);
         if (result && result.success) {
-            setIsMeShare({ ...postData, replyPost: [{ id: result.data.id }] });
+            setPostData({ ...postData, replyPost: [{ id: result.data.id }] });
         }
     }
 
@@ -135,7 +134,6 @@ function PostPage() {
     };
 
     function openShareOrReply(e) {
-        console.log("called openshareorreply")
         e.stopPropagation();
         if (hasShared) {
             handleShare(e);
@@ -164,7 +162,6 @@ function PostPage() {
         <p>&nbsp;</p>
     </div></>;
 
-    console.log(postData)
 
     const formatedDate = formatDate(postData.createdAt);
     return (

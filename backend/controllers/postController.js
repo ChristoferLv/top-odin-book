@@ -9,6 +9,40 @@ const validatePost = [
         .isLength({ max: 500 }).withMessage("The maximum post content length is 500.")
 ];
 
+async function createNotificationAndNotify(req, authorId, postId, type, receiverId) {
+    try {
+        const exists = await prisma.notifications.findUnique({
+            where: {
+                authorId_receiverId_postId_type: {
+                    authorId: authorId,
+                    postId: postId,
+                    type: type,
+                    receiverId: receiverId
+                }
+            }
+        });
+
+        if (exists) return;
+
+        const notificationResult = await prisma.notifications.create({
+            data: {
+                authorId: authorId,
+                postId: postId,
+                type: type,
+                receiverId: receiverId
+            }
+        });
+
+        if (!notificationResult)
+            return;
+
+        req.socketIo.to(`user:${receiverId}`).emit("notification");
+
+    } catch (e) {
+        console.log(e);
+    }
+}
+
 const makePost = [
     validatePost,
     async (req, res) => {
@@ -487,6 +521,17 @@ async function likePost(req, res) {
             return res.status(500).send({ success: false });
         }
 
+        createNotificationAndNotify(req, req.user.id, postId, "LIKE", exists.authorId);
+
+        // const notificationResult = prisma.notifications.create({
+        //     data: {
+        //         authorId: req.user.id,
+        //         postId: postId,
+        //         type: "LIKE",
+        //         receiverId: exists.authorId
+        //     }
+        // });
+
         return res.send({ success: true, data: result });
     } catch (e) {
         console.log(e);
@@ -706,6 +751,8 @@ async function sharePost(req, res) {
             return res.status(500).send({ success: false });
         }
 
+        createNotificationAndNotify(req, req.user.id, postId, "SHARE", exists.authorId);
+
         return res.send({ success: true, data: result });
     } catch (e) {
         console.log(e);
@@ -815,7 +862,6 @@ async function getMyReplies(req, res) {
         let condition = { postType: "REPLY" }
         if (req.query.userId)
             Object.assign(condition, { authorId: parseInt(req.query.userId) });
-        console.log("condition", condition)
         const result = await prisma.posts.findMany({
             where: condition,
             include: {
@@ -869,7 +915,6 @@ async function getMyReplies(req, res) {
 async function makeReply(req, res) {
     try {
         const postId = parseInt(req.params.postId);
-        console.log(req.body)
         const content = req.body.content;
 
         const exists = await prisma.posts.findUnique({
@@ -930,6 +975,8 @@ async function makeReply(req, res) {
         if (!result) {
             return res.status(500).send({ success: false });
         }
+
+        createNotificationAndNotify(req, req.user.id, postId, "REPLY", exists.authorId);
 
         return res.status(201).send({ success: true, data: result });
     } catch (e) {

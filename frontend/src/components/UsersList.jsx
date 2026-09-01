@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { USER_PICTURE_DEFAULT_SIZE } from "../utils/defaults";
 import UserPicture from "./UserPicture";
+import { followUser, unfollowUser } from "../../api/requests";
 
 function UsersList({ usersList }) {
 
@@ -21,7 +22,6 @@ function UserCard({ data }) {
         e.stopPropagation();
         if (userData.following.length) {
             const result = await unfollowUser(userData.id);
-            console.log(result)
             if (result && result.success) {
                 setUserData({ ...userData, following: [] });
             }
@@ -29,7 +29,6 @@ function UserCard({ data }) {
         }
 
         const result = await followUser(userData.id);
-        console.log(result)
         if (result && result.success) {
             setUserData({ ...userData, following: [{ id: result.data.id }] });
         }

@@ -8,17 +8,25 @@ import jwt from 'jsonwebtoken';
 import userRoutes from './routes/userRoutes.js';
 import postRouter from './routes/postRoutes.js';
 import notificationRouter from './routes/notificationRoutes.js';
-
+import http from 'http'
+import { Server } from 'socket.io'
 
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server, { cors: { origin: "http://localhost:5173" } });
 
 const corsOptions = {
   origin: 'http://localhost:5173'
 };
 
 app.use(urlencoded({ extended: true }));
-app.use(json());
 app.use(cors(corsOptions));
+app.use(json());
+
+app.use((req, res, next) => {
+  req.socketIo = io;
+  next();
+})
 
 app.use((req, res, next) => {
   try {
@@ -46,6 +54,12 @@ app.use("/posts", postRouter)
 app.use("/users", userRoutes);
 app.use("/notifications", notificationRouter);
 app.use("/auth", authRouter);
+app.get("/socket", (req, res) => {
+  console.log("emiting")
+  io.emit("notification", "ALOOOOO!")
+  res.send({ ok: true })
+})
+
 app.use("/", (req, res) => res.status(200).send({ message: "Ok" }))
 
 app.use((err, req, res, next) => {
@@ -63,8 +77,26 @@ app.use((err, req, res, next) => {
   });
 });
 
+io.on('connection', (socket) => {
+  console.log('A user connected');
+  let decoded = null;
+  try {
+    decoded = jwt.verify(socket.handshake.auth.token.split(" ")[1], process.env.JWT_SECRET);
+  } catch (e) {
+    console.log(e);
+    return;
+  }
 
-app.listen(3000, (error) => {
+  socket.user = { userId: decoded.id };
+  socket.join(`user:${decoded.id}`);
+
+  // Handle disconnection
+  socket.on('disconnect', () => {
+    console.log('A user disconnected');
+  });
+});
+
+server.listen(3000, (error) => {
   if (error) {
     throw error;
   }

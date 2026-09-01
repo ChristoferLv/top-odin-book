@@ -129,9 +129,11 @@ model Notifications {
   createdAt  DateTime         @default(now()) @db.Timestamptz(6)
   readAt     DateTime?        @db.Timestamptz(6)
   receiverId Int
-  receiver   Users            @relation("notificationsReceived", fields: [receiverId], references: [id])
+  receiver   Users            @relation("notificationsReceived", fields: [receiverId], references: [id], onDelete: Cascade)
   authorId   Int
-  author     Users            @relation("notificationsAuthor", fields: [authorId], references: [id])
+  author     Users            @relation("notificationsAuthor", fields: [authorId], references: [id], onDelete: Cascade)
   postId     Int?
-  post       Posts?           @relation(fields: [postId], references: [id])
+  post       Posts?           @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([authorId, receiverId, postId, type])
 }
