@@ -11,6 +11,7 @@ import ReplyDialog from "./components/ReplyDialog";
 import ShareWithComment from "./components/ShareWithReplyDialog";
 import ShareOrReplyDialog from "./components/ShareOrReplyDialog";
 import PostMidia from "./components/PostMidia";
+import MakeReply from "./components/MakeReply";
 
 function PostPage() {
     const { user, isLoading } = useContext(AuthContext);
@@ -28,6 +29,7 @@ function PostPage() {
     const hasShared = postData?.replyPost.length;
     const hasMidia = postData?.hasMidia;
 
+    console.log("postpage pathname", location.pathname, postId)
 
     const fetchReplies = useCallback(async () => {
         try {
@@ -48,8 +50,10 @@ function PostPage() {
 
     useEffect(() => {
         async function getPostData() {
+            console.log("fetching id", postId)
             const result = await fetchPostById(postId);
             if (result && result.success) {
+                console.log(result.data)
                 setPostData(result.data);
             }
         }
@@ -62,18 +66,6 @@ function PostPage() {
 
     function goToPostAuthor() {
         navigate("/" + postData.author.username);
-    }
-
-    function handleReplyChange(e) {
-        setReplyContent(e.target.value);
-    }
-
-    async function postReply() {
-        const result = await makeReply({ content: replyContent }, postId);
-        if (result.success) {
-            setReplyContent("");
-            fetchReplies();
-        }
     }
 
     async function handleLike() {
@@ -128,6 +120,7 @@ function PostPage() {
 
     function handleCloseDialog(e) {
         e.stopPropagation();
+        fetchReplies();
         setIsDialogOpen(false);
         setIsShareDialogOpen(false);
         setIsShareOrReplyOpen(false);
@@ -154,7 +147,11 @@ function PostPage() {
         setIsShareDialogOpen(true);
     }
 
-    function goToPicturePage(){
+    function handleSuccessReply() {
+        fetchReplies();
+    }
+
+    function goToPicturePage() {
         navigate(`/${postData.author.username}/post/${postData.id}/photo`);
     }
 
@@ -162,6 +159,7 @@ function PostPage() {
         <p>&nbsp;</p>
     </div></>;
 
+    console.log(postData);
 
     const formatedDate = formatDate(postData.createdAt);
     return (
@@ -182,7 +180,7 @@ function PostPage() {
                 </div>
                 <div className="post-view">
                     <div className="post-view-head" onClick={goToPostAuthor}>
-                        <UserPicture id={postData.author.id} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
+                        <UserPicture key={postData.author.id} id={postData.author.id} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
                         <div className="post-view-user-data">
                             <span>{postData.author.name}</span>
                             <span>@{postData.author.username}</span>
@@ -190,8 +188,8 @@ function PostPage() {
                     </div>
                     <div className="post-view-data">
                         <div className="post-content">
-                            <textarea readOnly defaultValue={postData.content}></textarea>
-                            {hasMidia && <PostMidia postId={postData.id} seePhoto={goToPicturePage}/>}
+                            <textarea readOnly value={postData.content}></textarea>
+                            {hasMidia && <PostMidia postId={postData.id} seePhoto={goToPicturePage} />}
                         </div>
                         <div className="post-hour">
                             {adjustPostDate(new Date(postData.createdAt))}
@@ -199,7 +197,7 @@ function PostPage() {
                     </div>
                     <div className="controls-separator"></div>
                     <div className="post-controls">
-                        <div className="comment-control-button">
+                        <div onClick={handleReply} className="comment-control-button">
                             <div>
                                 <svg viewBox="0 0 24 24" aria-hidden="true"><g>
                                     <path d="M1.751 10c0-4.42 3.584-8 8.005-8h4.366c4.49 0 8.129 3.64 8.129 8.13 0 2.96-1.607 5.68-4.196 7.11l-8.054 4.46v-3.69h-.067c-4.49.1-8.183-3.51-8.183-8.01zm8.005-6c-3.317 0-6.005 2.69-6.005 6 0 3.37 2.77 6.08 6.138 6.01l.351-.01h1.761v2.3l5.087-2.81c1.951-1.08 3.163-3.13 3.163-5.36 0-3.39-2.744-6.13-6.129-6.13H9.756z"></path></g>
@@ -229,11 +227,7 @@ function PostPage() {
                     </div>
                     <div className="controls-separator"></div>
 
-                    <div className="make-comment">
-                        <UserPicture id={user.id} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
-                        <textarea name="" id="" value={replyContent} onChange={handleReplyChange} placeholder="Post your reply"></textarea>
-                        <button onClick={postReply} className="post-comment">Reply</button>
-                    </div>
+                    <MakeReply postId={postData.id} onSuccess={handleSuccessReply} />
                 </div>
 
                 <div className="comments-list">

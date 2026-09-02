@@ -11,6 +11,8 @@ const validatePost = [
 
 async function createNotificationAndNotify(req, authorId, postId, type, receiverId) {
     try {
+        if(authorId == receiverId) return;
+
         const exists = await prisma.notifications.findUnique({
             where: {
                 authorId_receiverId_postId_type: {

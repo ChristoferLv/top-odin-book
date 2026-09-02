@@ -11,6 +11,7 @@ import ReplyDialog from "./components/ReplyDialog";
 import ShareWithComment from "./components/ShareWithReplyDialog";
 import ShareOrReplyDialog from "./components/ShareOrReplyDialog";
 import PostMidia from "./components/PostMidia";
+import MakeReply from "./components/MakeReply";
 
 function SeeingPicturePage() {
     const { user, isLoading } = useContext(AuthContext);
@@ -177,6 +178,10 @@ function SeeingPicturePage() {
         setIsShareDialogOpen(true);
     }
 
+     function handleSuccessReply() {
+        fetchReplies();
+    }
+
     if (!postData || !midiaBuff) return <> <div className="see-picture-page"></div></>;
 
 
@@ -276,11 +281,7 @@ function SeeingPicturePage() {
                             </div>
                         </div>
                         <div className="controls-separator"></div>
-                        <div className="make-comment">
-                            <UserPicture id={user.id} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
-                            <textarea ref={commentBox} name="" id="" value={replyContent} onChange={handleReplyChange} placeholder="Post your reply"></textarea>
-                            <button onClick={postReply} className="post-comment">Reply</button>
-                        </div>
+                        <MakeReply postId={postData.id} onSuccess={handleSuccessReply} inputRef={commentBox}/>
                     </div>
                     <div className="replies-container">
                         {commentsList.map((comment) => {
