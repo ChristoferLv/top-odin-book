@@ -14,27 +14,11 @@ async function getWhoToFollow(req, res) {
     const followingIds = following.map((it) => it.followingId);
     followingIds.push(req.user.id);
 
-    console.log(following)
-
     const result = await prisma.$queryRaw`
         SELECT "public"."Users"."id", "public"."Users"."username", "public"."Users"."name" 
         FROM "public"."Users" 
         WHERE "public"."Users"."id" NOT IN (${Prisma.join(followingIds)})
         ORDER BY RANDOM() ASC LIMIT 3`;
-
-    // const result = await prisma.users.findMany({
-    //     where: {
-    //         id: {
-    //             notIn: followingIds
-    //         }
-    //     },
-    //     select: {
-    //         id: true,
-    //         username: true,
-    //         name: true
-    //     },
-    //     take: 3
-    // });
 
     if (!result)
         return res.status(500).send({ success: false });

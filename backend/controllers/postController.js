@@ -1,6 +1,5 @@
 import { body, matchedData, validationResult } from "express-validator";
 import { prisma } from "../lib/prisma.js";
-import { PostType } from "../generated/prisma/index.js";
 
 const validatePost = [
     body("content")
@@ -71,7 +70,6 @@ const makePost = [
             let referenceId = originalPostId ? originalPostId : null;
             let postType = originalPostId ? "SHARE_REPLY" : "POST";
             let hasMidia = req.file?.size > 0;
-
 
             const result = await prisma.$transaction(async (tx) => {
                 const postResult = await tx.posts.create({
@@ -218,7 +216,6 @@ async function getPostById(req, res) {
                     }
                 }
             }
-
 
             // select: { _count: { select: { likes: true } } }
         });
@@ -405,60 +402,6 @@ async function searchPosts(req, res) {
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// async function getLikedPosts(req, res) {
-//     try {
-//         let condition = {}
-//         if (req.query.userId)
-//             condition = { whoLikedId: parseInt(req.query.userId) };
-//         const userId = req.user.id;
-//         const result = await prisma.likes.findMany({
-//             where: condition,
-//             select: {
-//                 post: {
-//                     include: {
-//                         author: {
-//                             omit:
-//                             {
-//                                 password: true,
-//                                 picture: true,
-//                                 mime: true,
-//                                 background: true,
-//                                 bgmime: true,
-//                                 createdAt: true
-//                             }
-//                         },
-//                         likes: { where: { whoLikedId: userId }, select: { id: true } },
-//                         bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } }
-//                     }
-//                 }
-//             },
-//         })
-
-//         if (!result) {
-//             return res.status(500).send({ success: false });
-//         }
-
-//         return res.send({ success: true, data: result });
-//     } catch (e) {
-//         console.log(e);
-//         throw e;
-//     }
-// }
-
 async function getLikedPosts(req, res) {
     try {
         let condition = {}
@@ -537,15 +480,6 @@ async function likePost(req, res) {
 
         createNotificationAndNotify(req, req.user.id, postId, "LIKE", exists.authorId);
 
-        // const notificationResult = prisma.notifications.create({
-        //     data: {
-        //         authorId: req.user.id,
-        //         postId: postId,
-        //         type: "LIKE",
-        //         receiverId: exists.authorId
-        //     }
-        // });
-
         return res.send({ success: true, data: result });
     } catch (e) {
         console.log(e);
@@ -556,16 +490,6 @@ async function likePost(req, res) {
 async function removeLike(req, res) {
     try {
         const postId = parseInt(req.params.postId);
-
-        // const exists = await prisma.posts.findUnique({
-        //     where: {
-        //         id: postId
-        //     }
-        // });
-
-        // if (!exists) {
-        //     return res.status(400).send({ success: false, message: "Post not found." });
-        // }
 
         const hasLiked = await prisma.likes.findUnique({
             where: {
@@ -595,72 +519,6 @@ async function removeLike(req, res) {
         throw e;
     }
 }
-
-// async function removeLike(req, res) {
-//     try {
-//         const postId = parseInt(req.params.postId);
-
-//         // const exists = await prisma.posts.findUnique({
-//         //     where: {
-//         //         id: postId
-//         //     }
-//         // });
-
-//         // if (!exists) {
-//         //     return res.status(400).send({ success: false, message: "Post not found." });
-//         // }
-
-//         const hasLiked = await prisma.likes.findUnique({
-//             where: {
-//                 postId_whoLikedId: { postId: postId, whoLikedId: req.user.id }
-//             }
-//         });
-
-//         if (!hasLiked)
-//             return res.status(400).send({ success: false, message: "You have not liked this post." });
-
-//         const result = await prisma.likes.delete({
-//             where: {
-//                 postId_whoLikedId: {
-//                     postId: postId,
-//                     whoLikedId: req.user.id
-//                 }
-//             }
-//         });
-
-//         if (!result) {
-//             return res.status(500).send({ success: false });
-//         }
-
-//         return res.send({ success: true, data: result });
-//     } catch (e) {
-//         console.log(e);
-//         throw e;
-//     }
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 async function getSharedPosts(req, res) {
     try {
@@ -742,14 +600,6 @@ async function sharePost(req, res) {
             }
         });
 
-        // const hasShared = await prisma.posts.findFirst({
-        //     where: {
-        //         originalPostId: postId,
-        //         authorId: req.user.id,
-        //         postType: "SHARE"
-        //     }
-        // })
-
         if (hasShared)
             return res.status(400).send({ success: false, message: "You have already shared this post." });
 
@@ -788,14 +638,6 @@ async function removeShare(req, res) {
             }
         })
 
-        // const hasShared = await prisma.posts.findFirst({
-        //     where: {
-        //         authorId: req.user.id,
-        //         originalPostId: postId,
-        //         postType: "SHARE"
-        //     }
-        // });
-
         if (!hasShared)
             return res.status(400).send({ success: false, message: "You have not shared this post." });
 
@@ -816,59 +658,6 @@ async function removeShare(req, res) {
         throw e;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// async function getMyComments(req, res) {
-//     try {
-//         const userId = req.user.id;
-//         let condition = {}
-//         if (req.query.userId)
-//             condition = { authorId: parseInt(req.query.userId) };
-//         const result = await prisma.comments.findMany({
-//             where: condition,
-
-//             include: {
-//                 author: {
-//                     omit:
-//                     {
-//                         password: true,
-//                         picture: true,
-//                         mime: true,
-//                         background: true,
-//                         bgmime: true,
-//                         createdAt: true
-//                     }
-//                 },
-//             }
-//         })
-
-//         if (!result) {
-//             return res.status(500).send({ success: false });
-//         }
-
-//         return res.send({ success: true, data: result });
-//     } catch (e) {
-//         console.log(e);
-//         throw e;
-//     }
-// }
 
 async function getMyReplies(req, res) {
     try {
@@ -975,17 +764,6 @@ async function makeReply(req, res) {
             return postResult;
         });
 
-        // const result = await prisma.posts.create(
-        //     {
-        //         data: {
-        //             content: content,
-        //             authorId: req.user.id,
-        //             postType: "REPLY",
-        //             originalPostId: postId
-        //         }
-        //     }
-        // );
-
         if (!result) {
             return res.status(500).send({ success: false });
         }
@@ -999,40 +777,6 @@ async function makeReply(req, res) {
         throw e;
     }
 }
-
-
-// async function makeComment(req, res) {
-//     try {
-//         const postId = parseInt(req.params.postId);
-//         console.log(req.body)
-//         const content = req.body.content;
-
-//         const exists = await prisma.posts.findUnique({
-//             where: { id: postId }
-//         });
-
-//         if (!exists) {
-//             return res.status(400).send({ success: false, message: "Post not found." });
-//         }
-
-//         const result = await prisma.comments.create({
-//             data: {
-//                 content: content,
-//                 postId: postId,
-//                 authorId: req.user.id
-//             }
-//         });
-
-//         if (!result) {
-//             return res.status(500).send({ success: false });
-//         }
-
-//         return res.status(201).send({ success: true, data: result });
-//     } catch (e) {
-//         console.log(e);
-//         throw e;
-//     }
-// }
 
 async function getRepliesOfPost(req, res) {
     try {
@@ -1105,22 +849,6 @@ async function deleteReplie(req, res) {
         throw e;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 async function getBookmarkedPosts(req, res) {
     const userId = req.user.id;
@@ -1201,16 +929,6 @@ async function removePostBookmark(req, res) {
     try {
         const postId = parseInt(req.params.postId);
 
-        // const exists = await prisma.posts.findUnique({
-        //     where: {
-        //         id: postId
-        //     }
-        // });
-
-        // if (!exists) {
-        //     return res.status(400).send({ success: false, message: "Post not found." });
-        // }
-
         const hasBookmarked = await prisma.bookmarks.findUnique({
             where: {
                 postId_whoBookmarkedId: { postId: postId, whoBookmarkedId: req.user.id }
@@ -1236,11 +954,6 @@ async function removePostBookmark(req, res) {
         throw e;
     }
 }
-
-
-
-
-
 
 
 

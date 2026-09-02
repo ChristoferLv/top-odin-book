@@ -34,7 +34,6 @@ model Users {
   bgmime     String?
   createdAt  DateTime    @default(now()) @db.Timestamptz(6)
   posts      Posts[]
-  comments   Comments[]
   likes      Likes[]
   followedBy Follows[]   @relation("followedBy")
   following  Follows[]   @relation("following")
@@ -57,7 +56,6 @@ model Posts {
   originalPostId Int?
   originalPost   Posts?  @relation("originlPostReference", fields: [originalPostId], references: [id])
 
-  comments  Comments[]
   likes     Likes[]
   bookmarks Bookmarks[]
 
@@ -67,16 +65,6 @@ model Posts {
   notifications Notifications[]
 
   @@unique([originalPostId, authorId, postType], where: raw("\"postType\" IN ('SHARE')"))
-}
-
-model Comments {
-  id        Int      @id @default(autoincrement())
-  content   String   @db.VarChar(500)
-  createdAt DateTime @default(now()) @db.Timestamptz(6)
-  postId    Int
-  authorId  Int
-  post      Posts    @relation(fields: [postId], references: [id], onDelete: Cascade)
-  author    Users    @relation(fields: [authorId], references: [id])
 }
 
 model Likes {
