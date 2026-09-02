@@ -331,11 +331,23 @@ async function searchPosts(req, res) {
     try {
         const userId = req.user.id;
         const searchTerm = req.query.q;
+        const onlyFollowing = req.query.pf == "on";
+
         let condition = {};
         let order = [{ likes: { _count: "desc" } }, { createdAt: "desc" }];
-        if (searchTerm.length > 0) {
+        if (searchTerm?.length > 0) {
             condition = { content: { contains: searchTerm, mode: "insensitive" } };
             order = [{ createdAt: "desc" }];
+        }
+
+        if (onlyFollowing) {
+            const users = await prisma.follows.findMany({
+                where: { followedById: req.user.id }
+            });
+
+            const usersId = users.map((i) => i.followingId);
+
+            condition = { ...condition, "authorId": { in: usersId } };
         }
 
         const result = await prisma.posts.findMany({

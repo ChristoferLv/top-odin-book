@@ -1210,7 +1210,7 @@ app-root {
     border: none;
 }
 
-.unfollow{
+.unfollow {
     background-color: #000000;
     color: var(--main-white-color);
     outline: 1px solid var(--main-white-color);
@@ -1981,48 +1981,6 @@ app-root {
         padding: 0 15px;
     }
 
-    .search-field {
-        z-index: 1;
-        display: flex;
-        align-items: center;
-        border: solid 1px var(--main-border-color);
-        border-radius: 9990px;
-        width: 100%;
-        padding-left: 12px;
-        gap: 0 5px;
-        outline: 3px solid transparent;
-        transition: outline 0.2s ease-in;
-
-        .search-icon {
-            width: 15px;
-            height: 15px;
-            fill: var(--shadowed-text-color);
-        }
-
-        form {
-            width: 100%;
-        }
-
-        input {
-            width: 100%;
-            background-color: transparent;
-            color: var(--main-white-color);
-            border: none;
-            outline: none;
-            height: 40px;
-            caret-color: var(--main-blue-color);
-        }
-
-        input::placeholder {
-            color: var(--shadowed-text-color);
-        }
-    }
-
-    .search-field:focus-within {
-        outline: 3px solid var(--main-blue-color);
-        transition: outline 0.3s ease-out;
-    }
-
     .search-options {
         margin-top: 1px;
         display: flex;
@@ -2074,7 +2032,89 @@ app-root {
     }
 }
 
+.search-field {
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    border: solid 1px var(--main-border-color);
+    border-radius: 9990px;
+    width: 100%;
+    padding-left: 12px;
+    gap: 0 5px;
+    outline: 3px solid transparent;
+    transition: outline 0.2s ease-in;
 
+    .search-icon {
+        width: 15px;
+        height: 15px;
+        fill: var(--shadowed-text-color);
+    }
+
+    form {
+        width: 100%;
+    }
+
+    input {
+        width: 100%;
+        background-color: transparent;
+        color: var(--main-white-color);
+        border: none;
+        outline: none;
+        height: 40px;
+        caret-color: var(--main-blue-color);
+    }
+
+    input::placeholder {
+        color: var(--shadowed-text-color);
+    }
+}
+
+.search-field:focus-within {
+    outline: 3px solid var(--main-blue-color);
+    transition: outline 0.3s ease-out;
+}
+
+.search-filters-select,
+.search-filters-title {
+    font-family: Inter;
+    color: var(--main-white-color);
+
+    border: 1px solid var(--main-border-color);
+    border-radius: 15px;
+
+    p {
+        margin: 12px;
+    }
+}
+
+.search-filters-title {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.search-filters-select {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px 0;
+
+    label{
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+    }
+
+    input{
+        margin: 0;
+        margin-right: 3px;
+    }
+
+    p {
+        margin: 0;
+        font-size: 14px;
+        font-weight: bold;
+    }
+}
 
 
 
@@ -2215,11 +2255,12 @@ app-root {
 .right-pane {
     display: flex;
     flex-direction: column;
-    background-color: rgb(7, 6, 29);
+    background-color: black;
     border-left: 1px solid var(--main-border-color);
     color: white;
+    padding-top: 10px;
     padding-left: 15px;
-    padding-right: 25px;
+    padding-right: 20%;
 }
 
 .who-to-follow {
@@ -2231,7 +2272,7 @@ app-root {
     border-radius: 15px;
     background-color: black;
 
-    p{
+    p {
         font-family: Inter;
         font-size: 20px;
         font-weight: bold;
@@ -2278,6 +2319,10 @@ app-root {
     .user-item-controls {
         margin-left: auto;
     }
+}
+
+.mini-search-input {
+    display: flex;
 }
 
 

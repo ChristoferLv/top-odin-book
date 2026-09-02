@@ -117,9 +117,36 @@ async function getUserById(req, res) {
 
 async function searchUsers(req, res) {
     const userId = req.user.id;
-    const searchTerm = req.query.q;
+    const searchTerm = req.query.q || "";
+    const onlyFollowing = req.query.pf == "on";
 
     try {
+        if (onlyFollowing) {
+            const users = await prisma.follows.findMany({
+                where: {
+                    followedById: req.user.id,
+                    following: {
+                        OR: [
+                            { username: { contains: searchTerm, mode: "insensitive" } },
+                            { name: { contains: searchTerm, mode: "insensitive" } }
+                        ]
+                    }
+                },
+                select: {
+                    following: {
+                        select: {
+                            id: true,
+                            username: true,
+                            name: true,
+                            following: { where: { followedById: userId, }, select: { id: true } }
+                        }
+                    }
+                }
+            });
+
+            return res.status(200).send({ success: true, data: users });
+        }
+
         const users = await prisma.users.findMany({
             where: {
                 NOT: { id: userId },

@@ -29,7 +29,8 @@ function SearchPane() {
         setPostsList([]);
         setUsersList([]);
         // setSearchOption(option);
-        setSearchParams({ q: searchTerm, f: option.toLowerCase() });
+        const paramsObj = Object.fromEntries([...searchParams]);
+        setSearchParams({ ...paramsObj, q: searchTerm, f: option.toLowerCase() });
     }
 
     function handleSearchTerm(e) {
@@ -38,11 +39,16 @@ function SearchPane() {
 
     function handleSearch(e) {
         e.preventDefault();
-        if (searchTerm.length == 0) return;
+        if (searchTerm.length == 0) {
+            const paramsObj = Object.fromEntries([...searchParams]);
+            const { q, ...rest } = { ...paramsObj };
+            setSearchParams(rest);
+            return;
+        }
         if (searchOption == SearchOptions.POSTS) {
             setSearchParams({ q: searchTerm, f: "posts" });
         } else {
-            setSearchParams({ q: searchTerm, f: "users" });
+            setSearchParams({ q: searchTerm, f: "people" });
         }
     }
 
@@ -73,7 +79,7 @@ function SearchPane() {
 
         async function getUsers() {
             try {
-                const result = await searchUsers(searchParams.get("q"), controller.signal);
+                const result = await searchUsers(searchParams.toString(), controller.signal);
                 if (result && result.success) {
                     setUsersList(result.data)
                 }
@@ -84,13 +90,12 @@ function SearchPane() {
         }
 
         if (searchParams.get("f") == "people") {
-            console.log("here")
             getUsers();
         } else if (!searchParams.get("f") || searchParams.get("f") == "posts") {
             if (!searchParams.get("q")) {
-                getPosts("");
+                getPosts(searchParams.toString());
             } else {
-                getPosts(searchParams.get("q"));
+                getPosts(searchParams.toString());
             }
         }
 
@@ -114,7 +119,7 @@ function SearchPane() {
                         <div className="search-icon">
                             <svg viewBox="0 0 24 24" aria-hidden="true" className="r-4qtqp9 r-yyyyoo r-dnmrzs r-bnwqim r-lrvibr r-m6rgpd r-1tjplnt r-1bwzh9t r-10ptun7 r-2dysd3 r-1janqcz"><g><path d="M10.25 3.75c-3.59 0-6.5 2.91-6.5 6.5s2.91 6.5 6.5 6.5c1.795 0 3.419-.726 4.596-1.904 1.178-1.177 1.904-2.801 1.904-4.596 0-3.59-2.91-6.5-6.5-6.5zm-8.5 6.5c0-4.694 3.806-8.5 8.5-8.5s8.5 3.806 8.5 8.5c0 1.986-.682 3.815-1.824 5.262l4.781 4.781-1.414 1.414-4.781-4.781c-1.447 1.142-3.276 1.824-5.262 1.824-4.694 0-8.5-3.806-8.5-8.5z"></path></g></svg>
                         </div>
-                        <form action="" onSubmit={handleSearch}>
+                        <form onSubmit={handleSearch}>
                             <input type="text" placeholder="Search" value={searchTerm} onChange={handleSearchTerm} />
                         </form>
                     </div>

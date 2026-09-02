@@ -5,8 +5,8 @@ import UserPicture from "./UserPicture";
 import { USER_PICTURE_DEFAULT_SIZE } from "../utils/defaults";
 
 function UserCard({ data }) {
-    const [userData, setUserData] = useState(data);
-    const [nowFollowing, setNowFollowing] = useState(false);
+    const [userData, setUserData] = useState(data.id ? data : data.following);
+    const [nowFollowing, setNowFollowing] = useState(data.id ? data.following?.length : data.following);
     const navigate = useNavigate();
 
     function goToUser() {

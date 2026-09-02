@@ -5,12 +5,17 @@ import { Navigate, Outlet, useLocation, useNavigate, useParams } from "react-rou
 import UserToast from "./components/UserToast";
 import NotificationsCount from "./components/NotificationsCount";
 import WhoToFollow from "./components/WhoToFollow";
+import SearchInput from "./components/SearchInput";
+import SearchFilter from "./components/SearchFilter";
 
 function MainPage() {
     const ActivePage = Object.freeze({
-        HOME: Symbol("home"),
-        BOOKMARKS: Symbol("bookmarks"),
-        PROFILE: Symbol("profile")
+        HOME: "HOME",
+        BOOKMARKS: "BOOKMARKS",
+        PROFILE: "PROFILE",
+        SEARCH: "SEARCH",
+        USERS: "USERS",
+        NOTIFICATIONS: "notifications"
     });
     const location = useLocation();
     const parts = location.pathname.split("/");
@@ -22,6 +27,15 @@ function MainPage() {
             break;
         case "bookmarks":
             active = ActivePage.BOOKMARKS;
+            break;
+        case "search":
+            active = ActivePage.SEARCH;
+            break;
+        case "notifications":
+            active = ActivePage.NOTIFICATIONS;
+            break;
+        case "users":
+            active = ActivePage.USERS;
             break;
         default:
             active = ActivePage.PROFILE;
@@ -58,6 +72,9 @@ function MainPage() {
         navigate("/" + user.username);
     }
 
+    console.log(location.pathname)
+    console.log(active)
+
     if (isLoading) return <><p>Loading...</p></>;
     if (!user && !isLoading) return <Navigate to="/login" replace />
 
@@ -85,9 +102,9 @@ function MainPage() {
                 </div>
                 <div onClick={goToExplore} className="navigation-button">
                     <div className="navigation-button-inner">
-                        <div className={`navigation-icon ${active == ActivePage.HOME ? "active" : ""}`}>
-                            <svg fill="#000000" width="800px" height="800px" fillRule="currentColor" viewBox="-2 3 27 27" version="1.1" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M19.469 12.594l3.625 3.313c0.438 0.406 0.313 0.719-0.281 0.719h-2.719v8.656c0 0.594-0.5 1.125-1.094 1.125h-4.719v-6.063c0-0.594-0.531-1.125-1.125-1.125h-2.969c-0.594 0-1.125 0.531-1.125 1.125v6.063h-4.719c-0.594 0-1.125-0.531-1.125-1.125v-8.656h-2.688c-0.594 0-0.719-0.313-0.281-0.719l10.594-9.625c0.438-0.406 1.188-0.406 1.656 0l2.406 2.156v-1.719c0-0.594 0.531-1.125 1.125-1.125h2.344c0.594 0 1.094 0.531 1.094 1.125v5.875z"></path>
+                        <div className={`navigation-icon ${active == ActivePage.SEARCH ? "active" : ""}`}>
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><g>
+                                <path d="M10.25 4.25c-3.314 0-6 2.686-6 6s2.686 6 6 6c1.657 0 3.155-.67 4.243-1.757 1.087-1.088 1.757-2.586 1.757-4.243 0-3.314-2.686-6-6-6zm-9 6c0-4.971 4.029-9 9-9s9 4.029 9 9c0 1.943-.617 3.744-1.664 5.215l4.475 4.474-2.122 2.122-4.474-4.475c-1.471 1.047-3.272 1.664-5.215 1.664-4.971 0-9-4.029-9-9z"></path></g>
                             </svg>
                         </div>
                         Explore
@@ -95,10 +112,10 @@ function MainPage() {
                 </div>
                 <div onClick={goToNotifications} className="navigation-button">
                     <div className="navigation-button-inner">
-                        <div className={`notifications navigation-icon ${active == ActivePage.HOME ? "active" : ""}`}>
+                        <div className={`notifications navigation-icon ${active == ActivePage.NOTIFICATIONS ? "active" : ""}`}>
                             <NotificationsCount user={user} />
-                            <svg viewBox="0 0 24 24" aria-hidden="true"><g>
-                                <path d="M19.993 9.042C19.48 5.017 16.054 2 11.996 2s-7.49 3.021-7.999 7.051L2.866 18H7.1c.463 2.282 2.481 4 4.9 4s4.437-1.718 4.9-4h4.236l-1.143-8.958zM12 20c-1.306 0-2.417-.835-2.829-2h5.658c-.412 1.165-1.523 2-2.829 2zm-6.866-4l.847-6.698C6.364 6.272 8.941 4 11.996 4s5.627 2.268 6.013 5.295L18.864 16H5.134z"></path></g>
+                            <svg viewBox="0 0 26 26" aria-hidden="true" fill="white"><g>
+                                <path d="M11.996 2c-4.062 0-7.49 3.021-7.999 7.051L2.866 18H7.1c.463 2.282 2.481 4 4.9 4s4.437-1.718 4.9-4h4.236l-1.143-8.958C19.48 5.017 16.054 2 11.996 2zM9.171 18h5.658c-.412 1.165-1.523 2-2.829 2s-2.417-.835-2.829-2z"></path></g>
                             </svg>
                         </div>
                         Notifications
@@ -116,9 +133,9 @@ function MainPage() {
                 </div>
                 <div onClick={goToAllUsers} className="navigation-button">
                     <div className="navigation-button-inner">
-                        <div className={`navigation-icon ${active == ActivePage.PROFILE ? "active" : ""}`}>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6" />
+                        <div className={`navigation-icon ${active == ActivePage.USERS ? "active" : ""}`}>
+                            <svg viewBox="-1 0 27 27" aria-hidden="true"><g>
+                                <path d="M5.5 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm18.25 13.91c-.18-2.01-.78-3.72-1.81-4.96C20.89 10.7 19.45 10 17.75 10c-.35 0-.68.03-1.01.09-.18.54-.45 1.05-.8 1.49.74.46 1.41 1.05 1.99 1.76 1.05 1.3 1.71 2.91 2.06 4.66h3.85l-.09-1.09zM18.5 9c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zM6.07 13.34c.58-.71 1.25-1.3 1.99-1.76-.35-.44-.62-.95-.8-1.49-.33-.06-.66-.09-1.01-.09-1.7 0-3.14.7-4.19 1.95C1.032 13.19.433 14.9.254 16.91L.157 18H4.01c.35-1.75 1.01-3.36 2.06-4.66zM15 8.5c0-1.66-1.34-3-3-3s-3 1.34-3 3 1.34 3 3 3 3-1.34 3-3zm-7.37 6.1c-1.07 1.32-1.69 3.15-1.88 5.31L5.66 21h12.68l-.09-1.09c-.19-2.16-.81-3.99-1.88-5.31-1.08-1.35-2.59-2.1-4.37-2.1s-3.28.75-4.37 2.1z"></path></g>
                             </svg>
                         </div>
                         All users
@@ -139,6 +156,8 @@ function MainPage() {
             <div className="master-pane">
                 <Outlet />
                 <div className="right-pane">
+                    {active != ActivePage.SEARCH && <SearchInput />}
+                    {active == ActivePage.SEARCH && <SearchFilter />}
                     <WhoToFollow />
                     <p>3</p>
                     <div>

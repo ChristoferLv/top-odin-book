@@ -217,10 +217,10 @@ async function fetchUserByUsername(username) {
     }
 }
 
-async function searchUsers(searchParam, signal) {
+async function searchUsers(searchArgs, signal) {
     try {
         const token = localStorage.getItem("token");
-        const request = await fetch('http://localhost:3000/users/search?q=' + searchParam, {
+        const request = await fetch('http://localhost:3000/users/search?' + searchArgs, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -426,10 +426,10 @@ async function fetchPostById(postId) {
     }
 }
 
-async function searchPosts(searchParam, signal) {
+async function searchPosts(searchArgs, signal) {
     try {
         const token = localStorage.getItem("token");
-        const rawResponse = await fetch('http://localhost:3000/posts/search?q=' + searchParam, {
+        const rawResponse = await fetch('http://localhost:3000/posts/search?' + searchArgs, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
