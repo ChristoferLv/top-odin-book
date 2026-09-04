@@ -10,6 +10,7 @@ import Toast from "./Toast";
 function EditProfile() {
     const { user, isLoading, setUser } = useContext(AuthContext);
     const [userData, setUserData] = useState({ name: "", bio: "" });
+    const [userDataValid, setUserDataValid] = useState({ name: true, bio: true });
     const navigate = useNavigate();
     const fileInputRef = useRef(null);
     const fileBackgroundRef = useRef(null);
@@ -28,17 +29,27 @@ function EditProfile() {
     function handleChange(e) {
         const whoChanged = e.target;
         let value = whoChanged.value;
+        let valid = true;
         if (whoChanged.name == "name") {
+            if (!value?.length) {
+                valid = false;
+            }
+
             if (value?.length > 50) {
                 value = value.slice(0, 50);
             }
         }
         if (whoChanged.name == "bio") {
-            if (value?.length > 50) {
-                value = value.slice(0, 50);
+            if (!value?.length || value.length == 0) {
+                valid = false;
+            }
+
+            if (value?.length > 160) {
+                value = value.slice(0, 160);
             }
         }
 
+        setUserDataValid({ ...userDataValid, [whoChanged.name]: valid });
         const newValues = { ...userData, [whoChanged.name]: value }
         setUserData(newValues);
     }
@@ -192,13 +203,25 @@ function EditProfile() {
                         </div>
                     </div>
                     <div className="user-data-inputs">
-                        <div className="user-field">
+                        <div className={`user-field ${userDataValid.name ? "" : "invalid"}`}>
                             <input name="name" type="text" id="name" placeholder=" " required value={userData.name} onChange={handleChange} />
-                            <label htmlFor="name">Name</label>
+                            <div className="field-infos">
+                                <label htmlFor="name">Name</label>
+                                <div className="counter">
+                                    <span>{userData.name.length}/50</span>
+                                </div>
+                            </div>
                         </div>
-                        <div className="user-field">
-                            <textarea name="bio" type="text" id="bio" placeholder=" " value={userData.bio} onChange={handleChange} />
-                            <label htmlFor="bio">Bio</label>
+                        <div className={`user-field ${userDataValid.bio ? "" : "invalid"}`}>
+                            <div className="textarea-wrap">
+                                <textarea name="bio" type="text" id="bio" placeholder=" " value={userData.bio} onChange={handleChange} />
+                            </div>
+                            <div className="field-infos">
+                                <label htmlFor="name">Bio</label>
+                                <div className="counter">
+                                    <span>{userData.bio.length}/160</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

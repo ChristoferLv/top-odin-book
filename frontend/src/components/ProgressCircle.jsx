@@ -47,14 +47,16 @@ const Pie = ({ current, max }) => {
     const remaining = (max - current);
     const circleColor = (remaining == 0) ? "red" : (remaining <= 20 ? "#ffd400" : "#1d9bf0")
     return (
-        <div className={`progress-circle ${remaining <= 20 ? "bigger-circle" : ""}`}>
-            <svg viewBox="0 0 45 45">
-                <g transform="translate(22, 22) rotate(-90 0 0)">
-                    <Circle colour="rgb(47, 51, 54)" />
-                    <Circle colour={circleColor} pct={pct} />
-                </g>
-                {(max - current) <= 20 && <Text value={max - current} />}
-            </svg>
+        <div className="progress-circle-box">
+            <div className={`progress-circle ${remaining <= 20 ? "bigger-circle" : ""}`}>
+                <svg viewBox="0 0 45 45">
+                    <g transform="translate(22, 22) rotate(-90 0 0)">
+                        <Circle colour="rgb(47, 51, 54)" />
+                        <Circle colour={circleColor} pct={pct} />
+                    </g>
+                    {(max - current) <= 20 && <Text value={max - current} />}
+                </svg>
+            </div>
         </div>
     );
 };
