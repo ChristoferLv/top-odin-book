@@ -188,19 +188,19 @@ function PostWithComment({ user, data }) {
             navigate(`/${postData.author.username}/post/${postData.id}/photo`);
     }
 
-    useEffect(() => {
-        const handleEsc = (event) => {
-            if (event.key === 'Escape') {
-                console.log("called here")
-                handleCloseDialog(event);
-            }
-        };
-        window.addEventListener('keydown', handleEsc);
+    // useEffect(() => {
+    //     const handleEsc = (event) => {
+    //         if (event.key === 'Escape') {
+    //             console.log("called here")
+    //             handleCloseDialog(event);
+    //         }
+    //     };
+    //     window.addEventListener('keydown', handleEsc);
 
-        return () => {
-            window.removeEventListener('keydown', handleEsc);
-        };
-    }, []);
+    //     return () => {
+    //         window.removeEventListener('keydown', handleEsc);
+    //     };
+    // }, []);
 
     return (
         <>

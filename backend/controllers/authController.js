@@ -2,37 +2,9 @@ import bcrypt from 'bcryptjs';
 import { body, matchedData, validationResult } from "express-validator";
 import { prisma } from '../lib/prisma.js';
 import jwt from 'jsonwebtoken';
-
-const validateNewUser = [
-    body("username").matches(/^[a-zA-Z0-9\s\-.]+$/).withMessage("Username can only contain letters, numbers, space, - and .")
-        .trim()
-        .isLength({ min: 3 }).withMessage("Username must have at leats 3 characteres")
-        .isLength({ max: 30 }).withMessage("The maximum username length is 30")
-        .custom(async value => {
-            try {
-                const exists = await prisma.users.findFirst({ where: { username: { equals: value.toLowerCase(), mode: 'insensitive' } } });
-                if (exists)
-                    throw new Error("Username is already in use");
-                return true;
-            } catch (e) {
-                console.log(e);
-                throw e;
-            }
-        }).withMessage("Username is already in use"),
-    body("password")
-        .trim()
-        .isLength({ min: 3 }).withMessage("Password must have at leats 3 characteres")
-        .isLength({ max: 50 }).withMessage("The maximum password length is 50"),
-    body('confirmPassword').custom((value, { req }) => {
-        return value === req.body.password;
-    }).withMessage("Password fields must match")
-];
+import { validateNewUser } from '../validators.js';
 
 async function getMe(req, res) {
-    if (!req.user) {
-        return res.status(401).send({ success: false });
-    }
-
     try {
         const result = await prisma.users.findUnique({
             where:
@@ -82,10 +54,6 @@ async function login(req, res) {
 }
 
 async function logOut(req, res) {
-    if (!req.user) {
-        return res.status(500).json({ success: false });
-    }
-
     const userId = req.user.id;
 
     try {

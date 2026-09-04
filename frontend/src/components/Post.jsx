@@ -133,18 +133,18 @@ function Post({ user, data }) {
         navigate(`/${usePostData.author.username}/post/${usePostData.id}/photo`);
     }
 
-    useEffect(() => {
-        const handleEsc = (event) => {
-            if (event.key === 'Escape') {
-                handleCloseDialog(event);
-            }
-        };
-        window.addEventListener('keydown', handleEsc);
+    // useEffect(() => {
+    //     const handleEsc = (event) => {
+    //         if (event.key === 'Escape') {
+    //             handleCloseDialog(event);
+    //         }
+    //     };
+    //     window.addEventListener('keydown', handleEsc);
 
-        return () => {
-            window.removeEventListener('keydown', handleEsc);
-        };
-    }, []);
+    //     return () => {
+    //         window.removeEventListener('keydown', handleEsc);
+    //     };
+    // }, []);
 
 
     return (
@@ -205,8 +205,8 @@ function Post({ user, data }) {
                     </div>
                 </div>
             </div >
-            <ReplyDialog isOpen={isDialogOpen} originalPost={usePostData} user={user} onCancel={handleCloseDialog} onConfirm={handleCloseDialog} />
-            <ShareWithComment isOpen={isShareDialogOpen} originalPost={usePostData} user={user} onCancel={handleCloseDialog} onConfirm={handleCloseDialog} />
+            <ReplyDialog key={crypto.randomUUID()} isOpen={isDialogOpen} originalPost={usePostData} user={user} onCancel={handleCloseDialog} onConfirm={handleCloseDialog} />
+            <ShareWithComment key={crypto.randomUUID()} isOpen={isShareDialogOpen} originalPost={usePostData} user={user} onCancel={handleCloseDialog} onConfirm={handleCloseDialog} />
         </>
     )
 }

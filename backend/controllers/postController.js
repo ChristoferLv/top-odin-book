@@ -1,16 +1,10 @@
 import { body, matchedData, validationResult } from "express-validator";
 import { prisma } from "../lib/prisma.js";
-
-const validatePost = [
-    body("content")
-        .trim()
-        .isLength({ min: 1 }).withMessage("Post must have at leats 1 characteres of content.")
-        .isLength({ max: 500 }).withMessage("The maximum post content length is 500.")
-];
+import { validatePost } from "../validators.js";
 
 async function createNotificationAndNotify(req, authorId, postId, type, receiverId) {
     try {
-        if(authorId == receiverId) return;
+        if (authorId == receiverId) return;
 
         const exists = await prisma.notifications.findUnique({
             where: {
@@ -714,69 +708,78 @@ async function getMyReplies(req, res) {
         throw e;
     }
 }
+const makeReply = [
+    validatePost,
+    async (req, res) => {
+        try {
+            const errors = validationResult(req);
 
-async function makeReply(req, res) {
-    try {
-        const postId = parseInt(req.params.postId);
-        const content = req.body.content;
-
-        const exists = await prisma.posts.findUnique({
-            where: { id: postId }
-        });
-
-        if (!exists) {
-            return res.status(400).send({ success: false, message: "Post not found." });
-        }
-
-        let hasMidia = req.file?.size > 0;
-
-        const result = await prisma.$transaction(async (tx) => {
-            const postResult = await tx.posts.create({
-                data: {
-                    authorId: req.user.id,
-                    hasMidia: hasMidia,
-                    postType: "REPLY",
-                    originalPostId: postId,
-                    content: content
-                }
-            });
-
-            if (!postResult) {
-                throw new Error("Fail to create new post.");
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ success: false, error: errors });
             }
 
-            if (!hasMidia) {
+
+            const postId = parseInt(req.params.postId);
+            const content = req.body.content;
+
+            const exists = await prisma.posts.findUnique({
+                where: { id: postId }
+            });
+
+            if (!exists) {
+                return res.status(400).send({ success: false, message: "Post not found." });
+            }
+
+            let hasMidia = req.file?.size > 0;
+
+            const result = await prisma.$transaction(async (tx) => {
+                const postResult = await tx.posts.create({
+                    data: {
+                        authorId: req.user.id,
+                        hasMidia: hasMidia,
+                        postType: "REPLY",
+                        originalPostId: postId,
+                        content: content
+                    }
+                });
+
+                if (!postResult) {
+                    throw new Error("Fail to create new post.");
+                }
+
+                if (!hasMidia) {
+                    return postResult;
+                }
+
+                const midiaResult = await tx.midias.create({
+                    data: {
+                        mime: req.file.mimetype,
+                        content: req.file.buffer,
+                        ownerId: req.user.id,
+                        postId: postResult.id
+                    }
+                });
+
+                if (!midiaResult)
+                    throw new Error("Fail to create new post.");
+
                 return postResult;
-            }
-
-            const midiaResult = await tx.midias.create({
-                data: {
-                    mime: req.file.mimetype,
-                    content: req.file.buffer,
-                    ownerId: req.user.id,
-                    postId: postResult.id
-                }
             });
 
-            if (!midiaResult)
-                throw new Error("Fail to create new post.");
+            if (!result) {
+                return res.status(500).send({ success: false });
+            }
 
-            return postResult;
-        });
+            createNotificationAndNotify(req, req.user.id, postId, "REPLY", exists.authorId);
 
-        if (!result) {
-            return res.status(500).send({ success: false });
+            return res.status(201).send({ success: true, data: result });
+        } catch (e) {
+            console.log(e);
+            res.status(500).send({ success: false });
+            throw e;
         }
-
-        createNotificationAndNotify(req, req.user.id, postId, "REPLY", exists.authorId);
-
-        return res.status(201).send({ success: true, data: result });
-    } catch (e) {
-        console.log(e);
-        res.status(500).send({ success: false });
-        throw e;
     }
-}
+]
 
 async function getRepliesOfPost(req, res) {
     try {

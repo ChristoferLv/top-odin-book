@@ -24,9 +24,9 @@ enum NotificationType {
 
 model Users {
   id         Int         @id @default(autoincrement())
-  name       String
-  username   String      @unique @db.VarChar(30)
-  bio        String?
+  name       String      @db.VarChar(50)
+  username   String      @unique @db.VarChar(15)
+  bio        String?     @db.VarChar(160)
   password   String
   picture    Bytes?
   mime       String?
@@ -47,7 +47,7 @@ model Users {
 model Posts {
   id        Int      @id @default(autoincrement())
   postType  PostType @default(POST)
-  content   String?  @db.VarChar(500)
+  content   String?  @db.VarChar(280)
   createdAt DateTime @default(now()) @db.Timestamptz(6)
   authorId  Int
   author    Users    @relation(fields: [authorId], references: [id])

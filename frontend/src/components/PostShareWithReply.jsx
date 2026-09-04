@@ -142,18 +142,18 @@ function PostShareWithReply({ user, data }) {
         navigate(`${postData.author.username}/post/${postData.id}`);
     }
 
-    useEffect(() => {
-        const handleEsc = (event) => {
-            if (event.key === 'Escape') {
-                handleCloseDialog(event);
-            }
-        };
-        window.addEventListener('keydown', handleEsc);
+    // useEffect(() => {
+    //     const handleEsc = (event) => {
+    //         if (event.key === 'Escape') {
+    //             handleCloseDialog(event);
+    //         }
+    //     };
+    //     window.addEventListener('keydown', handleEsc);
 
-        return () => {
-            window.removeEventListener('keydown', handleEsc);
-        };
-    }, []);
+    //     return () => {
+    //         window.removeEventListener('keydown', handleEsc);
+    //     };
+    // }, []);
 
     return (
         <>
@@ -202,8 +202,8 @@ function PostShareWithReply({ user, data }) {
                     </div>
                 </div>
             </div>
-            <ReplyDialog isOpen={isDialogOpen} originalPost={data} user={user} onCancel={handleCloseDialog} onConfirm={handleCloseDialog} />
-            <ShareWithComment isOpen={isShareDialogOpen} originalPost={data} user={user} onCancel={handleCloseDialog} onConfirm={handleCloseDialog} />
+            <ReplyDialog key={crypto.randomUUID()} isOpen={isDialogOpen} originalPost={data} user={user} onCancel={handleCloseDialog} onConfirm={handleCloseDialog} />
+            <ShareWithComment key={crypto.randomUUID()} isOpen={isShareDialogOpen} originalPost={data} user={user} onCancel={handleCloseDialog} onConfirm={handleCloseDialog} />
         </>
     );
 }

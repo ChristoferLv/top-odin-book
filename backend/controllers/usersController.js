@@ -1,5 +1,6 @@
 import { body, matchedData, validationResult } from "express-validator";
 import { prisma } from "../lib/prisma.js";
+import { validateUpdateUser } from "../validators.js";
 
 async function createNotificationAndNotify(req, authorId, receiverId) {
     try {
@@ -170,17 +171,13 @@ async function searchUsers(req, res) {
 }
 
 const updateUserProfile = [
+    validateUpdateUser,
     async (req, res) => {
-        // const errors = validationResult(req);
+        const errors = validationResult(req);
 
-        // if (!errors.isEmpty()) {
-        //     return res.status(400).json({ success: false, error: errors });
-        // }
-
-        if (!req.user) {
-            return res.status(401).send({ success: false });
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ success: false, error: errors });
         }
-
 
         const { name, bio } = req.body;
         const userId = parseInt(req.user.id);

@@ -5,6 +5,7 @@ import UserPicture from "./UserPicture";
 import { editUser, fetchUserBackground, fetchUserPicture, sendUserBackground, sendUserPicture } from "../../api/requests";
 import { useNavigate } from "react-router";
 import background from "../../public/bkgd.png";
+import Toast from "./Toast";
 
 function EditProfile() {
     const { user, isLoading, setUser } = useContext(AuthContext);
@@ -17,13 +18,33 @@ function EditProfile() {
     const [backgroundBuff, setBackground] = useState(null);
     const [mimeBkgd, setMimeBkgd] = useState(null);
 
+    const [isToastOpen, setIsToastOpen] = useState(false);
+
+    function handleCloseToast() {
+        setIsToastOpen(false);
+    }
+
+
     function handleChange(e) {
-        const whoChanged = event.target;
-        const newValues = { ...userData, [whoChanged.name]: whoChanged.value }
+        const whoChanged = e.target;
+        let value = whoChanged.value;
+        if (whoChanged.name == "name") {
+            if (value?.length > 50) {
+                value = value.slice(0, 50);
+            }
+        }
+        if (whoChanged.name == "bio") {
+            if (value?.length > 50) {
+                value = value.slice(0, 50);
+            }
+        }
+
+        const newValues = { ...userData, [whoChanged.name]: value }
         setUserData(newValues);
     }
 
     async function handleSaveEdit() {
+        if (userData.name.length < 1) return;
         const result = await editUser(userData);
         if (result && result.success) {
             localStorage.setItem('user', JSON.stringify(result.data));
@@ -45,7 +66,7 @@ function EditProfile() {
         const data = Object.fromEntries(new FormData(e.target).entries());
         fileInputRef.current.value = "";
         if (data.picture.size > 5000000) {
-            alert("Maximum picture file size is 5MB.");
+            setIsToastOpen(true);
             return;
         }
 
@@ -69,7 +90,7 @@ function EditProfile() {
         const data = Object.fromEntries(new FormData(e.target).entries());
         fileBackgroundRef.current.value = "";
         if (data.background.size > 5000000) {
-            alert("Maximum background file size is 5MB.");
+            setIsToastOpen(true);
             return;
         }
 
@@ -163,7 +184,7 @@ function EditProfile() {
                     <div className="my-page-controls">
                         <div className="my-page-picture">
                             <div
-                                className="profile-pic" onClick={handleClickImage}
+                                className="profile-pic pic-border" onClick={handleClickImage}
                             >
                                 <img src={!rawBufferPicture ? "../public/avatar.png" :
                                     imageUrlPicture} alt="" />
@@ -176,12 +197,13 @@ function EditProfile() {
                             <label htmlFor="name">Name</label>
                         </div>
                         <div className="user-field">
-                            <textarea name="bio" type="text" id="bio" placeholder=" " required defaultValue={userData.bio} onChange={handleChange} />
+                            <textarea name="bio" type="text" id="bio" placeholder=" " value={userData.bio} onChange={handleChange} />
                             <label htmlFor="bio">Bio</label>
                         </div>
                     </div>
                 </div>
             </div>
+            {isToastOpen && <Toast message={"Your file is to large. The maximum file size is 5MB"} isOpen={isToastOpen} setIsOpen={handleCloseToast} />}
         </>
     );
 }
