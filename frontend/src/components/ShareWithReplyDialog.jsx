@@ -137,7 +137,7 @@ function ShareWithComment({ isOpen, user, originalPost, onCancel, onConfirm }) {
                         </button>
                     </div>
                     <div className="reply-body">
-                        <UserPicture id={user.id} size={USER_PICTURE_DEFAULT_SIZE} />
+                        <UserPicture id={user.id} username={user.username} size={USER_PICTURE_DEFAULT_SIZE} />
                         <div className="reply-content">
                             <div className="new-reply-on-dialog">
                                 <form>

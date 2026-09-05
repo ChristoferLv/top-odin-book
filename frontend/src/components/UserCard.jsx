@@ -29,12 +29,16 @@ function UserCard({ data }) {
         }
     }
 
+    function handleSeeUser() {
+        navigate("/" + userData.username);
+    }
+
+
     return (
         <>
-            <div className="user-item">
-                <div onClick={goToUser}>
-                    <UserPicture id={userData.id} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
-                </div>
+            <div className="user-item" onClick={handleSeeUser}>
+                <UserPicture id={userData.id} username={userData.username} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
+
                 <div className="user-infos">
                     <div className="user-item-head" onClick={goToUser}>
                         <span>{userData.name}</span>

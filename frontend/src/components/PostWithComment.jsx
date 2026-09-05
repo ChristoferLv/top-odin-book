@@ -209,9 +209,7 @@ function PostWithComment({ user, data }) {
                     {/* <div className="chain"></div> */}
                     <div className="post-body">
                         <div className="left-side">
-                            <div className="picture-space" onClick={(e) => { handleSeeAuthor(e, true) }}>
-                                <UserPicture id={originalPostData.author.id} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
-                            </div>
+                                <UserPicture id={originalPostData.author.id} username={originalPostData.author.username} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
                             <div className="chain"></div>
                         </div>
                         <div className="post-data">
@@ -273,9 +271,7 @@ function PostWithComment({ user, data }) {
                         </div>
                         }
                         <div className="post-body">
-                            <div className="picture-space" onClick={(e) => { handleSeeAuthor(e, false) }}>
-                                <UserPicture id={postData.author.id} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
-                            </div>
+                                <UserPicture id={postData.author.id} username={postData.author.username} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
                             <div className="post-data">
                                 <div className="post-head" onClick={(e) => { handleSeeAuthor(e, false) }}>
                                     <span>{postData.author.name}</span>

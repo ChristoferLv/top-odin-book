@@ -236,7 +236,7 @@ function SeeingPicturePage() {
                 <div className="side-container">
                     <div className="actions-container">
                         <div onClick={goToPostAuthor} className="actions-container-header">
-                            <UserPicture id={postData.author.id} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
+                            <UserPicture id={postData.author.id} username={postData.author.username} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
                             <div className="actions-container-user-data">
                                 <span>{postData.author.name}</span>
                                 <span>@{postData.author.username}</span>

@@ -121,7 +121,7 @@ function Notification({ data }) {
                 </div>
                 <div className="notification-body">
                     <div className="notification-head">
-                        <UserPicture id={data.authorId} size={32} useBorder={false} />
+                        <UserPicture id={data.authorId} username={data.username} size={32} useBorder={false} />
                     </div>
                     <div className="notification-content">
                         {action}

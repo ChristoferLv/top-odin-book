@@ -160,9 +160,7 @@ function Post({ user, data }) {
                 </div>
                 }
                 <div className="post-body">
-                    <div className="pic-space" onClick={handleSeeAuthor}>
-                        <UserPicture id={usePostData.author.id} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
-                    </div>
+                        <UserPicture id={usePostData.author.id} username={usePostData.author.username} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
                     <div className="post-data">
                         <div className="post-head" onClick={handleSeeAuthor}>
                             <span>{usePostData.author.name}</span>

@@ -177,7 +177,7 @@ function PostPage() {
                     <p>Post</p>
                 </div>
             </div>
-            < PostWithComment data={postData} user={user} />
+            <PostWithComment data={postData} user={user} />
             <div className="post-view">
                 <MakeReply postId={postData.id} onSuccess={handleSuccessReply} />
             </div>
@@ -189,16 +189,7 @@ function PostPage() {
         </div>
 
 
-    </>)
-
-
-
-
-
-
-
-
-
+    </>);
 
 
     const formatedDate = formatDate(postData.createdAt);
@@ -220,7 +211,7 @@ function PostPage() {
                 </div>
                 <div className="post-view">
                     <div className="post-view-head" onClick={goToPostAuthor}>
-                        <UserPicture key={postData.author.id} id={postData.author.id} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
+                        <UserPicture key={postData.author.id} id={postData.author.id} username={postData.author.username} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
                         <div className="post-view-user-data">
                             <span>{postData.author.name}</span>
                             <span>@{postData.author.username}</span>

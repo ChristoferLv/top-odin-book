@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
 import { fetchUserPicture } from "../../api/requests";
 import dafaultAvatar from "../../public/avatar.png";
+import { useNavigate } from "react-router";
 
 
-function UserPicture({ id, size, useBorder }) {
+function UserPicture({ id, username, size, useBorder }) {
     const [pictureBuff, setPicture] = useState(null);
     const [mime, setMime] = useState(null);
     const rawBuffer = new Uint8Array(pictureBuff);
     const blob = new Blob([rawBuffer], { type: mime });
     const imageUrl = URL.createObjectURL(blob);
+    const navigate = useNavigate();
 
 
     useEffect(() => {
@@ -30,9 +32,14 @@ function UserPicture({ id, size, useBorder }) {
         }
     }, [])
 
+    function handleSeeUser() {
+        if (username)
+            navigate("/" + username);
+    }
+
     return (
         <>
-            <div className="pic-container">
+            <div className="pic-container" onClick={handleSeeUser}>
                 <div className={`profile-pic ${useBorder ? "pic-border" : ""}`}
                     style={{ width: size + "px", height: size + "px" }}>
                     <img src={!pictureBuff ? dafaultAvatar :

@@ -102,7 +102,7 @@ function NewPost() {
     return (
         <>
             <div className="new-post">
-                <UserPicture id={user.id} size={USER_PICTURE_DEFAULT_SIZE} />
+                <UserPicture id={user.id} username={user.username} size={USER_PICTURE_DEFAULT_SIZE} />
                 <form onSubmit={handlePost}>
                     <input
                         ref={fileInputRef}

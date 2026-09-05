@@ -107,7 +107,7 @@ function Comment({ user, data }) {
         <>
             <div className="post" onClick={handleSeePost}>
                 <div className="post-body">
-                    <UserPicture id={postData.author.id} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
+                    <UserPicture id={postData.author.id} username={postData.author.username} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
                     <div className="post-data">
                         <div className="post-head">
                             <span>{postData.author.name}</span>

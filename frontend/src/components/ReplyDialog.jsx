@@ -128,7 +128,7 @@ function ReplyDialog({ isOpen, user, originalPost, onCancel, onConfirm }) {
                     </div>
                     <div className="reply-body">
                         <div className="chain"></div>
-                        <UserPicture id={originalPost.author.id} size={USER_PICTURE_DEFAULT_SIZE} useBorder={true} />
+                        <UserPicture id={originalPost.author.id} username={originalPost.author.id} size={USER_PICTURE_DEFAULT_SIZE} useBorder={true} />
                         <div className="reply-content">
                             <div className="post-head">
                                 <span>{originalPost.author.name}</span>
@@ -145,7 +145,7 @@ function ReplyDialog({ isOpen, user, originalPost, onCancel, onConfirm }) {
                     </div>
                     <div className="reply">
                         <div className="new-reply">
-                            <UserPicture id={user.id} size={USER_PICTURE_DEFAULT_SIZE} useBorder={true} />
+                            <UserPicture id={user.id} username={user.author.id} size={USER_PICTURE_DEFAULT_SIZE} useBorder={true} />
                             <form>
                                 <input
                                     ref={fileInputRef}
