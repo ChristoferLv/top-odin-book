@@ -33,6 +33,7 @@ body {
     --sb-track-color: #000000;
     --sb-thumb-color: #b7b7b7;
     --sb-size: 4px;
+    background-color: #000000;
 }
 
 #root,

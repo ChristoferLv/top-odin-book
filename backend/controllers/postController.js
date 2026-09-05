@@ -196,6 +196,25 @@ async function getPostById(req, res) {
 
                     }
                 },
+                originalPost: {
+                    include: {
+                        author: {
+                            omit:
+                            {
+                                password: true,
+                                picture: true,
+                                mime: true,
+                                background: true,
+                                bgmime: true,
+                                createdAt: true
+                            }
+                        },
+                        likes: { where: { whoLikedId: req.user.id }, select: { id: true } },
+                        bookmarks: { where: { whoBookmarkedId: req.user.id }, select: { id: true } },
+                        replyPost: { where: { authorId: req.user.id, postType: "SHARE" }, select: { id: true } },
+                        midia: false
+                    }
+                },
                 likes: { where: { whoLikedId: req.user.id }, select: { id: true } },
                 bookmarks: { where: { whoBookmarkedId: req.user.id }, select: { id: true } },
                 replyPost: { where: { authorId: req.user.id, postType: "SHARE" }, select: { id: true } },
