@@ -1,7 +1,27 @@
+import { useEffect } from "react";
+
 function ShareOrReplyDialog({ onClose, selectShare, selectShareReply }) {
+
+    function handleClose(e){
+        e.stopPropagation();
+        onClose();
+    }
+
+    useEffect(() => {
+        const handleEsc = (event) => {
+            if (event.key === 'Escape') {
+                onClose(event);
+            }
+        };
+        window.addEventListener('keydown', handleEsc);
+
+        return () => {
+            window.removeEventListener('keydown', handleEsc);
+        };
+    }, []);
     return (
         <>
-            <div onClick={onClose} className="transparent-overlay"></div>
+            <div onClick={handleClose} className="transparent-overlay"></div>
             <div className="share-or-reply">
                 <div onClick={selectShare} className="option">
                     <div className="icon">

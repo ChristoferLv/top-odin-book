@@ -16,7 +16,7 @@ function CompactPost({ user, data }) {
     const navigate = useNavigate();
     const isReply = data.postType == PostType.REPLY;
     const isShare = data.postType == PostType.SHARE;
-    const hasShared = isShare ? postData.originalPost.replyPost.length : postData.replyPost.length;
+    // const hasShared = isShare ? postData.originalPost.replyPost.length : postData.replyPost.length;
     const hasMidia = postData.hasMidia;
     // const isMeShare = data.postType == PostType.SHARE && data.author.id == user.id;
     const usePostData = isShare ? postData.originalPost : postData;

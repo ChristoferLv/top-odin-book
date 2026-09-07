@@ -86,7 +86,6 @@ function ShareWithComment({ isOpen, user, originalPost, onCancel, onConfirm }) {
         formData.append("content", replyContent)
         formData.append("originalPostId", originalPost.id);
         // const check = Object.fromEntries(payload.entries());
-        console.log(replyContent)
         if (replyContent.length < 1 && !fileInputRef.current.files[0]) {
             return;
         }
@@ -196,7 +195,7 @@ function ShareWithComment({ isOpen, user, originalPost, onCancel, onConfirm }) {
                 closeModal={handleCloseModal}
             >
                 <div className="modal-image">
-                    <img src={imageUrl} alt="" />
+                    {imageUrl != "" && <img src={imageUrl} alt="" />}
                 </div>
             </PictureDialog >
             {isToastOpen && <Toast message={"Your file is to large. The maximum file size is 5MB"} isOpen={isToastOpen} setIsOpen={handleCloseToast} />}

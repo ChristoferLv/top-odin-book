@@ -64,6 +64,14 @@ const makePost = [
             let referenceId = originalPostId ? originalPostId : null;
             let postType = originalPostId ? "SHARE_REPLY" : "POST";
             let hasMidia = req.file?.size > 0;
+            let reference = {};
+            if (originalPostId) {
+                reference.sharedPostId = referenceId;
+                reference.originalPostId = null;
+            } else {
+                reference.originalPostId = referenceId;
+                reference.sharedPostId = null;
+            }
 
             const result = await prisma.$transaction(async (tx) => {
                 const postResult = await tx.posts.create({
@@ -71,7 +79,7 @@ const makePost = [
                         authorId: req.user.id,
                         hasMidia: hasMidia,
                         postType: postType,
-                        originalPostId: referenceId,
+                        ...reference,
                         content: content
                     }
                 });
@@ -152,13 +160,53 @@ async function getAllPosts(req, res) {
                         },
                         likes: { where: { whoLikedId: userId }, select: { id: true } },
                         bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } },
-                        replyPost: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } },
-                        midia: false
+                        shares: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } },
+                        midia: false,
+                        _count: {
+                            select: {
+                                likes: true,
+                                replyPost: true,
+                                shares: true
+                            }
+                        }
                     }
                 },
                 likes: { where: { whoLikedId: userId }, select: { id: true } },
                 bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } },
-                replyPost: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } }
+                shares: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } },
+                _count: {
+                    select: {
+                        likes: true,
+                        replyPost: true,
+                        shares: true
+                    }
+                },
+                sharedPost: {
+                    include: {
+                        author: {
+                            omit:
+                            {
+                                password: true,
+                                picture: true,
+                                mime: true,
+                                background: true,
+                                bgmime: true,
+                                createdAt: true
+                            }
+                        },
+                        likes: { where: { whoLikedId: userId }, select: { id: true } },
+                        bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } },
+                        shares: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } },
+                        midia: false,
+                        _count: {
+                            select: {
+                                likes: true,
+                                replyPost: true,
+                                shares: true
+                            }
+                        },
+                    }
+                },
             },
             orderBy: { createdAt: "desc" }
         });
@@ -193,7 +241,6 @@ async function getPostById(req, res) {
                         background: true,
                         bgmime: true,
                         createdAt: true,
-
                     }
                 },
                 originalPost: {
@@ -211,23 +258,53 @@ async function getPostById(req, res) {
                         },
                         likes: { where: { whoLikedId: req.user.id }, select: { id: true } },
                         bookmarks: { where: { whoBookmarkedId: req.user.id }, select: { id: true } },
-                        replyPost: { where: { authorId: req.user.id, postType: "SHARE" }, select: { id: true } },
-                        midia: false
+                        shares: { where: { authorId: req.user.id, postType: "SHARE" }, select: { id: true } },
+                        midia: false,
+                        _count: {
+                            select: {
+                                likes: true,
+                                replyPost: true,
+                                shares: true
+                            }
+                        },
+                    }
+                },
+                sharedPost: {
+                    include: {
+                        author: {
+                            omit:
+                            {
+                                password: true,
+                                picture: true,
+                                mime: true,
+                                background: true,
+                                bgmime: true,
+                                createdAt: true
+                            }
+                        },
+                        likes: { where: { whoLikedId: req.user.id }, select: { id: true } },
+                        bookmarks: { where: { whoBookmarkedId: req.user.id }, select: { id: true } },
+                        shares: { where: { authorId: req.user.id, postType: "SHARE" }, select: { id: true } },
+                        midia: false,
+                        _count: {
+                            select: {
+                                likes: true,
+                                replyPost: true,
+                                shares: true
+                            }
+                        },
                     }
                 },
                 likes: { where: { whoLikedId: req.user.id }, select: { id: true } },
                 bookmarks: { where: { whoBookmarkedId: req.user.id }, select: { id: true } },
-                replyPost: { where: { authorId: req.user.id, postType: "SHARE" }, select: { id: true } },
+                shares: { where: { authorId: req.user.id, postType: "SHARE" }, select: { id: true } },
                 _count: {
                     select: {
-                        likes: {
-                            where: { postId: postId }
-                        },
-                        bookmarks: {
-                            where: { postId: postId }
-                        }
+                        likes: true,
+                        replyPost: true,
+                        shares: true
                     }
-                }
+                },
             }
 
             // select: { _count: { select: { likes: true } } }
@@ -394,12 +471,52 @@ async function searchPosts(req, res) {
                         likes: { where: { whoLikedId: userId }, select: { id: true } },
                         bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } },
                         replyPost: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } },
-                        midia: false
+                        midia: false,
+                        _count: {
+                            select: {
+                                likes: true,
+                                replyPost: true,
+                                shares: true
+                            }
+                        },
+                    }
+                },
+                sharedPost: {
+                    include: {
+                        author: {
+                            omit:
+                            {
+                                password: true,
+                                picture: true,
+                                mime: true,
+                                background: true,
+                                bgmime: true,
+                                createdAt: true
+                            }
+                        },
+                        likes: { where: { whoLikedId: userId }, select: { id: true } },
+                        bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } },
+                        replyPost: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } },
+                        midia: false,
+                        _count: {
+                            select: {
+                                likes: true,
+                                replyPost: true,
+                                shares: true
+                            }
+                        },
                     }
                 },
                 likes: { where: { whoLikedId: userId }, select: { id: true } },
                 bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } },
-                replyPost: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } }
+                replyPost: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } },
+                _count: {
+                    select: {
+                        likes: true,
+                        replyPost: true,
+                        shares: true
+                    }
+                },
             },
             orderBy: order
         });
@@ -439,7 +556,14 @@ async function getLikedPosts(req, res) {
                         },
                         likes: { where: { whoLikedId: userId }, select: { id: true } },
                         bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } },
-                        replyPost: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } }
+                        replyPost: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } },
+                        _count: {
+                            select: {
+                                likes: true,
+                                replyPost: true,
+                                shares: true
+                            }
+                        },
                     }
                 },
             },
@@ -571,9 +695,41 @@ async function getSharedPosts(req, res) {
                         replyPost: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } }
                     }
                 },
+                sharedPost: {
+                    include: {
+                        author: {
+                            omit:
+                            {
+                                password: true,
+                                picture: true,
+                                mime: true,
+                                background: true,
+                                bgmime: true,
+                                createdAt: true
+                            }
+                        },
+                        likes: { where: { whoLikedId: userId }, select: { id: true } },
+                        bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } },
+                        replyPost: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } },
+                        _count: {
+                            select: {
+                                likes: true,
+                                replyPost: true,
+                                shares: true
+                            }
+                        },
+                    }
+                },
                 likes: { where: { whoLikedId: userId }, select: { id: true } },
                 bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } },
-                replyPost: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } }
+                replyPost: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } },
+                _count: {
+                    select: {
+                        likes: true,
+                        replyPost: true,
+                        shares: true
+                    }
+                },
             }
         })
 
@@ -605,8 +761,8 @@ async function sharePost(req, res) {
 
         const hasShared = await prisma.posts.findUnique({
             where: {
-                originalPostId_authorId_postType: {
-                    originalPostId: postId,
+                sharedPostId_authorId_postType: {
+                    sharedPostId: postId,
                     authorId: req.user.id,
                     postType: "SHARE"
                 }
@@ -620,7 +776,7 @@ async function sharePost(req, res) {
             data: {
                 authorId: req.user.id,
                 postType: "SHARE",
-                originalPostId: postId
+                sharedPostId: postId
             }
         });
 
@@ -643,8 +799,8 @@ async function removeShare(req, res) {
 
         const hasShared = await prisma.posts.findUnique({
             where: {
-                originalPostId_authorId_postType: {
-                    originalPostId: postId,
+                sharedPostId_authorId_postType: {
+                    sharedPostId: postId,
                     authorId: req.user.id,
                     postType: "SHARE"
                 }
@@ -707,12 +863,26 @@ async function getMyReplies(req, res) {
                         },
                         likes: { where: { whoLikedId: userId }, select: { id: true } },
                         bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } },
-                        replyPost: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } }
+                        replyPost: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } },
+                        _count: {
+                            select: {
+                                likes: true,
+                                replyPost: true,
+                                shares: true
+                            }
+                        },
                     }
                 },
                 likes: { where: { whoLikedId: userId }, select: { id: true } },
                 bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } },
-                replyPost: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } }
+                replyPost: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } },
+                _count: {
+                    select: {
+                        likes: true,
+                        replyPost: true,
+                        shares: true
+                    }
+                },
             },
             orderBy: { createdAt: "desc" }
         })
@@ -829,7 +999,14 @@ async function getRepliesOfPost(req, res) {
                 },
                 likes: { where: { whoLikedId: userId }, select: { id: true } },
                 bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } },
-                replyPost: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } }
+                shares: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } },
+                _count: {
+                    select: {
+                        likes: true,
+                        replyPost: true,
+                        shares: true
+                    }
+                },
             },
             orderBy: { createdAt: "desc" }
         });
@@ -893,7 +1070,14 @@ async function getBookmarkedPosts(req, res) {
                         },
                         likes: { where: { whoLikedId: userId }, select: { id: true } },
                         bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } },
-                        replyPost: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } }
+                        replyPost: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } },
+                        _count: {
+                            select: {
+                                likes: true,
+                                replyPost: true,
+                                shares: true
+                            }
+                        },
                     }
                 }
             },

@@ -451,7 +451,6 @@ app-root {
     margin-top: 8px;
     width: 100%;
 
-
     .midia-btn {
         padding: 8px;
         border-radius: 999px;
@@ -570,6 +569,19 @@ app-root {
     display: flex;
     justify-content: space-between;
     margin-top: 15px;
+    --count-color: var(--shadowed-text-color);
+
+    p {
+        margin: 0;
+        color: var(--count-color);
+        font-family: sans-serif;
+        font-size: 13px;
+    }
+
+    &>div:not(:last-of-type) {
+        flex: 1;
+        justify-content: flex-start;
+    }
 
     /* 
     path {
@@ -586,19 +598,28 @@ app-root {
     .share-control-button {
         position: relative;
         fill: #656a6e;
+        display: flex;
+        align-items: center;
+        gap: 0 5px;
     }
 
     .like-control-button,
     .bookmark-control-button {
         stroke: #656a6e;
         stroke-width: 2px;
+        display: flex;
+        align-items: center;
+        gap: 0 3px;
     }
 
     .comment-control-button {
-        :hover {
+        &:hover {
             path {
                 fill: #1a8bd8;
+                --count-color: #1a8bd8;
             }
+
+            --count-color: #1a8bd8;
         }
     }
 
@@ -606,43 +627,52 @@ app-root {
         &.active {
             stroke: transparent;
             fill: #00a76f;
+            --count-color: #00a76f;
         }
 
-        &>div:first-child:hover {
+        &:hover>:not(.share-or-reply) {
             path {
                 fill: #00a76f;
             }
+
+            --count-color: #00a76f;
         }
     }
 
     .like-control-button {
-        &.active {
-            stroke: transparent;
-            fill: #f91880;
-        }
-
-        :hover {
+        &:hover {
             path {
                 stroke: #f91880;
             }
+
+            --count-color: #f91880;
+        }
+
+        &.active {
+            stroke: #f91880;
+            fill: #f91880;
+            --count-color: #f91880;
         }
     }
 
     .bookmark-control-button {
-        &.active {
-            stroke: transparent;
-            fill: #1a8bd8;
-        }
-
-        :hover {
+        &:hover {
             path {
                 stroke: #1a8bd8;
             }
+
+            --count-color: #1a8bd8;
+        }
+
+        &.active {
+            stroke: #1a8bd8;
+            fill: #1a8bd8;
+            --count-color: #1a8bd8;
         }
     }
 }
 
-.post-controls>div {
+.icon-box {
     width: 20px;
     height: 20px;
     cursor: pointer;
@@ -1689,6 +1719,10 @@ app-root {
     overflow: hidden;
     z-index: 9999;
 
+    p {
+        color: white;
+    }
+
 
     .option {
         box-sizing: border-box;
@@ -1714,12 +1748,14 @@ app-root {
     }
 
 
-    p {
-        margin: 0;
-        font-family: Inter;
-        font-weight: bold;
-        color: var(--main-white-color);
-    }
+
+}
+
+.share-or-reply p {
+    margin: 0;
+    font-family: Inter;
+    font-weight: bold;
+    color: var(--main-white-color);
 }
 
 
@@ -1883,19 +1919,28 @@ app-root {
         .share-control-button {
             position: relative;
             fill: #656a6e;
+            display: flex;
+            align-items: center;
+            gap: 0 5px;
         }
 
         .like-control-button,
         .bookmark-control-button {
             stroke: #656a6e;
             stroke-width: 2px;
+            display: flex;
+            align-items: center;
+            gap: 0 5px;
         }
 
         .comment-control-button {
-            :hover {
+            &:hover {
                 path {
                     fill: #1a8bd8;
+                    --count-color: #1a8bd8;
                 }
+
+                --count-color: #1a8bd8;
             }
         }
 
@@ -1903,38 +1948,47 @@ app-root {
             &.active {
                 stroke: transparent;
                 fill: #00a76f;
+                --count-color: #00a76f;
             }
 
-            &>div:first-child:hover {
+            &:hover>:not(.share-or-reply) {
                 path {
                     fill: #00a76f;
                 }
+
+                --count-color: #00a76f;
             }
         }
 
         .like-control-button {
-            &.active {
-                stroke: transparent;
-                fill: #f91880;
-            }
-
-            :hover {
+            &:hover {
                 path {
                     stroke: #f91880;
                 }
+
+                --count-color: #f91880;
+            }
+
+            &.active {
+                stroke: #f91880;
+                fill: #f91880;
+                --count-color: #f91880;
             }
         }
 
         .bookmark-control-button {
-            &.active {
-                stroke: transparent;
-                fill: #1a8bd8;
-            }
-
-            :hover {
+            &:hover {
                 path {
                     stroke: #1a8bd8;
                 }
+
+                --count-color: #1a8bd8;
+            }
+
+            &.active {
+                stroke: #1a8bd8;
+                fill: #1a8bd8;
+                --count-color: #1a8bd8;
             }
         }
     }
@@ -1943,6 +1997,20 @@ app-root {
         margin: 0 30%;
         margin-bottom: 20px;
         margin-top: auto;
+
+        --count-color: white;
+
+        &>div:not(:last-of-type) {
+            flex: 1;
+            justify-content: flex-start;
+        }
+
+        p:not(.share-or-reply p) {
+            margin: 0;
+            color: var(--count-color);
+            font-family: sans-serif;
+            font-size: 13px;
+        }
 
         .comment-control-button,
         .share-control-button {
@@ -1960,7 +2028,23 @@ app-root {
     .actions-container-controls {
         margin: 0 1%;
         margin-top: 10px;
+        --count-color: var(--shadowed-text-color);
+
+        &>div:not(:last-of-type) {
+            flex: 1;
+            justify-content: flex-start;
+        }
+
+        p:not(.share-or-reply p) {
+            margin: 0;
+            color: var(--count-color);
+            font-family: sans-serif;
+            font-size: 13px;
+
+        }
     }
+
+
 
     .actions-container-controls>div,
     .main-container-controls>div {

@@ -88,7 +88,7 @@ function MakeReply({ postId, onSuccess, inputRef }) {
 
         const result = await makeReply(formData, postId);
         if (result && result.success) {
-            onSuccess();
+            onSuccess(result);
             fileInputRef.current.value = "";
             setImageUrl("");
             setModal(false);

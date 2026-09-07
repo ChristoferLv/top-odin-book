@@ -56,6 +56,10 @@ model Posts {
   originalPostId Int?
   originalPost   Posts?  @relation("originlPostReference", fields: [originalPostId], references: [id])
 
+  shares       Posts[] @relation("shares")
+  sharedPostId Int?
+  sharedPost   Posts?  @relation("shares", fields: [sharedPostId], references: [id])
+
   likes     Likes[]
   bookmarks Bookmarks[]
 
@@ -64,7 +68,8 @@ model Posts {
 
   notifications Notifications[]
 
-  @@unique([originalPostId, authorId, postType], where: raw("\"postType\" IN ('SHARE')"))
+  @@unique([sharedPostId, authorId, postType], where: raw("\"postType\" IN ('SHARE')"))
+  // @@unique([originalPostId, authorId, postType], where: raw("\"postType\" IN ('SHARE')"))
 }
 
 model Likes {
