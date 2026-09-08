@@ -5,6 +5,7 @@ import { fetchAllPosts, searchPosts, searchUsers } from "../../api/requests";
 import { AuthContext } from "../AuthContext";
 import { useLocation, useNavigate, useSearchParams } from "react-router";
 import UsersList from "./UsersList";
+import SearchField from "./SearchField";
 
 
 function SearchPane() {
@@ -30,26 +31,35 @@ function SearchPane() {
         setUsersList([]);
         // setSearchOption(option);
         const paramsObj = Object.fromEntries([...searchParams]);
-        setSearchParams({ ...paramsObj, q: searchTerm, f: option.toLowerCase() });
+        if (!paramsObj.q || paramsObj.q == "") {
+            setSearchParams({ f: option.toLowerCase() });
+        } else {
+            setSearchParams({ ...paramsObj, q: searchTerm, f: option.toLowerCase() });
+        }
     }
 
-    function handleSearchTerm(e) {
-        setSearchTerm(e.target.value);
-    }
+    // function handleSearchTerm(e) {
+    //     setSearchTerm(e.target.value);
+    // }
 
-    function handleSearch(e) {
-        e.preventDefault();
-        if (searchTerm.length == 0) {
+    function handleSearch(value) {
+        if (value.length == 0) {
             const paramsObj = Object.fromEntries([...searchParams]);
-            const { q, ...rest } = { ...paramsObj };
-            setSearchParams(rest);
+            const { q, f } = { ...paramsObj };
+            if (f == "people") {
+                setSearchParams({ "f": f });
+            } else {
+                setSearchParams({});
+            }
+            setSearchTerm("");
             return;
         }
         if (searchOption == SearchOptions.POSTS) {
-            setSearchParams({ q: searchTerm, f: "posts" });
+            setSearchParams({ q: value });
         } else {
-            setSearchParams({ q: searchTerm, f: "people" });
+            setSearchParams({ q: value, f: "people" });
         }
+        setSearchTerm(value);
     }
 
     useEffect(() => {
@@ -115,14 +125,7 @@ function SearchPane() {
                             Back
                         </div>
                     </div>
-                    <div className="search-field">
-                        <div className="search-icon">
-                            <svg viewBox="0 0 24 24" aria-hidden="true" className="r-4qtqp9 r-yyyyoo r-dnmrzs r-bnwqim r-lrvibr r-m6rgpd r-1tjplnt r-1bwzh9t r-10ptun7 r-2dysd3 r-1janqcz"><g><path d="M10.25 3.75c-3.59 0-6.5 2.91-6.5 6.5s2.91 6.5 6.5 6.5c1.795 0 3.419-.726 4.596-1.904 1.178-1.177 1.904-2.801 1.904-4.596 0-3.59-2.91-6.5-6.5-6.5zm-8.5 6.5c0-4.694 3.806-8.5 8.5-8.5s8.5 3.806 8.5 8.5c0 1.986-.682 3.815-1.824 5.262l4.781 4.781-1.414 1.414-4.781-4.781c-1.447 1.142-3.276 1.824-5.262 1.824-4.694 0-8.5-3.806-8.5-8.5z"></path></g></svg>
-                        </div>
-                        <form onSubmit={handleSearch}>
-                            <input type="text" placeholder="Search" value={searchTerm} onChange={handleSearchTerm} />
-                        </form>
-                    </div>
+                    <SearchField key={Date.now()} handleSearch={handleSearch} startSearchTerm={searchTerm} />
                 </div>
                 <div className="search-options">
                     <div className={`search-option-btn ${searchOption == SearchOptions.POSTS ? "active" : ""}`} onClick={(e) => handleChangeSearchOption(SearchOptions.POSTS)}>
