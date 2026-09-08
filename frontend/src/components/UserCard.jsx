@@ -33,7 +33,6 @@ function UserCard({ data }) {
         navigate("/" + userData.username);
     }
 
-
     return (
         <>
             <div className="user-item" onClick={handleSeeUser}>

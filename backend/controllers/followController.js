@@ -26,6 +26,66 @@ async function getWhoToFollow(req, res) {
     return res.status(200).send({ success: true, data: result });
 }
 
+async function getFollowersOfUser(req, res) {
+    const username = req.params.username;
+    const result = await prisma.follows.findMany({
+        where: {
+            following: {
+                username: username
+            }
+        },
+        select: {
+            followedBy: {
+                select: {
+                    id: true,
+                    bio: true,
+                    name: true,
+                    username: true,
+                    following:{select:{id:true}}
+                }
+            }
+        }
+    });
+
+    if (!result) {
+        return res.status(500).send({ success: false });
+    }
+
+    const treatedResult = result.map((it) => it.followedBy);
+
+    return res.status(200).send({ success: true, data: treatedResult });
+}
+
+async function getWhoUserIsFollowing(req, res) {
+    const username = req.params.username;
+
+    const result = await prisma.follows.findMany({
+        where: {
+            followedBy: {
+                username: username
+            }
+        },
+        select: {
+            following: {
+                select: {
+                    id: true,
+                    bio: true,
+                    name: true,
+                    username: true,
+                }
+            }
+        }
+    });
+
+    if (!result) {
+        return res.status(500).send({ success: false });
+    }
+
+    return res.status(200).send({ success: true, data: result });
+}
+
 export {
-    getWhoToFollow
+    getWhoToFollow,
+    getFollowersOfUser,
+    getWhoUserIsFollowing
 }

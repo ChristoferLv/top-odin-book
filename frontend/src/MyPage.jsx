@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "./AuthContext";
-import { fetchLikedPosts, fetchLikedPostsByUserId, fetchMyPosts, fetchPostsByUserId, fetchRepliesByUserId, fetchSharedPostsByUserId, fetchUserByUsername } from "../api/requests";
+import { fetchLikedPosts, fetchLikedPostsByUserId, fetchMyPosts, fetchPostsByUserId, fetchRepliesByUserId, fetchSharedPostsByUserId, fetchUserByUsername, followUser, unfollowUser } from "../api/requests";
 import UserPicture from "./components/UserPicture";
 import UserBackground from "./components/UserBackground";
 import PostsList from "./components/PostsList";
@@ -43,6 +43,8 @@ function MyPage() {
     const [seeingOption, setSeeingOption] = useState(SeeingOptions.POSTS)
     const navigate = useNavigate();
     const [count, setCount] = useState(0);
+    const isMyProfile = user?.id == userData?.id;
+    const isFollowing = userData?.following.length;
 
     function handleSeePosts() {
         setMyPosts([]);
@@ -68,16 +70,35 @@ function MyPage() {
         navigate("/settings/profile");
     }
 
+    function goToFollowagePage(where) {
+        navigate(where);
+    }
+
+    async function handleFollowage() {
+        if (isFollowing) {
+            const result = await unfollowUser(userData.id);
+            if (result && result.success) {
+                setUserData({ ...userData, following: [] });
+            }
+            return;
+        }
+
+        const result = await followUser(userData.id);
+        if (result && result.success) {
+            setUserData({ ...userData, following: [result.data.id] });
+        }
+    }
+
     useEffect(() => {
+        setUserData(null);
         async function fetchUserData() {
             const result = await fetchUserByUsername(parts[1]);
-            console.log(result)
             if (result && result.success) {
                 setUserData(result.data)
             }
         }
         fetchUserData();
-    }, [])
+    }, [location.pathname])
 
     useEffect(() => {
         // setMyPosts([]);
@@ -118,6 +139,8 @@ function MyPage() {
             getPosts();
     }, [location, userData]);
     if (!userData || !user) return <div className="loading"><p>Loading</p></div>
+
+    console.log("userdata", userData)
     return (
         <>
             <div className="my-page">
@@ -131,14 +154,18 @@ function MyPage() {
                                 Back
                             </div>
                         </div>
-                        <p>{userData.name}</p>
+                        <div className="user-data-header">
+                            <p>{userData.name}</p>
+                            <p>{userData._count.posts} posts</p>
+                        </div>
                     </div>
                     <UserBackground id={userData.id} />
                     <div className="my-page-controls">
                         <div className="my-page-picture">
                             <UserPicture id={userData.id} useBorder={true} />
                         </div>
-                        <button onClick={handleEditProfile} className="edit-profile-button">Edit profile</button>
+                        {isMyProfile && <button onClick={handleEditProfile} className="edit-profile-button">Edit profile</button>}
+                        {!isMyProfile && <button onClick={handleFollowage} className={`edit-profile-button ${isFollowing ? "unfollow-btn" : ""}`}>{isFollowing ? "Following" : "Follow"}</button>}
                     </div>
                     <div className="user-profile-info">
                         <p>{userData.name}</p>
@@ -146,6 +173,16 @@ function MyPage() {
                     </div>
                     <div className="user-profile-bio">
                         <p>{userData.bio}</p>
+                    </div>
+                    <div className="user-followage-info">
+                        <div className="count" onClick={(e) => goToFollowagePage("following")}>
+                            <span>{userData._count.followedBy}</span>
+                            <span> Following</span>
+                        </div>
+                        <div className="count" onClick={(e) => goToFollowagePage("followers")}>
+                            <span>{userData._count.following}</span>
+                            <span> Followers</span>
+                        </div>
                     </div>
                     <div className="view-list-options">
                         <div onClick={handleSeePosts} className={`posts-option ${active == SeeingOptions.POSTS ? "active" : ""}`}>

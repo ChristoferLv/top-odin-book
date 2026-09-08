@@ -306,6 +306,55 @@ async function getFollowSuggestions() {
 }
 
 
+async function fetchFollowersOfUser(username, signal) {
+    try {
+        const token = localStorage.getItem("token");
+        const request = await fetch(`http://localhost:3000/follows/${username}/followers`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': token
+            },
+            signal:signal
+        });
+        if (request.ok) {
+            const result = await request.json();
+            return result;
+        }
+    } catch (e) {
+        console.log(e);
+        throw e;
+    }
+}
+
+async function fetchWhoUserIsFollowing(username, signal) {
+    try {
+        const token = localStorage.getItem("token");
+        const request = await fetch(`http://localhost:3000/follows/${username}/following`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': token
+            },
+            signal:signal
+        });
+        if (request.ok) {
+            const result = await request.json();
+            return result;
+        }
+    } catch (e) {
+        console.log(e);
+        throw e;
+    }
+}
+
+
+
+
+
+
 
 
 
@@ -945,6 +994,8 @@ export {
     followUser,
     unfollowUser,
     getFollowSuggestions,
+    fetchFollowersOfUser,
+    fetchWhoUserIsFollowing,
 
     makePost,
     fetchAllPosts,

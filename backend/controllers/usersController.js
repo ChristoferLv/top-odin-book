@@ -78,7 +78,8 @@ async function getUserByUsername(req, res) {
                     */
                     select: {
                         following: true,
-                        followedBy: true
+                        followedBy: true,
+                        posts:true
                     }
                 }
             }

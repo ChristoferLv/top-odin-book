@@ -470,7 +470,7 @@ async function searchPosts(req, res) {
                         },
                         likes: { where: { whoLikedId: userId }, select: { id: true } },
                         bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } },
-                        replyPost: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } },
+                        shares: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } },
                         midia: false,
                         _count: {
                             select: {
@@ -496,7 +496,7 @@ async function searchPosts(req, res) {
                         },
                         likes: { where: { whoLikedId: userId }, select: { id: true } },
                         bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } },
-                        replyPost: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } },
+                        shares: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } },
                         midia: false,
                         _count: {
                             select: {
@@ -509,7 +509,7 @@ async function searchPosts(req, res) {
                 },
                 likes: { where: { whoLikedId: userId }, select: { id: true } },
                 bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } },
-                replyPost: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } },
+                shares: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } },
                 _count: {
                     select: {
                         likes: true,
@@ -556,7 +556,7 @@ async function getLikedPosts(req, res) {
                         },
                         likes: { where: { whoLikedId: userId }, select: { id: true } },
                         bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } },
-                        replyPost: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } },
+                        shares: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } },
                         _count: {
                             select: {
                                 likes: true,
@@ -692,7 +692,7 @@ async function getSharedPosts(req, res) {
                         },
                         likes: { where: { whoLikedId: userId }, select: { id: true } },
                         bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } },
-                        replyPost: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } }
+                        shares: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } }
                     }
                 },
                 sharedPost: {
@@ -710,7 +710,7 @@ async function getSharedPosts(req, res) {
                         },
                         likes: { where: { whoLikedId: userId }, select: { id: true } },
                         bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } },
-                        replyPost: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } },
+                        shares: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } },
                         _count: {
                             select: {
                                 likes: true,
@@ -722,7 +722,7 @@ async function getSharedPosts(req, res) {
                 },
                 likes: { where: { whoLikedId: userId }, select: { id: true } },
                 bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } },
-                replyPost: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } },
+                shares: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } },
                 _count: {
                     select: {
                         likes: true,
@@ -863,7 +863,7 @@ async function getMyReplies(req, res) {
                         },
                         likes: { where: { whoLikedId: userId }, select: { id: true } },
                         bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } },
-                        replyPost: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } },
+                        shares: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } },
                         _count: {
                             select: {
                                 likes: true,
@@ -875,7 +875,7 @@ async function getMyReplies(req, res) {
                 },
                 likes: { where: { whoLikedId: userId }, select: { id: true } },
                 bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } },
-                replyPost: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } },
+                shares: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } },
                 _count: {
                     select: {
                         likes: true,
@@ -1070,7 +1070,7 @@ async function getBookmarkedPosts(req, res) {
                         },
                         likes: { where: { whoLikedId: userId }, select: { id: true } },
                         bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } },
-                        replyPost: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } },
+                        shares: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } },
                         _count: {
                             select: {
                                 likes: true,

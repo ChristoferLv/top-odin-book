@@ -1036,6 +1036,49 @@ app-root {
     flex-direction: column;
     align-items: stretch;
     background-color: var(--main-background-color);
+
+    .user-followage-info {
+        margin-top: 20px;
+        display: flex;
+        gap: 0 15px;
+    }
+
+    .count {
+        font-family: Inter;
+        font-size: 14px;
+        margin-left: 15px;
+        cursor: pointer;
+    }
+
+    .count span:nth-of-type(1) {
+        color: var(--main-white-color);
+        font-weight: bold;
+        font-size: 15px;
+    }
+
+    .count span:nth-of-type(2) {
+        color: var(--shadowed-text-color);
+    }
+
+    .user-data-header {
+        display: flex;
+        flex-direction: column;
+        gap: 0 5px;
+        padding: 10px 0;
+
+        p {
+            margin: 0;
+            font-family: Inter;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        p:nth-of-type(2) {
+            font-size: 12px;
+            color: #666a6f;
+            font-weight: normal;
+        }
+    }
 }
 
 .my-page-top {
@@ -1044,17 +1087,13 @@ app-root {
     margin: 0 15px;
     align-items: center;
     gap: 0 10px;
-
-    p {
-        font-family: Inter;
-        font-size: large;
-        font-weight: bold;
-    }
 }
 
 .my-page-back-button {
+    border-radius: 9999px;
     width: 20px;
     height: 20px;
+    padding: 10px;
     margin-right: 15px;
     cursor: pointer;
 }
@@ -1073,6 +1112,10 @@ app-root {
     pointer-events: none;
 }
 
+.my-page-back-button:hover {
+    background-color: rgba(239, 243, 244, 0.1);
+}
+
 .my-page-back-button:hover .tooltip {
     visibility: visible;
     visibility: visible;
@@ -1081,7 +1124,18 @@ app-root {
 }
 
 .my-page-header {
-    /* border-bottom: 1px solid white; */
+    .unfollow-btn:hover {
+        color: rgb(244, 33, 46);
+        background-color: rgba(244, 33, 46, 0.1);
+        border: 1px solid rgb(103, 7, 15);
+        border-color: rgb(103, 7, 15);
+        font-size: 0;
+
+        &:after {
+            font-size: 15px;
+            content: "Unfollow";
+        }
+    }
 }
 
 .my-page-controls {
@@ -1108,6 +1162,11 @@ app-root {
     font-size: 15px;
     font-family: sans-serif;
     cursor: pointer;
+    transition: background-color 0.2s ease-out;
+}
+
+.edit-profile-button:not(.unfollow-btn):hover {
+    background-color: rgba(239, 243, 244, 0.12);
 }
 
 .user-profile-info {
@@ -1148,17 +1207,26 @@ app-root {
 
     display: flex;
     justify-content: space-between;
-    padding: 0 10px;
-    margin-top: 25px;
+    /* padding: 0 10px; */
+    margin-top: 15px;
 
     color: var(--shadowed-text-color);
     font-family: Inter;
     font-weight: bold;
     font-size: 15px;
 
+    border-bottom: 1px solid var(--main-border-color);
+
     div {
-        padding: 20px;
+        text-align: center;
+        flex-grow: 1;
+        padding: 15px 20px;
         cursor: pointer;
+        transition: background-color 0.2s ease-out;
+    }
+
+    div:hover {
+        background-color: rgba(239, 243, 244, 0.1);
     }
 
     p {
@@ -2169,6 +2237,26 @@ app-root {
         border-bottom: solid 1px var(--main-border-color);
     }
 
+    .user-data-header {
+        display: flex;
+        flex-direction: column;
+        gap: 0 5px;
+
+        p {
+            color: var(--main-white-color);
+            margin: 0;
+            font-family: Inter;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        p:nth-of-type(2) {
+            font-size: 12px;
+            color: #666a6f;
+            font-weight: normal;
+        }
+    }
+
     .search-controls {
         display: flex;
         align-items: center;
@@ -2525,6 +2613,101 @@ app-root {
 
 
 
+
+
+
+
+
+
+
+
+
+.followage-pane {
+    .followage-pane-header {
+        display: flex;
+        flex-direction: column;
+
+        padding-top: 10px;
+
+        border-bottom: solid 1px var(--main-border-color);
+    }
+
+    .user-data-header {
+        display: flex;
+        flex-direction: column;
+        gap: 0 5px;
+
+        p {
+            color: var(--main-white-color);
+            margin: 0;
+            font-family: Inter;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        p:nth-of-type(2) {
+            font-size: 12px;
+            color: #666a6f;
+            font-weight: normal;
+        }
+    }
+
+    .followage-top {
+        display: flex;
+        margin: 0 15px;
+        gap: 0 10px;
+    }
+
+    .search-options {
+        margin-top: 1px;
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        color: var(--shadowed-text-color);
+        font-family: Inter;
+        font-weight: bold;
+    }
+
+    .search-option-btn {
+        flex-grow: 1;
+        display: flex;
+        justify-content: center;
+        cursor: pointer;
+    }
+
+    .search-option-btn.active {
+        color: var(--main-white-color);
+    }
+
+    .search-option-btn:hover {
+        background-color: #181818;
+    }
+
+    .search-option-content {
+        width: 50%;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-bottom: 16px;
+        padding-top: 16px;
+    }
+
+
+    .option-indicator {
+        display: none;
+        position: absolute;
+        bottom: 0;
+        height: 4px;
+        width: 60%;
+        border-radius: 99px;
+        background-color: var(--main-blue-color);
+    }
+
+    .option-indicator.active {
+        display: block;
+    }
+}
 
 
 

@@ -17,6 +17,7 @@ import SeeingPicturePage from './SeeingPicturePage.jsx';
 import SearchPane from './components/SearchPane.jsx';
 import NotificationsPane from './components/NotificationsPane.jsx';
 import MainContextProvider from './components/MainContext.jsx';
+import FollowageListing from './components/FollowageListing.jsx';
 
 
 const router = createBrowserRouter([
@@ -34,6 +35,8 @@ const router = createBrowserRouter([
       { path: "/bookmarks", element: <BookmarksPage /> },
       { path: "/:username/post/:postId/photo", element: <SeeingPicturePage /> },
       { path: "/:username/post/:postId", element: <PostPage /> },
+      { path: "/:username/following", element: <FollowageListing /> },
+      { path: "/:username/followers", element: <FollowageListing /> },
       { path: "/:username/replies", element: <MyPage /> },
       { path: "/:username/shares", element: <MyPage /> },
       { path: "/:username/likes", element: <MyPage /> },
