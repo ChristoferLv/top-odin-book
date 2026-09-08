@@ -5,8 +5,9 @@ function SearchFilter() {
     const [followingFilter, setFollowingFilter] = useState(false);
     const [searchParams, setSearchParams] = useSearchParams();
 
-    function handleOptionChange() {
-        const newValue = !followingFilter;
+    function handleOptionChange(followers) {
+        if (followingFilter == followers) return;
+        const newValue = followers;
 
         if (newValue == true) {
             const paramsObj = Object.fromEntries([...searchParams]);
@@ -28,27 +29,32 @@ function SearchFilter() {
 
             <div className="search-filters-select">
                 <p>Users</p>
-                <div>
-                    <label htmlFor="apple">
-                        <input
-                            type="radio"
+                <label className="container">
+                    <p>Any user</p>
+                    <span class="checkmark">
+                        <div className={`marker ${!followingFilter ? "checked" : ""}`}>
+                            <svg viewBox="-2 -2 28 28" aria-hidden="true"><g>
+                                <path d="M9.64 18.952l-5.55-4.861 1.317-1.504 3.951 3.459 8.459-10.948L19.4 6.32 9.64 18.952z"></path></g>
+                            </svg>
+                        </div>
+                        <input type="radio"
                             checked={!followingFilter}
-                            onChange={handleOptionChange}
-                        />
-                        Any user
-                    </label>
-                </div>
-
-                <div>
-                    <label htmlFor="banana">
-                        <input
-                            type="radio"
+                            onClick={(e) => handleOptionChange(false)}></input>
+                    </span>
+                </label>
+                <label className="container">
+                    <p>Users that you follow</p>
+                    <span class="checkmark">
+                        <div className={`marker ${followingFilter ? "checked" : ""}`}>
+                            <svg viewBox="-2 -2 28 28" aria-hidden="true"><g>
+                                <path d="M9.64 18.952l-5.55-4.861 1.317-1.504 3.951 3.459 8.459-10.948L19.4 6.32 9.64 18.952z"></path></g>
+                            </svg>
+                        </div>
+                        <input type="radio"
                             checked={followingFilter}
-                            onChange={handleOptionChange}
-                        />
-                        Users thet you follow
-                    </label>
-                </div>
+                            onClick={(e) => handleOptionChange(true)}></input>
+                    </span>
+                </label>
             </div>
         </>
     );

@@ -1536,7 +1536,7 @@ app-root {
 }
 
 
-.share-replie-dialog {
+.share-reply-dialog {
     background-color: var(--main-dialog-color);
     padding: 15px;
     border-radius: 8px;
@@ -1544,6 +1544,8 @@ app-root {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     display: flex;
     flex-direction: column;
+    max-height: 80vh;
+    overflow-y: auto;
 
     .dialog-header {
         margin-bottom: 15px;
@@ -1625,6 +1627,8 @@ app-root {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     display: flex;
     flex-direction: column;
+    max-height: 80vh;
+    overflow-y: auto;
 
     .dialog-header {
         margin-bottom: 15px;
@@ -1756,6 +1760,7 @@ app-root {
     border: none;
     color: #fdfdfe;
     cursor: pointer;
+    outline: none;
 
     svg {
         display: block;
@@ -1848,18 +1853,26 @@ app-root {
     transform: translate(-50%, -50%);
     margin: 0;
     background-color: var(--secondary-background-color);
+    max-height: 70vh;
+    overflow-y: auto;
+
+    .modal-content {
+        margin-bottom: 15px;
+        margin-right: 15px;
+    }
 }
 
 .modal-image {
     width: 100%;
     max-width: 90vw;
     height: auto;
-    max-height: 80vh;
+    max-height: inherit;
     margin-top: 5px;
+    margin: 15px;
 
     img {
-        width: 100%;
-        height: 100%;
+        max-width: 100%;
+        max-height: 100%;
         object-fit: fill;
     }
 }
@@ -2379,6 +2392,7 @@ app-root {
     display: flex;
     flex-direction: column;
     gap: 10px 0;
+    position: relative;
 
     label {
         display: flex;
@@ -2396,7 +2410,82 @@ app-root {
         font-size: 14px;
         font-weight: bold;
     }
+
+    .container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        margin-bottom: 12px;
+        cursor: pointer;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+
+    .marker {
+        width: 16px;
+        height: 16px;
+        border-radius: 99px;
+        border: 2px solid rgb(113, 118, 123);
+    }
+
+    .marker.checked {
+        width: 16px;
+        height: 16px;
+        border-color: transparent;
+        background-color: rgb(24, 155, 240);
+        fill: rgb(231, 233, 234);
+    }
+
+     .container input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+        height: 0;
+        width: 0;
+    }
+
+    /*.checkmark {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 20px;
+        width: 20px;
+        border-radius: 99px;
+        background-color: #eee;
+    }
+
+    .container:hover input~.checkmark {
+        background-color: #ccc;
+    }
+
+    .container input:checked~.checkmark {
+        background-color: #2196F3;
+    }
+
+    .checkmark:after {
+        content: "";
+        position: absolute;
+        display: none;
+    }
+
+    .container input:checked~.checkmark:after {
+        display: block;
+    }
+
+    .container .checkmark:after {
+        left: 7px;
+        top: 4px;
+        width: 4px;
+        height: 8px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: rotate(40deg);
+    } */
 }
+
 
 
 
@@ -2754,7 +2843,7 @@ app-root {
     justify-content: center;
     align-items: center;
     padding: 0 15px;
-
+    /* pointer-events: none; */
 
     p {
         margin: 0;

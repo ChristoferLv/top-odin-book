@@ -127,7 +127,7 @@ function ShareWithComment({ isOpen, user, originalPost, onCancel, onConfirm }) {
     return (
         <>
             <div onClick={handleClose} id="overlay" className="overlay">
-                <div onClick={preventClose} className='share-replie-dialog' role="alertdialog" aria-modal="true">
+                <div onClick={preventClose} className='share-reply-dialog' role="alertdialog" aria-modal="true">
                     <div className="dialog-header">
                         <button className='close-dialog' onClick={handleClose}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 20 20" fill="none">
