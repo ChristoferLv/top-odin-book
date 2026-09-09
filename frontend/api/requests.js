@@ -522,6 +522,24 @@ async function fetchPostMidia(postId) {
     }
 }
 
+async function fetchTrendingPosts() {
+    const token = localStorage.getItem("token");
+    const rawReponse = await fetch('http://localhost:3000/posts/trending', {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': token
+        }
+    });
+    if (rawReponse.ok) {
+        const response = await rawReponse.json();
+        return response;
+    } else {
+        return null;
+    }
+}
+
 
 
 
@@ -1004,6 +1022,7 @@ export {
     fetchPostById,
     searchPosts,
     fetchPostMidia,
+    fetchTrendingPosts,
 
     fetchNotificationsCount,
     fetchNotifications,

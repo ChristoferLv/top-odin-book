@@ -224,6 +224,10 @@ async function getAllPosts(req, res) {
 
 async function getPostById(req, res) {
     try {
+        if (typeof req.params.postId === 'string' && Number.isNaN(Number(req.params.postId))) {
+            return res.status(400).send({ success: false });
+        }
+
         const postId = parseInt(req.params.postId);
 
         const result = await prisma.posts.findUnique({
@@ -1161,6 +1165,80 @@ async function removePostBookmark(req, res) {
     }
 }
 
+async function getTrendingPosts(req, res) {
+    const timeAgo = new Date();
+    timeAgo.setMinutes(timeAgo.getMinutes() - 1);
+    try {
+        const result = await prisma.$transaction(async (tx) => {
+            const deletion = await tx.trending.deleteMany({
+                where: {
+                    createdAt: { lt: timeAgo }
+                }
+            });
+
+            console.log("trends deleted", deletion);
+
+            const getCurrent = await tx.trending.findMany(
+                {
+                    include: {
+                        post: {
+                            include: {
+                                author: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                        username: true
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            if (getCurrent.length > 0) {
+                return getCurrent;
+            }
+
+            console.log("current trends", getCurrent);
+
+            const newTrends = await tx.posts.findMany({
+                orderBy: [{ likes: { _count: "desc" } }, { createdAt: "desc" }],
+                take: 3
+            });
+
+            console.log("generated new trends", newTrends);
+
+            const newTrendsIds = newTrends.map((it) => { return { postId: it.id } });
+
+            const saveTrends = await tx.trending.createManyAndReturn({
+                data: newTrendsIds,
+                include: {
+                    post: {
+                        include: {
+                            author: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                    username: true
+                                }
+                            }
+                        },
+                    }
+                }
+            });
+            console.log("saved new trends", saveTrends);
+            return saveTrends;
+        });
+
+        if (!result)
+            return res.status(500).send({ success: false });
+
+        return res.status(200).send({ success: true, data: result });
+    } catch (e) {
+        console.log(e);
+        throw e;
+    }
+}
+
 
 
 export {
@@ -1187,5 +1265,7 @@ export {
 
     getBookmarkedPosts,
     bookmarkPost,
-    removePostBookmark
+    removePostBookmark,
+
+    getTrendingPosts
 }

@@ -49,7 +49,6 @@ function CompactPost({ user, data }) {
     async function handleShare(e) {
         e.stopPropagation();
         if (hasShared) {
-            console.log("unsharing")
             const result = await unsharePost(usePostData.id);
             if (result && result.success) {
                 if (isShare) {

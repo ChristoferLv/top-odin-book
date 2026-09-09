@@ -7,6 +7,7 @@ import NotificationsCount from "./components/NotificationsCount";
 import WhoToFollow from "./components/WhoToFollow";
 import SearchInput from "./components/SearchInput";
 import SearchFilter from "./components/SearchFilter";
+import TrendingPosts from "./components/TrendingPosts";
 
 function MainPage() {
     const ActivePage = Object.freeze({
@@ -159,6 +160,7 @@ function MainPage() {
                     {active != ActivePage.SEARCH && <SearchInput />}
                     {active == ActivePage.SEARCH && <SearchFilter />}
                     <WhoToFollow />
+                    <TrendingPosts />
                     <p>3</p>
                     <div>
                         <p>1</p>

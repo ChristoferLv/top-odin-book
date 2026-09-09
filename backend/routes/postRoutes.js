@@ -1,7 +1,7 @@
 import Router from 'express';
 import { passport } from "../authUtils.js"
 import { checkUser } from '../utils.js';
-import { bookmarkPost, deletePost, deleteReplie, getAllPosts, getBookmarkedPosts, getLikedPosts, getMyReplies, getPostById, getPostMidia, getRepliesOfPost, getSharedPosts, likePost, makePost, makeReply, removeLike, removePostBookmark, removeShare, searchPosts, sharePost, updatePost } from '../controllers/postController.js';
+import { bookmarkPost, deletePost, deleteReplie, getAllPosts, getBookmarkedPosts, getLikedPosts, getMyReplies, getPostById, getPostMidia, getRepliesOfPost, getSharedPosts, getTrendingPosts, likePost, makePost, makeReply, removeLike, removePostBookmark, removeShare, searchPosts, sharePost, updatePost } from '../controllers/postController.js';
 import multer from 'multer';
 
 const postRouter = Router();
@@ -10,6 +10,8 @@ const postRouter = Router();
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
+
+postRouter.get("/trending", passport.authenticate('jwt', { session: false }), checkUser, getTrendingPosts);
 
 postRouter.get("/likes", passport.authenticate('jwt', { session: false }), checkUser, getLikedPosts)
 postRouter.post("/:postId/likes", passport.authenticate('jwt', { session: false }), checkUser, likePost);

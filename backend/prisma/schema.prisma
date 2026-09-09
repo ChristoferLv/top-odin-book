@@ -50,15 +50,15 @@ model Posts {
   content   String?  @db.VarChar(280)
   createdAt DateTime @default(now()) @db.Timestamptz(6)
   authorId  Int
-  author    Users    @relation(fields: [authorId], references: [id])
+  author    Users    @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
   replyPost      Posts[] @relation("originlPostReference")
   originalPostId Int?
-  originalPost   Posts?  @relation("originlPostReference", fields: [originalPostId], references: [id])
+  originalPost   Posts?  @relation("originlPostReference", fields: [originalPostId], references: [id], onDelete: Cascade)
 
   shares       Posts[] @relation("shares")
   sharedPostId Int?
-  sharedPost   Posts?  @relation("shares", fields: [sharedPostId], references: [id])
+  sharedPost   Posts?  @relation("shares", fields: [sharedPostId], references: [id], onDelete: Cascade)
 
   likes     Likes[]
   bookmarks Bookmarks[]
@@ -67,9 +67,10 @@ model Posts {
   midia    Midias?
 
   notifications Notifications[]
+  // @@unique([originalPostId, authorId, postType], where: raw("\"postType\" IN ('SHARE')"))
+  trendings     Trending[]
 
   @@unique([sharedPostId, authorId, postType], where: raw("\"postType\" IN ('SHARE')"))
-  // @@unique([originalPostId, authorId, postType], where: raw("\"postType\" IN ('SHARE')"))
 }
 
 model Likes {
@@ -78,7 +79,7 @@ model Likes {
   postId     Int
   post       Posts    @relation(fields: [postId], references: [id], onDelete: Cascade)
   whoLikedId Int
-  whoLiked   Users    @relation(fields: [whoLikedId], references: [id])
+  whoLiked   Users    @relation(fields: [whoLikedId], references: [id], onDelete: Cascade)
 
   @@unique([postId, whoLikedId])
 }
@@ -129,4 +130,11 @@ model Notifications {
   post       Posts?           @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   @@unique([authorId, receiverId, postId, type])
+}
+
+model Trending {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  postId    Int
+  post      Posts    @relation(fields: [postId], references: [id], onDelete: Cascade)
 }
