@@ -113,10 +113,10 @@ app-root {
 
     .close-button {
         position: absolute;
-        top:auto;
+        top: auto;
         left: auto;
         bottom: 0px;
-        right:0px;
+        right: 0px;
         width: 30px;
         height: 30px;
         background-color: rgba(0, 0, 0, 0.75);
@@ -621,6 +621,13 @@ app-root {
     }
 }
 
+.controll-wrapper>div {
+    width: fit-content;
+    align-self: flex-start;
+    display: inline-flex;
+    position: relative;
+}
+
 .post-controls {
     display: flex;
     justify-content: space-between;
@@ -652,7 +659,7 @@ app-root {
 
     .comment-control-button,
     .share-control-button {
-        position: relative;
+        /* position: relative; */
         fill: #656a6e;
         display: flex;
         align-items: center;
@@ -1856,6 +1863,8 @@ app-root {
     align-items: flex-start;
     justify-content: center;
     padding-top: 5vw;
+    pointer-events: auto;
+    z-index: 9998;
 }
 
 .share-or-reply {
@@ -1869,6 +1878,7 @@ app-root {
     box-sizing: border-box;
     overflow: hidden;
     z-index: 9999;
+    cursor: pointer;
 
     p {
         color: white;
@@ -1906,6 +1916,7 @@ app-root {
     margin: 0;
     font-family: Inter;
     font-weight: bold;
+    font-size: 15px;
     color: var(--main-white-color);
 }
 
@@ -2728,11 +2739,20 @@ app-root {
         font-weight: bold;
         color: var(--main-white-color);
         margin: 15px 0;
+        margin-bottom: 0;
         margin-left: 15px;
     }
 
     .user-item:last-of-type {
         border-bottom: none;
+    }
+
+    .user-item span:last-of-type {
+        font-size: 14px;
+    }
+
+    .user-item {
+        padding: 10px 15px;
     }
 }
 

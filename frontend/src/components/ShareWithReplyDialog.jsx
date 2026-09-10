@@ -15,8 +15,9 @@ function ShareWithComment({ isOpen, user, originalPost, onCancel, onConfirm }) {
     const [modal, setModal] = useState(false);
     const [imageUrl, setImageUrl] = useState("");
     const [canPost, setCanPost] = useState(false);
-
+    
     const [isToastOpen, setIsToastOpen] = useState(false);
+    const fileInputRef = useRef(null);
 
     function handleCloseToast() {
         setIsToastOpen(false);
@@ -36,7 +37,6 @@ function ShareWithComment({ isOpen, user, originalPost, onCancel, onConfirm }) {
         setReplyContent(value);
     }
 
-    const fileInputRef = useRef(null);
 
     function handleClickAttach(e) {
         fileInputRef.current.click();
@@ -70,7 +70,8 @@ function ShareWithComment({ isOpen, user, originalPost, onCancel, onConfirm }) {
     }
 
     function handleClose(e) {
-        fileInputRef.current.value = "";
+        if (fileInputRef.current != null)
+            fileInputRef.current.value = "";
         setCanPost(false);
         setReplyContent("");
         setModal(false);

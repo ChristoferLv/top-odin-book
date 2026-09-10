@@ -1,11 +1,27 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
-function ShareOrReplyDialog({ onClose, selectShare, selectShareReply }) {
-
-    function handleClose(e){
+function ShareOrReplyDialog({ position, shared, isOpen, onClose, selectShare, selectShareReply }) {
+    const dialogRef = useRef(null);
+    function handleClose(e) {
         e.stopPropagation();
         onClose();
     }
+
+    useEffect(() => {
+        if (!isOpen) return;
+
+        function handleClickOutside(e) {
+            if (dialogRef.current && !dialogRef.current.contains(event.target)) {
+                handleClose(e);
+            }
+        }
+
+        document.addEventListener("mousedown", handleClickOutside);
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [isOpen, onClose])
 
     useEffect(() => {
         const handleEsc = (event) => {
@@ -21,15 +37,18 @@ function ShareOrReplyDialog({ onClose, selectShare, selectShareReply }) {
     }, []);
     return (
         <>
-            <div onClick={handleClose} className="transparent-overlay"></div>
-            <div className="share-or-reply">
+            <div className="transparent-overlay">
+            </div>
+            <div className="share-or-reply" ref={dialogRef}
+                style={{ position: "absolute", top: position.top, right: position.right }}
+            >
                 <div onClick={selectShare} className="option">
                     <div className="icon">
                         <svg viewBox="0 0 24 24" aria-hidden="true"><g>
                             <path d="M4.75 3.79l4.603 4.3-1.706 1.82L6 8.38v7.37c0 .97.784 1.75 1.75 1.75H13V20H7.75c-2.347 0-4.25-1.9-4.25-4.25V8.38L1.853 9.91.147 8.09l4.603-4.3zm11.5 2.71H11V4h5.25c2.347 0 4.25 1.9 4.25 4.25v7.37l1.647-1.53 1.706 1.82-4.603 4.3-4.603-4.3 1.706-1.82L18 15.62V8.25c0-.97-.784-1.75-1.75-1.75z"></path></g>
                         </svg>
                     </div>
-                    <p>Share</p>
+                    {shared ? <p>Undo share</p> : <p>Share</p>}
                 </div>
                 <div onClick={selectShareReply} className="option">
                     <div className="icon">

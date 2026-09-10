@@ -268,7 +268,8 @@ async function getPostById(req, res) {
                             select: {
                                 likes: true,
                                 replyPost: true,
-                                shares: true
+                                shares: true,
+                                bookmarks:true
                             }
                         },
                     }
@@ -294,7 +295,8 @@ async function getPostById(req, res) {
                             select: {
                                 likes: true,
                                 replyPost: true,
-                                shares: true
+                                shares: true,
+                                bookmarks:true
                             }
                         },
                     }
@@ -306,7 +308,8 @@ async function getPostById(req, res) {
                     select: {
                         likes: true,
                         replyPost: true,
-                        shares: true
+                        shares: true,
+                        bookmarks:true
                     }
                 },
             }

@@ -159,8 +159,8 @@ function MainPage() {
                 <div className="right-pane">
                     {active != ActivePage.SEARCH && <SearchInput />}
                     {active == ActivePage.SEARCH && <SearchFilter />}
-                    <WhoToFollow />
                     <TrendingPosts />
+                    <WhoToFollow />
                     <p>3</p>
                     <div>
                         <p>1</p>

@@ -81,11 +81,13 @@ function ReplyDialog({ isOpen, user, originalPost, onCancel, onConfirm }) {
         e.stopPropagation();
         setModal(false);
         setImageUrl("");
-        fileInputRef.current.value = "";
+        if (fileInputRef.current)
+            fileInputRef.current.value = "";
     }
 
     function handleClose(e) {
-        fileInputRef.current.value = "";
+        if (fileInputRef.current != null)
+            fileInputRef.current.value = "";
         setCanPost(false);
         setReplyContent("");
         setModal(false);
@@ -101,7 +103,6 @@ function ReplyDialog({ isOpen, user, originalPost, onCancel, onConfirm }) {
     useEffect(() => {
         const handleEsc = (event) => {
             if (event.key === 'Escape') {
-                console.log("called here")
                 handleClose(event);
             }
         };
