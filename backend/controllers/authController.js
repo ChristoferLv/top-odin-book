@@ -78,7 +78,6 @@ const register = [
     async (req, res) => {
         try {
             const errors = validationResult(req);
-            console.log(errors)
             if (errors.array().length == 1 && errors.array()[0].msg == 'Username is already in use')
                 return res.status(409).json({ success: false, error: errors });
 
@@ -86,10 +85,19 @@ const register = [
                 return res.status(400).json({ success: false, error: errors });
             }
 
-            const { username, password } = matchedData(req);
+            const { username, name, password } = matchedData(req);
             const hashedPassword = await bcrypt.hash(password, 10);
 
-            let userData = { username: username, password: hashedPassword };
+            let userData = {
+                name: name,
+                username: username,
+                password: hashedPassword
+            };
+
+            if (req.file?.size > 0) {
+                userData.picture = req.file.buffer;
+                userData.mime = req.file.mimetype;
+            }
 
             const result = await prisma.users.create({ data: userData });
 

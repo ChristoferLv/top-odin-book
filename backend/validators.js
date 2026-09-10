@@ -1,7 +1,9 @@
 import { body } from "express-validator";
+import { prisma } from './lib/prisma.js';
+
 
 export const validateNewUser = [
-    body("username").matches(/^[a-zA-Z0-9_]+$/).withMessage("Username can only contain letters, numbers, space and _")
+    body("username").matches(/^[a-zA-Z0-9_]+$/).withMessage("Username can only contain letters, numbers and _")
         .trim()
         .isLength({ min: 1 }).withMessage("Username must have at leats 1 characteres")
         .isLength({ max: 15 }).withMessage("The maximum username length is 15")
@@ -25,7 +27,15 @@ export const validateNewUser = [
         .isLength({ max: 50 }).withMessage("The maximum password length is 50"),
     body('confirmPassword').custom((value, { req }) => {
         return value === req.body.password;
-    }).withMessage("Password fields must match")
+    }).withMessage("Password fields must match"),
+    body("picture").custom((value, { req }) => {
+        if (req.file && req.file.size > 5000000) {
+            throw new Error("Maximum file size if 5MB.");
+        }
+        if (!req.file && value.length < 1)
+            throw new Error("Minimum message length is 1 character.");
+        return true;
+    })
 ];
 
 

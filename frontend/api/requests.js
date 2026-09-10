@@ -240,8 +240,6 @@ async function searchUsers(searchArgs, signal) {
 }
 
 async function followUser(userId) {
-    console.log("follow user")
-
     try {
         const token = localStorage.getItem("token");
         const request = await fetch(`http://localhost:3000/users/${userId}/follows`, {
@@ -263,7 +261,6 @@ async function followUser(userId) {
 }
 
 async function unfollowUser(userId) {
-    console.log("unfollow user")
     try {
         const token = localStorage.getItem("token");
         const request = await fetch(`http://localhost:3000/users/${userId}/follows`, {
@@ -368,7 +365,6 @@ async function fetchWhoUserIsFollowing(username, signal) {
 
 
 async function makePost(postData) {
-    console.log("makingpost")
     try {
         const token = localStorage.getItem("token");
         const rawResponse = await fetch('http://localhost:3000/posts', {
@@ -455,7 +451,6 @@ async function fetchMyPosts() {
 }
 
 async function fetchPostById(postId) {
-    console.log("getting post", postId)
     const token = localStorage.getItem("token");
     const rawResponse = await fetch('http://localhost:3000/posts/' + postId, {
         method: 'GET',
