@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router";
 import { AuthContext } from "./AuthContext";
 import { formatDate } from "./utils/dateUtils";
@@ -13,6 +13,7 @@ import ShareOrReplyDialog from "./components/ShareOrReplyDialog";
 import PostMidia from "./components/PostMidia";
 import MakeReply from "./components/MakeReply";
 import PostWithComment from "./components/PostWithComment";
+import LoadingSpinner from "./components/LoadingSpinner";
 
 function PostPage() {
     const { user, isLoading } = useContext(AuthContext);
@@ -36,16 +37,16 @@ function PostPage() {
     const numShares = postData?._count.shares;
     const numReplies = postData?._count.replyPost;
 
-    const fetchReplies = useCallback(async () => {
-        try {
-            const result = await fetchRepliesOfPost(postId);
-            if (result && result.success) {
-                setCommentsList(result.data);
-            }
-        } catch (e) {
-            console.log(e);
-        }
-    }, [location.pathname]);
+    // const fetchReplies = useCallback(async () => {
+    //     try {
+    //         const result = await fetchRepliesOfPost(postId);
+    //         if (result && result.success) {
+    //             setCommentsList(result.data);
+    //         }
+    //     } catch (e) {
+    //         console.log(e);
+    //     }
+    // }, [location.pathname]);
 
     function adjustPostDate(date) {
         const day = date.toDateString().split(" ").slice(1).join(" ");
@@ -64,9 +65,9 @@ function PostPage() {
         getPostData();
     }, [location.pathname]);
 
-    useEffect(() => {
-        fetchReplies();
-    }, [location.pathname])
+    // useEffect(() => {
+    //     fetchReplies();
+    // }, [location.pathname])
 
     function goToPostAuthor() {
         navigate("/" + postData.author.username);
@@ -202,11 +203,14 @@ function PostPage() {
             <div className="post-view">
                 <MakeReply postId={postData.id} onSuccess={handleSuccessReply} />
             </div>
-            <div className="comments-list">
+
+            <InfiniteRepliesList postId={postData.id} user={user} key={location.pathname} />
+
+            {/* <div className="comments-list">
                 {commentsList.map((comment) => {
                     return <Post key={comment.id} data={comment} user={user} />
                 })}
-            </div>
+            </div> */}
         </div>
 
 
@@ -289,11 +293,13 @@ function PostPage() {
                     <MakeReply postId={postData.id} onSuccess={handleSuccessReply} />
                 </div>
 
-                <div className="comments-list">
+                <InfiniteRepliesList postId={postData.id} user={user} key={location.pathname} />
+
+                {/* <div className="comments-list">
                     {commentsList.map((comment) => {
                         return <Post key={comment.id} data={comment} user={user} />
                     })}
-                </div>
+                </div> */}
             </div>
             {isDialogOpen && <ReplyDialog isOpen={isDialogOpen} originalPost={postData} user={user} onCancel={handleCloseDialog} onConfirm={handleCloseDialog} />}
             {isShareDialogOpen && <ShareWithComment isOpen={isShareDialogOpen} originalPost={postData} user={user} onCancel={handleCloseDialog} onConfirm={successShareReply} />}
@@ -302,6 +308,78 @@ function PostPage() {
 }
 
 
+
+function InfiniteRepliesList({ user, postId }) {
+    const [replies, setReplies] = useState([]);
+    const [page, setPage] = useState(1);
+    const [loading, setLoading] = useState(false);
+    const [hasMore, setHasMore] = useState(true);
+    const observerTarget = useRef(null);
+
+    useEffect(() => {
+        let ignore = false;
+        const controller = new AbortController();
+
+        async function getReplies(page) {
+            if (loading) return;
+            setLoading(true);
+
+            try {
+                const result = await fetchRepliesOfPost(postId, controller.signal, page);
+                if (result && result.success) {
+                    if (ignore) return;
+                    if (result.data.length == 0) {
+                        setHasMore(false);
+                    } else {
+                        setReplies((prev) => [...prev, ...result.data]);
+                    }
+                }
+            } catch (e) {
+                console.log(e);
+            } finally {
+                if (!ignore) setLoading(false);
+            }
+        }
+        getReplies(page);
+
+        return () => { ignore = true; controller.abort("abort") };
+    }, [page]);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting && hasMore && !loading && replies.length != 0) {
+                    setPage((prevPage) => prevPage + 1);
+                }
+            },
+            { threshold: 0.5 }
+        );
+
+        if (observerTarget.current) {
+            observer.observe(observerTarget.current);
+        }
+
+        return () => {
+            if (observerTarget.current) {
+                observer.unobserve(observerTarget.current);
+            }
+        };
+    }, [hasMore, loading]);
+
+    return (
+        <>
+            <div className="comments-list">
+                {replies.map((reply) => {
+                    return <Post key={reply.id} data={reply} user={user} />
+                })}
+            </div>
+            <div ref={observerTarget} style={{ height: "20px", width: "100%", backgroundColor: "red" }}>
+                {loading && <LoadingSpinner />}
+                {!hasMore && <p>No more items to load.</p>}
+            </div>
+        </>
+    );
+}
 
 
 

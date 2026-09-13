@@ -175,16 +175,17 @@ async function fetchUserBackground(userId) {
     }
 }
 
-async function fetchAllUsers() {
+async function fetchAllUsers(signal, page) {
     try {
         const token = localStorage.getItem("token");
-        const request = await fetch(`http://localhost:3000/users`, {
+        const request = await fetch(`http://localhost:3000/users?page=${page}`, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
                 'Authorization': token
-            }
+            },
+            signal:signal
         });
         if (request.ok) {
             const background = await request.json();
@@ -217,10 +218,10 @@ async function fetchUserByUsername(username) {
     }
 }
 
-async function searchUsers(searchArgs, signal) {
+async function searchUsers(searchArgs, page, signal) {
     try {
         const token = localStorage.getItem("token");
-        const request = await fetch('http://localhost:3000/users/search?' + searchArgs, {
+        const request = await fetch(`http://localhost:3000/users/search?page=${page}&${searchArgs}`, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -313,7 +314,7 @@ async function fetchFollowersOfUser(username, signal) {
                 'Content-Type': 'application/json',
                 'Authorization': token
             },
-            signal:signal
+            signal: signal
         });
         if (request.ok) {
             const result = await request.json();
@@ -335,7 +336,7 @@ async function fetchWhoUserIsFollowing(username, signal) {
                 'Content-Type': 'application/json',
                 'Authorization': token
             },
-            signal:signal
+            signal: signal
         });
         if (request.ok) {
             const result = await request.json();
@@ -389,15 +390,16 @@ async function makePost(postData) {
     }
 }
 
-async function fetchAllPosts() {
+async function fetchAllPosts(page, signal) {
     const token = localStorage.getItem("token");
-    const rawResponse = await fetch('http://localhost:3000/posts?onFeed=true', {
+    const rawResponse = await fetch('http://localhost:3000/posts?onFeed=true&page=' + page, {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
             'Authorization': token
-        }
+        },
+        signal: signal
     });
     if (rawResponse.status == 200) {
         const response = await rawResponse.json();
@@ -409,15 +411,15 @@ async function fetchAllPosts() {
     }
 }
 
-async function fetchPostsByUserId(userId) {
+async function fetchPostsByUserId(userId, signal, page) {
     const token = localStorage.getItem("token");
-    const rawResponse = await fetch('http://localhost:3000/posts?onFeed=false&userId=' + userId, {
+    const rawResponse = await fetch(`http://localhost:3000/posts?onFeed=false&userId=${userId}&page=${page}`, {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
             'Authorization': token
-        }
+        }, signal: signal
     });
     if (rawResponse.ok) {
         const response = await rawResponse.json();
@@ -470,10 +472,11 @@ async function fetchPostById(postId) {
     }
 }
 
-async function searchPosts(searchArgs, signal) {
+async function searchPosts(searchArgs, page, signal) {
+    console.log("call")
     try {
         const token = localStorage.getItem("token");
-        const rawResponse = await fetch('http://localhost:3000/posts/search?' + searchArgs, {
+        const rawResponse = await fetch(`http://localhost:3000/posts/search?page=${page}&${searchArgs}`, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -491,7 +494,7 @@ async function searchPosts(searchArgs, signal) {
             return null;
         }
     } catch (e) {
-        console.log(e)
+        console.log(e, page)
     }
 }
 
@@ -645,15 +648,16 @@ async function markNotificationsAsRead(signal) {
 
 
 
-async function fetchRepliesByUserId(userId) {
+async function fetchRepliesByUserId(userId, signal, page) {
     const token = localStorage.getItem("token");
-    const rawReponse = await fetch('http://localhost:3000/posts/replies?userId=' + userId, {
+    const rawReponse = await fetch(`http://localhost:3000/posts/replies?userId=${userId}${page ? ('&page=' + page) : ""}`, {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
             'Authorization': token
-        }
+        },
+        signal:signal
     });
     if (rawReponse.ok) {
         const response = await rawReponse.json();
@@ -709,15 +713,16 @@ async function makeReply(data, postId) {
     }
 }
 
-async function fetchRepliesOfPost(postId) {
+async function fetchRepliesOfPost(postId, signal, page) {
     const token = localStorage.getItem("token");
-    const rawReponse = await fetch(`http://localhost:3000/posts/${postId}/replies`, {
+    const rawReponse = await fetch(`http://localhost:3000/posts/${postId}/replies?page=${page}`, {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
             'Authorization': token
-        }
+        },
+        signal:signal
     });
     if (rawReponse.ok) {
         const response = await rawReponse.json();
@@ -742,15 +747,16 @@ async function fetchRepliesOfPost(postId) {
 
 
 
-async function fetchLikedPostsByUserId(userId) {
+async function fetchLikedPostsByUserId(userId,signal,page) {
     const token = localStorage.getItem("token");
-    const rawReponse = await fetch('http://localhost:3000/posts/likes?userId=' + userId, {
+    const rawReponse = await fetch(`http://localhost:3000/posts/likes?userId=${userId}${page ? ('&page=' + page) : ""}`, {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
             'Authorization': token
-        }
+        },
+        signal:signal
     });
     if (rawReponse.ok) {
         const response = await rawReponse.json();
@@ -845,15 +851,16 @@ async function dislikePost(postId) {
 
 
 
-async function fetchSharedPostsByUserId(userId) {
+async function fetchSharedPostsByUserId(userId, signal, page) {
     const token = localStorage.getItem("token");
-    const rawReponse = await fetch('http://localhost:3000/posts/shares?userId=' + userId, {
+    const rawReponse = await fetch(`http://localhost:3000/posts/shares?userId=${userId}${page ? ('&page=' + page) : ""}`, {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
             'Authorization': token
-        }
+        },
+        signal:signal
     });
     if (rawReponse.ok) {
         const response = await rawReponse.json();

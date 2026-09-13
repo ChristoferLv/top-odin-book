@@ -2,6 +2,8 @@ import { body, matchedData, validationResult } from "express-validator";
 import { prisma } from "../lib/prisma.js";
 import { validateUpdateUser } from "../validators.js";
 
+const PAGE_SIZE = 15;
+
 async function createNotificationAndNotify(req, authorId, receiverId) {
     try {
         const exists = await prisma.notifications.findFirst({
@@ -36,6 +38,12 @@ async function createNotificationAndNotify(req, authorId, receiverId) {
 
 async function getAllUsers(req, res) {
     const userId = req.user.id;
+
+    const page = req.query.page;
+    let toTake = {};
+    if (page && page > 0)
+        toTake = { skip: (page - 1) * PAGE_SIZE, take: PAGE_SIZE }
+
     try {
         const users = await prisma.users.findMany({
             where: { NOT: { id: userId } },
@@ -44,7 +52,9 @@ async function getAllUsers(req, res) {
                 username: true,
                 name: true,
                 following: { where: { followedById: userId, }, select: { id: true } }
-            }
+            },
+            orderBy: [{ following: { _count: "desc" } }, { createdAt: "asc" }],
+            ...toTake
         });
 
         res.status(200).send({ success: true, data: users });
@@ -79,7 +89,7 @@ async function getUserByUsername(req, res) {
                     select: {
                         following: true,
                         followedBy: true,
-                        posts:true
+                        posts: true
                     }
                 }
             }
@@ -121,6 +131,11 @@ async function searchUsers(req, res) {
     const userId = req.user.id;
     const searchTerm = req.query.q || "";
     const onlyFollowing = req.query.pf == "on";
+    const page = req.query.page;
+
+    let toTake = {};
+    if (page && page > 0)
+        toTake = { skip: (page - 1) * PAGE_SIZE, take: PAGE_SIZE }
 
     try {
         if (onlyFollowing) {
@@ -143,10 +158,14 @@ async function searchUsers(req, res) {
                             following: { where: { followedById: userId, }, select: { id: true } }
                         }
                     }
-                }
+                },
+                orderBy: { createdAt: "desc" },
+                ...toTake
             });
 
-            return res.status(200).send({ success: true, data: users });
+            const treatedUsers = users.map((user) => user.following);
+
+            return res.status(200).send({ success: true, data: treatedUsers });
         }
 
         const users = await prisma.users.findMany({
@@ -162,7 +181,9 @@ async function searchUsers(req, res) {
                 username: true,
                 name: true,
                 following: { where: { followedById: userId, }, select: { id: true } }
-            }
+            },
+            orderBy: { createdAt: "asc" },
+            ...toTake
         });
 
         res.status(200).send({ success: true, data: users });

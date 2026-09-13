@@ -3059,3 +3059,30 @@ app-root {
 .loading {
     background-color: #000000;
 }
+
+.spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+}
+
+.loading-spinner {
+    margin-top: 10px;
+    width: 30px;
+    height: 30px;
+    border: 4px solid white;
+    border-top: 4px solid var(--main-blue-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}

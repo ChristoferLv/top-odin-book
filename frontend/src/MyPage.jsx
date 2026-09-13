@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { AuthContext } from "./AuthContext";
 import { fetchLikedPosts, fetchLikedPostsByUserId, fetchMyPosts, fetchPostsByUserId, fetchRepliesByUserId, fetchSharedPostsByUserId, fetchUserByUsername, followUser, unfollowUser } from "../api/requests";
 import UserPicture from "./components/UserPicture";
@@ -7,15 +7,17 @@ import PostsList from "./components/PostsList";
 import { useLocation, useNavigate } from "react-router";
 import background from "../public/bkgd.png"
 
+const SeeingOptions = Object.freeze({
+    POSTS: Symbol("posts"),
+    LIKES: Symbol("likes"),
+    SHARES: Symbol("shares"),
+    REPLIES: Symbol("replies")
+});
+
 
 function MyPage() {
     const [userData, setUserData] = useState(null);
-    const SeeingOptions = Object.freeze({
-        POSTS: Symbol("posts"),
-        LIKES: Symbol("likes"),
-        SHARES: Symbol("shares"),
-        REPLIES: Symbol("replies")
-    });
+
     const location = useLocation();
     const parts = location.pathname.split("/");
     console.log(parts)
@@ -39,31 +41,30 @@ function MyPage() {
     }
 
     const { user, setUser } = useContext(AuthContext);
-    const [myPosts, setMyPosts] = useState([]);
     const [seeingOption, setSeeingOption] = useState(SeeingOptions.POSTS)
     const navigate = useNavigate();
-    const [count, setCount] = useState(0);
     const isMyProfile = user?.id == userData?.id;
     const isFollowing = userData?.following.length;
 
+
     function handleSeePosts() {
-        setMyPosts([]);
-        navigate("/" + user.username);
+        // setMyPosts([]);
+        navigate("/" + userData.username);
     }
 
     function handleSeeReplies() {
-        setMyPosts([]);
-        navigate("/" + user.username + "/replies", { replace: true });
+        // setMyPosts([]);
+        navigate("/" + userData.username + "/replies", { replace: true });
     }
 
     function handleSeeShares() {
-        setMyPosts([]);
-        navigate("/" + user.username + "/shares", { replace: true });
+        // setMyPosts([]);
+        navigate("/" + userData.username + "/shares", { replace: true });
     }
 
     function handleSeeLikes() {
-        setMyPosts([]);
-        navigate("/" + user.username + "/likes", { replace: true });
+        // setMyPosts([]);
+        navigate("/" + userData.username + "/likes", { replace: true });
     }
 
     function handleEditProfile() {
@@ -89,8 +90,13 @@ function MyPage() {
         }
     }
 
+    const [previousUser, setPreviousUser] = useState(parts[1]);
+
     useEffect(() => {
-        setUserData(null);
+        if (previousUser != parts[1]) {
+            setPreviousUser(parts[1]);
+            setUserData(null);
+        }
         async function fetchUserData() {
             const result = await fetchUserByUsername(parts[1]);
             if (result && result.success) {
@@ -100,44 +106,7 @@ function MyPage() {
         fetchUserData();
     }, [location.pathname])
 
-    useEffect(() => {
-        // setMyPosts([]);
-        async function getPosts() {
-            let response = null;
-            if (active == SeeingOptions.POSTS) {
-                response = await fetchPostsByUserId(userData.id);
-                if (response && response.success) {
-                    setMyPosts(response.data);
-                }
-            }
 
-            if (active == SeeingOptions.REPLIES) {
-                response = await fetchRepliesByUserId(userData.id);
-                if (response && response.success) {
-                    setMyPosts(response.data);
-                    // setMyPosts(response.data.map((item) => { return { ...item, likes: [], bookmarks: [] } }));
-                }
-            }
-
-            if (active == SeeingOptions.SHARES) {
-                response = await fetchSharedPostsByUserId(userData.id);
-                if (response && response.success) {
-                    setMyPosts(response.data.map((item) => { return { ...item, likes: [], bookmarks: [] } }));
-                }
-            }
-
-            if (active == SeeingOptions.LIKES) {
-                response = await fetchLikedPostsByUserId(userData.id);
-                if (response && response.success) {
-                    setMyPosts(response.data.map((item) => item.post));
-                }
-            }
-
-        }
-        setCount(c => ++c);
-        if (userData)
-            getPosts();
-    }, [location, userData]);
     if (!userData || !user) return <div className="loading"><p>Loading</p></div>
 
     console.log("userdata", userData)
@@ -200,13 +169,126 @@ function MyPage() {
                     </div>
                 </div>
                 <div className="my-page-content">
-                    <PostsList key={Date.now()} postsList={myPosts} user={user} onUserPage={showFullReplie} />
+                    <InfinitePostsList key={location.pathname + user.id} user={userData} listOption={active} fullReplies={showFullReplie} />
                 </div>
             </div>
         </>
     )
-
 }
+
+
+function InfinitePostsList({ user, listOption, fullReplies }) {
+    const [myPosts, setMyPosts] = useState([]);
+    const [page, setPage] = useState(1);
+    const [loading, setLoading] = useState(false);
+    const [hasMore, setHasMore] = useState(true);
+    const observerTarget = useRef(null);
+
+    const searchKey = location.pathname + location.search;
+    const [prevSearchKey, setPrevSearchKey] = useState(searchKey);
+    if (prevSearchKey !== searchKey) {
+        setUserData(null);
+        setPrevSearchKey(searchKey);
+        setPage(1);
+        setHasMore(true);
+        setLoading(false); 
+    }
+    useEffect(() => {
+        let ignore = false;
+        const controller = new AbortController();
+
+        // setMyPosts([]);
+        async function getPosts(page) {
+            if (loading) return;
+            setLoading(true);
+            let response = null;
+
+            try {
+                if (listOption == SeeingOptions.POSTS) {
+                    response = await fetchPostsByUserId(user.id, controller.signal, page);
+                    if (ignore) return;
+                    if (response.data.length == 0) {
+                        setHasMore(false);
+                    } else {
+                        setMyPosts((prev) => [...prev, ...response.data]);
+                    }
+                }
+
+                if (listOption == SeeingOptions.REPLIES) {
+                    response = await fetchRepliesByUserId(user.id, controller.signal, page);
+                    if (ignore) return;
+                    if (response.data.length == 0) {
+                        setHasMore(false);
+                    } else {
+                        setMyPosts((prev) => [...prev, ...response.data]);
+                    }
+                }
+
+                if (listOption == SeeingOptions.SHARES) {
+                    response = await fetchSharedPostsByUserId(user.id, controller.signal, page);
+                    if (ignore) return;
+                    if (response.data.length == 0) {
+                        setHasMore(false);
+                    } else {
+                        // const treatedResponse = response.data.map((item) => { return { ...item, likes: [], bookmarks: [] } })
+                        setMyPosts((prev) => [...prev, ...response.data]);
+                    }
+                }
+
+                if (listOption == SeeingOptions.LIKES) {
+                    response = await fetchLikedPostsByUserId(user.id, controller.signal, page);
+                    if (ignore) return;
+                    if (response && response.success) {
+                        if (response.data.length == 0) {
+                            setHasMore(false);
+                        } else {
+                            // const treatedResponse = response.data.map((item) => item.post);
+                            setMyPosts((prev) => [...prev, ...response.data]);
+                        }
+                    }
+                }
+            } catch (e) {
+                console.log(e);
+            } finally {
+                if (!ignore) setLoading(false);
+            }
+        }
+        getPosts(page);
+
+        return () => { ignore = true; controller.abort("abort") };
+    }, [searchKey, page]);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting && hasMore && !loading && myPosts.length != 0) {
+                    setPage((prevPage) => prevPage + 1);
+                }
+            },
+            { threshold: 0.5 }
+        );
+
+        if (observerTarget.current) {
+            observer.observe(observerTarget.current);
+        }
+
+        return () => {
+            if (observerTarget.current) {
+                observer.unobserve(observerTarget.current);
+            }
+        };
+    }, [hasMore, loading]);
+
+    return (
+        <>
+            <PostsList key={searchKey} observerRef={observerTarget} hasMore={hasMore} loading={loading} postsList={myPosts} user={user} onUserPage={fullReplies} />
+        </>
+    );
+}
+
+
+
+
 
 export default MyPage;
 

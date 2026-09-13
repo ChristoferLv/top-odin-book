@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
 
 function SearchFilter() {
-    const [followingFilter, setFollowingFilter] = useState(false);
     const [searchParams, setSearchParams] = useSearchParams();
+    const [followingFilter, setFollowingFilter] = useState(searchParams.get("pf") && searchParams.get("pf") == "on");
+
+
+   
 
     function handleOptionChange(followers) {
         if (followingFilter == followers) return;
@@ -31,7 +34,7 @@ function SearchFilter() {
                 <p>Users</p>
                 <label className="container">
                     <p>Any user</p>
-                    <span class="checkmark">
+                    <span className="checkmark">
                         <div className={`marker ${!followingFilter ? "checked" : ""}`}>
                             <svg viewBox="-2 -2 28 28" aria-hidden="true"><g>
                                 <path d="M9.64 18.952l-5.55-4.861 1.317-1.504 3.951 3.459 8.459-10.948L19.4 6.32 9.64 18.952z"></path></g>
@@ -39,12 +42,12 @@ function SearchFilter() {
                         </div>
                         <input type="radio"
                             checked={!followingFilter}
-                            onClick={(e) => handleOptionChange(false)}></input>
+                            onChange={(e) => handleOptionChange(false)}></input>
                     </span>
                 </label>
                 <label className="container">
                     <p>Users that you follow</p>
-                    <span class="checkmark">
+                    <span className="checkmark">
                         <div className={`marker ${followingFilter ? "checked" : ""}`}>
                             <svg viewBox="-2 -2 28 28" aria-hidden="true"><g>
                                 <path d="M9.64 18.952l-5.55-4.861 1.317-1.504 3.951 3.459 8.459-10.948L19.4 6.32 9.64 18.952z"></path></g>
@@ -52,7 +55,7 @@ function SearchFilter() {
                         </div>
                         <input type="radio"
                             checked={followingFilter}
-                            onClick={(e) => handleOptionChange(true)}></input>
+                            onChange={(e) => handleOptionChange(true)}></input>
                     </span>
                 </label>
             </div>

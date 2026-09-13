@@ -1,4 +1,4 @@
-@token = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJ1c2VyMSIsImlhdCI6MTc4NzA3ODgwNywiZXhwIjoxNzg3MTY1MjA3fQ.mJ-FQ0F2iCwIqH2v0ezJRRMUP47jvaydzdfgIU5RWtg
+@token = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJ1c2VyMSIsImlhdCI6MTc4OTE2Nzg3MSwiZXhwIjoxNzg5MjU0MjcxfQ.8zwo39HB-PVBirIdN3hY6JmIbP1KM8X5O7M2n8Tn3yQ
 
 POST http://localhost:3000/auth/signup
 content-type: application/json
@@ -66,5 +66,15 @@ Authorization: {{token}}
 
 ###
 
+GET http://localhost:3000/posts?onFeed=true&page=8
+Authorization: {{token}}
+
+###
+
 GET http://localhost:3000/posts?userId=1
+Authorization: {{token}}
+
+###
+
+GET http://localhost:3000/posts/trends
 Authorization: {{token}}

@@ -1,9 +1,11 @@
+import { useRef } from "react";
 import { PostType } from "../utils/defaults";
 import Post from "./Post";
 import PostShareWithReply from "./PostShareWithReply";
 import PostWithComment from "./PostWithComment";
+import LoadingSpinner from "./LoadingSpinner";
 
-function PostsList({ user, postsList, onUserPage }) {
+function PostsList({ observerRef, loading, hasMore, user, postsList, onUserPage }) {
     return (<>
         <div className="posts-list">
             {postsList.map((post) => {
@@ -13,6 +15,10 @@ function PostsList({ user, postsList, onUserPage }) {
                     return <PostWithComment key={post.id} data={post} user={user} />
                 return <Post key={post.id} data={post} user={user} />
             })}
+        </div>
+        <div ref={observerRef} style={{ height: "20px", width:"100%", backgroundColor:"red" }}>
+            {loading && <LoadingSpinner />}
+            {/* {!hasMore && <p>No more items to load.</p>} */}
         </div>
     </>)
 }

@@ -2,6 +2,9 @@ import { body, matchedData, validationResult } from "express-validator";
 import { prisma } from "../lib/prisma.js";
 import { validatePost } from "../validators.js";
 
+const PAGE_SIZE = 5;
+
+
 async function createNotificationAndNotify(req, authorId, postId, type, receiverId) {
     try {
         if (authorId == receiverId) return;
@@ -122,13 +125,20 @@ const makePost = [
 async function getAllPosts(req, res) {
     try {
         const userId = req.user.id;
-        let condition = {}
+        const page = req.query.page;
+
+        let condition = {};
         if (req.query.onFeed == 'true') {
             Object.assign(condition, { NOT: { AND: { authorId: userId, postType: { in: ["POST"] } } } })
         }
         if (req.query.userId) {
             Object.assign(condition, { authorId: parseInt(req.query.userId), postType: { in: ["POST", "SHARE_REPLY"] } });
         }
+
+        let toTake = {};
+        if (page && page > 0)
+            toTake = { skip: (page - 1) * PAGE_SIZE, take: PAGE_SIZE }
+
         const result = await prisma.posts.findMany({
             where: condition,
             include:
@@ -208,7 +218,8 @@ async function getAllPosts(req, res) {
                     }
                 },
             },
-            orderBy: { createdAt: "desc" }
+            orderBy: { createdAt: "desc" },
+            ...toTake
         });
 
         if (!result) {
@@ -269,7 +280,7 @@ async function getPostById(req, res) {
                                 likes: true,
                                 replyPost: true,
                                 shares: true,
-                                bookmarks:true
+                                bookmarks: true
                             }
                         },
                     }
@@ -296,7 +307,7 @@ async function getPostById(req, res) {
                                 likes: true,
                                 replyPost: true,
                                 shares: true,
-                                bookmarks:true
+                                bookmarks: true
                             }
                         },
                     }
@@ -309,7 +320,7 @@ async function getPostById(req, res) {
                         likes: true,
                         replyPost: true,
                         shares: true,
-                        bookmarks:true
+                        bookmarks: true
                     }
                 },
             }
@@ -428,6 +439,7 @@ async function searchPosts(req, res) {
         const userId = req.user.id;
         const searchTerm = req.query.q;
         const onlyFollowing = req.query.pf == "on";
+        const page = req.query.page;
 
         let condition = {};
         let order = [{ likes: { _count: "desc" } }, { createdAt: "desc" }];
@@ -445,6 +457,10 @@ async function searchPosts(req, res) {
 
             condition = { ...condition, "authorId": { in: usersId } };
         }
+
+        let toTake = {};
+        if (page && page > 0)
+            toTake = { skip: (page - 1) * PAGE_SIZE, take: PAGE_SIZE }
 
         const result = await prisma.posts.findMany({
             where: condition,
@@ -525,7 +541,8 @@ async function searchPosts(req, res) {
                     }
                 },
             },
-            orderBy: order
+            orderBy: order,
+            ...toTake
         });
 
         if (!result) {
@@ -541,10 +558,16 @@ async function searchPosts(req, res) {
 
 async function getLikedPosts(req, res) {
     try {
+        const userId = req.user.id;
         let condition = {}
         if (req.query.userId)
             condition = { whoLikedId: parseInt(req.query.userId) };
-        const userId = req.user.id;
+
+        const page = req.query.page;
+        let toTake = {};
+        if (page && page > 0)
+            toTake = { skip: (page - 1) * PAGE_SIZE, take: PAGE_SIZE }
+
         const result = await prisma.likes.findMany({
             where: condition,
             select: {
@@ -574,14 +597,17 @@ async function getLikedPosts(req, res) {
                     }
                 },
             },
-            orderBy: { createdAt: "desc" }
-        })
+            orderBy: { createdAt: "desc" },
+            ...toTake
+        });
+
+        const treatedResult = result.map((it) => it.post);
 
         if (!result) {
             return res.status(500).send({ success: false });
         }
 
-        return res.send({ success: true, data: result });
+        return res.send({ success: true, data: treatedResult });
     } catch (e) {
         console.log(e);
         throw e;
@@ -666,10 +692,17 @@ async function removeLike(req, res) {
 
 async function getSharedPosts(req, res) {
     try {
+        const userId = req.user.id;
         let condition = { postType: "SHARE" }
         if (req.query.userId)
             Object.assign(condition, { authorId: parseInt(req.query.userId) });
-        const userId = req.user.id;
+
+        const page = req.query.page;
+        let toTake = {};
+        if (page && page > 0)
+            toTake = { skip: (page - 1) * PAGE_SIZE, take: PAGE_SIZE }
+
+
         const result = await prisma.posts.findMany({
             where: condition,
             include: {
@@ -737,7 +770,9 @@ async function getSharedPosts(req, res) {
                         shares: true
                     }
                 },
-            }
+            },
+            orderBy: { createdAt: "desc" },
+            ...toTake
         })
 
         if (!result) {
@@ -841,6 +876,12 @@ async function getMyReplies(req, res) {
         let condition = { postType: "REPLY" }
         if (req.query.userId)
             Object.assign(condition, { authorId: parseInt(req.query.userId) });
+
+        const page = req.query.page;
+        let toTake = {};
+        if (page && page > 0)
+            toTake = { skip: (page - 1) * PAGE_SIZE, take: PAGE_SIZE }
+
         const result = await prisma.posts.findMany({
             where: condition,
             include: {
@@ -891,7 +932,8 @@ async function getMyReplies(req, res) {
                     }
                 },
             },
-            orderBy: { createdAt: "desc" }
+            orderBy: { createdAt: "desc" },
+            ...toTake
         })
 
         if (!result) {
@@ -981,6 +1023,11 @@ async function getRepliesOfPost(req, res) {
     try {
         const userId = req.user.id;
         const postId = parseInt(req.params.postId);
+        const page = req.query.page;
+        let toTake = {};
+        if (page && page > 0)
+            toTake = { skip: (page - 1) * PAGE_SIZE, take: PAGE_SIZE }
+
 
         const exists = await prisma.posts.findUnique({
             where: { id: postId }
@@ -1015,7 +1062,8 @@ async function getRepliesOfPost(req, res) {
                     }
                 },
             },
-            orderBy: { createdAt: "desc" }
+            orderBy: [{ likes: { _count: "desc" } }, { createdAt: "desc" }],
+            ...toTake
         });
 
         if (!result) {
@@ -1179,7 +1227,7 @@ async function getTrendingPosts(req, res) {
                 }
             });
 
-            console.log("trends deleted", deletion);
+            // console.log("trends deleted", deletion);
 
             const getCurrent = await tx.trending.findMany(
                 {
@@ -1201,14 +1249,14 @@ async function getTrendingPosts(req, res) {
                 return getCurrent;
             }
 
-            console.log("current trends", getCurrent);
+            // console.log("current trends", getCurrent);
 
             const newTrends = await tx.posts.findMany({
                 orderBy: [{ likes: { _count: "desc" } }, { createdAt: "desc" }],
                 take: 3
             });
 
-            console.log("generated new trends", newTrends);
+            // console.log("generated new trends", newTrends);
 
             const newTrendsIds = newTrends.map((it) => { return { postId: it.id } });
 
@@ -1228,7 +1276,7 @@ async function getTrendingPosts(req, res) {
                     }
                 }
             });
-            console.log("saved new trends", saveTrends);
+            // console.log("saved new trends", saveTrends);
             return saveTrends;
         });
 

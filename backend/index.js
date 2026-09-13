@@ -34,13 +34,15 @@ app.use((req, res, next) => {
     const timestamp = new Date().toISOString();
     const method = req.method;
     const url = req.url || req.originalUrl || 'unknown';
-    console.log(`📝 ${timestamp} - ${method} ${url}`);
-    console.log("   └req.body ->", req.body)
+    if (!req.originalUrl.includes("picture") && !req.originalUrl.includes("background") && !req.originalUrl.includes("midia")) {
+      console.log(`📝 ${timestamp} - ${method} ${url}`);
+      console.log("   └req.body ->", req.body)
+    }
     //console.log(req.headers.cookie)
 
     const originalJson = res.json.bind(res)
     res.json = (body) => {
-      if (!req.originalUrl.includes("picture") && !req.originalUrl.includes("background") && !req.originalUrl.includes("midia"))
+      if (!false && !req.originalUrl.includes("picture") && !req.originalUrl.includes("background") && !req.originalUrl.includes("midia"))
         console.log(`   └─ res [${res.statusCode}] ->`, JSON.stringify(body, null, 2), req.originalUrl, req.method)
       return originalJson(body)
     }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { fetchAllUsers, followUser, unfollowUser } from "../api/requests";
 import { useNavigate } from "react-router";
 import UsersList from "./components/UsersList";
@@ -7,17 +7,67 @@ function UsersPage() {
     const [usersList, setUsersList] = useState([]);
     const navigate = useNavigate();
 
+    const [page, setPage] = useState(1);
+    const [loading, setLoading] = useState(false);
+    const [hasMore, setHasMore] = useState(true);
+    const observerTarget = useRef(null);
+
     useEffect(() => {
+        let ignore = false;
+        const controller = new AbortController();
+
         async function getAllUsers() {
-            const result = await fetchAllUsers();
-            if (result && result.success) {
-                setUsersList(result.data);
+            if (loading) return;
+            setLoading(true);
+            try {
+                const result = await fetchAllUsers(controller.signal, page);
+                if (ignore) return;
+                if (result && result.success) {
+                    if (result.data.length == 0) {
+                        setHasMore(false);
+                    } else {
+                        setUsersList((prev) => [...prev, ...result.data]);
+                    }
+                }
+            } catch (e) {
+                if (e.name === 'AbortError') {
+                    // Safely ignore or log the cancellation
+                    console.log('Fetch aborted gracefully');
+                    return;
+                }
+                console.log(e);
+            } finally {
+                if (!ignore) setLoading(false);
             }
         }
-        getAllUsers();
-    }, []);
 
-    console.log(usersList)
+        getAllUsers();
+
+        return () => { ignore = true; controller.abort("cancel") }
+
+    }, [page]);
+
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting && hasMore && !loading && usersList.length != 0) {
+                    setPage((prevPage) => prevPage + 1);
+                }
+            },
+            { threshold: 0.5 }
+        );
+
+        if (observerTarget.current) {
+            observer.observe(observerTarget.current);
+        }
+
+        return () => {
+            if (observerTarget.current) {
+                observer.unobserve(observerTarget.current);
+            }
+        };
+    }, [hasMore, loading]);
 
 
     return (
@@ -37,7 +87,7 @@ function UsersPage() {
                     </div>
                 </div>
 
-                <UsersList usersList={usersList} />
+                <UsersList usersList={usersList} hasMore={hasMore} loading={loading} observerRef={observerTarget} />
             </div>
         </>
     );
