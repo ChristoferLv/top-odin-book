@@ -64,6 +64,7 @@ app-root {
             height: 80%;
             max-width: none;
             max-height: none;
+            filter: drop-shadow(-10px 10px 15px var(--main-blue-color));
         }
 
         path {
@@ -89,7 +90,7 @@ app-root {
         font-size: 60px;
         margin-bottom: 40px;
         margin-top: 20px;
-        color: var(--main-white-color);
+        color: white;
         font-family: Inter;
     }
 
@@ -133,6 +134,7 @@ app-root {
         font-weight: bold;
         border: none;
         cursor: pointer;
+        align-self: center;
     }
 
     input[type='submit'].register {
@@ -194,6 +196,7 @@ app-root {
     max-height: 100vh;
     display: grid;
     grid-template-columns: 27vw auto;
+    overflow-y: hidden;
     /* grid-template-columns: 27vw 40vw 33vw; */
 }
 
@@ -324,9 +327,11 @@ app-root {
     border-radius: 99px;
     transition: background-color 0.2s cubic-bezier(0, 0.55, 0.45, 1);
     cursor: pointer;
+    user-select: none;
+    /* position: relative; */
 }
 
-.user-toast:hover {
+.user-toast:hover:not(:has(.logout-balloon:hover)) {
     background-color: #202020;
 }
 
@@ -352,6 +357,45 @@ app-root {
     }
 }
 
+.logout-balloon {
+    width: 300px;
+    background-color: #161616;
+    border-radius: 10px;
+    position: absolute;
+    padding: 10px 0;
+    z-index: 99999;
+
+
+    a {
+        color: var(--main-white-color);
+        font-weight: bold;
+        font-family: Inter;
+        font-size: 14px;
+    }
+
+    .logout-body {
+        padding: 15px 15px;
+    }
+
+    .logout-body:hover {
+        background-color: #16181c;
+    }
+
+    svg {
+        position: absolute;
+        /* top: 50%; */
+        top: calc(100% + 2px);
+        left: 50%;
+        transform: translate(-50%, -50%) matrix(1, 0, 0, -1, 0, 0);
+        width: 20px;
+        height: 20px;
+
+        fill: #141414;
+
+    }
+
+
+}
 
 
 

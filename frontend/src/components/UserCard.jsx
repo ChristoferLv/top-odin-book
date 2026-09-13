@@ -29,7 +29,8 @@ function UserCard({ data }) {
         }
     }
 
-    function handleSeeUser() {
+    function handleSeeUser(e) {
+        e.stopPropagation();
         navigate("/" + userData.username);
     }
 
@@ -39,7 +40,7 @@ function UserCard({ data }) {
                 <UserPicture id={userData.id} username={userData.username} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
 
                 <div className="user-infos">
-                    <div className="user-item-head" onClick={goToUser}>
+                    <div className="user-item-head">
                         <span>{userData.name}</span>
                         <span>@{userData.username}</span>
                     </div>

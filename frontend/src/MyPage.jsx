@@ -46,6 +46,10 @@ function MyPage() {
     const isMyProfile = user?.id == userData?.id;
     const isFollowing = userData?.following.length;
 
+    useEffect(() => {
+        document.getElementById("master-pane").scrollTo(0, 0);
+    }, []);
+
 
     function handleSeePosts() {
         // setMyPosts([]);

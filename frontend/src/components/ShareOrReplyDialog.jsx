@@ -21,7 +21,7 @@ function ShareOrReplyDialog({ position, shared, isOpen, onClose, selectShare, se
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
-    }, [isOpen, onClose])
+    }, [isOpen, onClose]);
 
     useEffect(() => {
         const handleEsc = (event) => {
@@ -37,8 +37,7 @@ function ShareOrReplyDialog({ position, shared, isOpen, onClose, selectShare, se
     }, []);
     return (
         <>
-            <div className="transparent-overlay">
-            </div>
+            <div className="transparent-overlay"></div>
             <div className="share-or-reply" ref={dialogRef}
                 style={{ position: "absolute", top: position.top, right: position.right }}
             >

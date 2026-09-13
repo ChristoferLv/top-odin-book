@@ -69,6 +69,11 @@ function PostPage() {
     //     fetchReplies();
     // }, [location.pathname])
 
+
+    useEffect(() => {
+        document.getElementById("master-pane").scrollTo(0, 0);
+    }, [location.pathname]);
+
     function goToPostAuthor() {
         navigate("/" + postData.author.username);
     }

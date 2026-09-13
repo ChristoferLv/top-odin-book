@@ -13,6 +13,10 @@ function UsersPage() {
     const observerTarget = useRef(null);
 
     useEffect(() => {
+        document.getElementById("master-pane").scrollTo(0, 0);
+    }, [location.pathname]);
+
+    useEffect(() => {
         let ignore = false;
         const controller = new AbortController();
 

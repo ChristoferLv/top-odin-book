@@ -11,19 +11,7 @@ async function register(data) {
     }
 }
 
-async function logOut() {
-    const token = localStorage.getItem("token");
-    try {
-        const rawResponse = await fetch('http://localhost:3000/auth/logout', {
-            method: 'POST',
-            headers: {
-                'Authorization': token
-            }
-        });
-    } catch (error) {
-        console.log(error);
-    }
-
+async function logOut() {   
     localStorage.removeItem("user");
     localStorage.removeItem("token");
     window.location.pathname = "/login";

@@ -32,7 +32,8 @@ function UserPicture({ id, username, size, useBorder }) {
         }
     }, [])
 
-    function handleSeeUser() {
+    function handleSeeUser(e) {
+        e.stopPropagation();
         if (username)
             navigate("/" + username);
     }

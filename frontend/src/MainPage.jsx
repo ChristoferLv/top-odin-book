@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useState } from "react";
 import { AuthContext } from "./AuthContext";
 import NewPost from "./components/NewPost";
-import { Navigate, Outlet, useLocation, useNavigate, useParams } from "react-router";
+import { Navigate, Outlet, ScrollRestoration, useLocation, useNavigate, useParams } from "react-router";
 import UserToast from "./components/UserToast";
 import NotificationsCount from "./components/NotificationsCount";
 import WhoToFollow from "./components/WhoToFollow";
@@ -152,10 +152,11 @@ function MainPage() {
                         Profile
                     </div>
                 </div>
-                <UserToast onClick={goToProfile} user={user} />
+                <UserToast user={user} />
             </div>
-            <div className="master-pane">
+            <div className="master-pane" id="master-pane">
                 <Outlet />
+                <ScrollRestoration />
                 <div className="right-pane">
                     {active != ActivePage.SEARCH && <SearchInput />}
                     {active == ActivePage.SEARCH && <SearchFilter />}

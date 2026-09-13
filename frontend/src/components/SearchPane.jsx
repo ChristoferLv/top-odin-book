@@ -15,6 +15,10 @@ function SearchPane() {
         PEOPLE: "PEOPLE",
     });
 
+    useEffect(() => {
+        document.getElementById("master-pane").scrollTo(0, 0);
+    }, [location.pathname+location.search]);
+
     const { user, setUser } = useContext(AuthContext);
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
