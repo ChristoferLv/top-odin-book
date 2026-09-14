@@ -2,7 +2,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { AuthContext } from "../AuthContext";
 import UserBackground from "./UserBackground";
 import UserPicture from "./UserPicture";
-import { editUser, fetchUserBackground, fetchUserPicture, sendUserBackground, sendUserPicture } from "../../api/requests";
+import { editUser, fetchUserBackground, fetchUserPicture, removeBackground, removePicture, sendUserBackground, sendUserPicture } from "../../api/requests";
 import { useNavigate } from "react-router";
 import background from "../../public/bkgd.png";
 import Toast from "./Toast";
@@ -54,6 +54,22 @@ function EditProfile() {
         setUserData(newValues);
     }
 
+    async function removeImg(e) {
+        e.stopPropagation();
+        const result = await removePicture();
+        if (result.success) {
+            setPicture(null);
+        }
+    }
+
+    async function removeBckg(e) {
+        e.stopPropagation();
+        const result = await removeBackground();
+        if (result.success) {
+            setBackground(null);
+        }
+    }
+
     async function handleSaveEdit() {
         if (userData.name.length < 1) return;
         const result = await editUser(userData);
@@ -74,17 +90,17 @@ function EditProfile() {
 
     async function handlePictureSubmit(e) {
         e.preventDefault();
-        const data = Object.fromEntries(new FormData(e.target).entries());
+        const formData = new FormData();
+        formData.append("picture", fileInputRef.current.files[0]);
         fileInputRef.current.value = "";
-        if (data.picture.size > 5000000) {
+        if (formData.get("picture").size > 5000000) {
             setIsToastOpen(true);
             return;
         }
 
-        const result = await sendUserPicture(data);
+        const result = await sendUserPicture(formData);
         if (result.success) {
             setPicture(result.data.data);
-            // setUpdate(c => c + 1)
         }
     }
 
@@ -98,17 +114,17 @@ function EditProfile() {
 
     async function handleBackgroundSubmit(e) {
         e.preventDefault();
-        const data = Object.fromEntries(new FormData(e.target).entries());
+        const formData = new FormData();
+        formData.append("background", fileBackgroundRef.current.files[0]);
         fileBackgroundRef.current.value = "";
-        if (data.background.size > 5000000) {
+        if (formData.get("background").size > 5000000) {
             setIsToastOpen(true);
             return;
         }
 
-        const result = await sendUserBackground(data);
+        const result = await sendUserBackground(formData);
         if (result.success) {
             setBackground(result.data.data);
-            // setUpdate(c => c + 1)
         }
     }
 
@@ -187,18 +203,48 @@ function EditProfile() {
                         <button onClick={handleSaveEdit} className="save-profile">Save</button>
                     </div>
                     <>
-                        <div className="user-background" onClick={handleClickBackground}>
+                        <div className="user-background">
                             <img src={!backgroundBuff ? background :
                                 imageUrlBkgd} alt="" />
+                            <div className="background-actions">
+                                <button title="Change Background" className="change-background" onClick={handleClickBackground}>
+                                    <svg viewBox="0 0 20 20" aria-hidden="true"><g>
+                                        <path d="M17.084 7.5c0-1.163 0-1.744-.144-2.218-.323-1.065-1.157-1.899-2.222-2.222-.473-.143-1.055-.143-2.218-.143H8.25c-1.867 0-2.8 0-3.513.363-.627.32-1.137.83-1.457 1.457-.363.713-.363 1.646-.363 3.513v4.25c0 1.163 0 1.745.144 2.218.323 1.065 1.156 1.899 2.222 2.222.473.143 1.054.143 2.217.143" fill="none" stroke="currentColor" stroke-width="1.667"></path>
+                                        <path d="M2.917 12.5l3.75-3.333 2.917 2.916" fill="none" stroke="currentColor" stroke-width="1.667"></path>
+                                        <circle cx="12.5" cy="7.5" fill="currentColor" r="1.667"></circle>
+                                        <path d="M17.56 10.894c-.644-.645-1.684-.659-2.346-.032l-3.656 3.463c-.6.568-.968 1.34-1.031 2.164l-.11 1.428 1.479-.114c.793-.061 1.539-.404 2.101-.967l3.564-3.563c.657-.657.657-1.722 0-2.38z" fill="none" stroke="currentColor" stroke-width="1.667"></path></g>
+                                    </svg>
+                                </button>
+                                {backgroundBuff && <button title="Remove background" className="remove-background" onClick={removeBckg}>
+                                    <svg viewBox="0 0 24 24" aria-hidden="true"><g>
+                                        <path d="M10.59 12L4.54 5.96l1.42-1.42L12 10.59l6.04-6.05 1.42 1.42L13.41 12l6.05 6.04-1.42 1.42L12 13.41l-6.04 6.05-1.42-1.42L10.59 12z"></path></g>
+                                    </svg>
+                                </button>}
+                            </div>
                         </div>
                     </>
                     <div className="my-page-controls">
                         <div className="my-page-picture">
                             <div
-                                className="profile-pic pic-border" onClick={handleClickImage}
+                                className="profile-pic pic-border"
                             >
-                                <img src={!rawBufferPicture ? "../public/avatar.png" :
+                                <img src={!pictureBuff ? "../public/avatar.png" :
                                     imageUrlPicture} alt="" />
+
+                                <button title="Change picture" className="change-user-picture" onClick={handleClickImage}>
+                                    <svg viewBox="0 0 20 20" aria-hidden="true"><g>
+                                        <path d="M17.084 7.5c0-1.163 0-1.744-.144-2.218-.323-1.065-1.157-1.899-2.222-2.222-.473-.143-1.055-.143-2.218-.143H8.25c-1.867 0-2.8 0-3.513.363-.627.32-1.137.83-1.457 1.457-.363.713-.363 1.646-.363 3.513v4.25c0 1.163 0 1.745.144 2.218.323 1.065 1.156 1.899 2.222 2.222.473.143 1.054.143 2.217.143" fill="none" stroke="currentColor" stroke-width="1.667"></path>
+                                        <path d="M2.917 12.5l3.75-3.333 2.917 2.916" fill="none" stroke="currentColor" stroke-width="1.667"></path>
+                                        <circle cx="12.5" cy="7.5" fill="currentColor" r="1.667"></circle>
+                                        <path d="M17.56 10.894c-.644-.645-1.684-.659-2.346-.032l-3.656 3.463c-.6.568-.968 1.34-1.031 2.164l-.11 1.428 1.479-.114c.793-.061 1.539-.404 2.101-.967l3.564-3.563c.657-.657.657-1.722 0-2.38z" fill="none" stroke="currentColor" stroke-width="1.667"></path></g>
+                                    </svg>
+                                </button>
+
+                                {pictureBuff && <button title="Remove image" type="button" className='close-button' onClick={removeImg}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 14 14" fill="none">
+                                        <path fillRule="evenodd" clipRule="evenodd" d="M13.7071 1.70711C14.0976 1.31658 14.0976 0.683417 13.7071 0.292893C13.3166 -0.0976311 12.6834 -0.0976311 12.2929 0.292893L7 5.58579L1.70711 0.292893C1.31658 -0.0976311 0.683417 -0.0976311 0.292893 0.292893C-0.0976311 0.683417 -0.0976311 1.31658 0.292893 1.70711L5.58579 7L0.292893 12.2929C-0.0976311 12.6834 -0.0976311 13.3166 0.292893 13.7071C0.683417 14.0976 1.31658 14.0976 1.70711 13.7071L7 8.41421L12.2929 13.7071C12.6834 14.0976 13.3166 14.0976 13.7071 13.7071C14.0976 13.3166 14.0976 12.6834 13.7071 12.2929L8.41421 7L13.7071 1.70711Z" fill="white" />
+                                    </svg>
+                                </button>}
                             </div>
                         </div>
                     </div>

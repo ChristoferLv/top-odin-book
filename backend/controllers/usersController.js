@@ -336,6 +336,26 @@ async function uploadPicture(req, res) {
     }
 }
 
+async function removePicture(req, res) {
+    try {
+        const userId = req.user.id;
+
+        const result = await prisma.users.update(
+            {
+                data: { picture: null, mime: null },
+                where: { id: userId }
+            }
+        );
+        if (!result) {
+            return res.status(500).send({ success: false });
+        }
+        return res.status(201).send({ success: true });
+    } catch (e) {
+        console.log(e);
+        return res.status(500).send({ success: false });
+    }
+}
+
 async function getBackground(req, res) {
     const userId = parseInt(req.params.userId);
     const result = await prisma.users.findUnique(
@@ -376,6 +396,27 @@ async function uploadBackground(req, res) {
     }
 }
 
+async function removeBackground(req, res) {
+    try {
+        const userId = req.user.id;
+
+        const result = await prisma.users.update(
+            {
+                data: { background: null, bgmime: null },
+                where: { id: userId }
+            }
+        );
+
+        if (!result) {
+            return res.status(500).send({ success: false });
+        }
+        return res.status(201).send({ success: true });
+    } catch (e) {
+        console.log(e);
+        return res.status(500).send({ success: false });
+    }
+}
+
 
 export {
     getAllUsers,
@@ -387,6 +428,8 @@ export {
     unfollowUser,
     uploadPicture,
     getPicture,
+    removePicture,
     uploadBackground,
-    getBackground
+    getBackground,
+    removeBackground
 }

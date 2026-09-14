@@ -11,7 +11,7 @@ async function register(data) {
     }
 }
 
-async function logOut() {   
+async function logOut() {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
     window.location.pathname = "/login";
@@ -77,10 +77,8 @@ async function editUser(data) {
     }
 }
 
-async function sendUserPicture(data) {
+async function sendUserPicture(formData) {
     try {
-        const formData = new FormData();
-        formData.append("picture", data.picture);
         const token = localStorage.getItem("token");
         const result = await fetch("http://localhost:3000/users/picture/", {
 
@@ -93,6 +91,28 @@ async function sendUserPicture(data) {
         })
         const resultData = await result.json();
         return resultData;
+    } catch (e) {
+        console.log(e);
+        throw e;
+    }
+}
+
+async function removePicture() {
+    try {
+        const token = localStorage.getItem("token");
+        const result = await fetch("http://localhost:3000/users/picture/", {
+            method: 'DELETE',
+
+            headers: {
+                Authorization: token,
+            },
+        })
+        if (result.ok) {
+            const resultData = await result.json();
+            return resultData;
+        } else {
+            return null;
+        }
     } catch (e) {
         console.log(e);
         throw e;
@@ -120,10 +140,8 @@ async function fetchUserPicture(userId) {
     }
 }
 
-async function sendUserBackground(data) {
+async function sendUserBackground(formData) {
     try {
-        const formData = new FormData();
-        formData.append("background", data.background);
         const token = localStorage.getItem("token");
         const result = await fetch("http://localhost:3000/users/background/", {
 
@@ -163,6 +181,28 @@ async function fetchUserBackground(userId) {
     }
 }
 
+async function removeBackground() {
+    try {
+        const token = localStorage.getItem("token");
+        const result = await fetch("http://localhost:3000/users/background/", {
+            method: 'DELETE',
+
+            headers: {
+                Authorization: token,
+            },
+        })
+        if (result.ok) {
+            const resultData = await result.json();
+            return resultData;
+        } else {
+            return null;
+        }
+    } catch (e) {
+        console.log(e);
+        throw e;
+    }
+}
+
 async function fetchAllUsers(signal, page) {
     try {
         const token = localStorage.getItem("token");
@@ -173,7 +213,7 @@ async function fetchAllUsers(signal, page) {
                 'Content-Type': 'application/json',
                 'Authorization': token
             },
-            signal:signal
+            signal: signal
         });
         if (request.ok) {
             const background = await request.json();
@@ -645,7 +685,7 @@ async function fetchRepliesByUserId(userId, signal, page) {
             'Content-Type': 'application/json',
             'Authorization': token
         },
-        signal:signal
+        signal: signal
     });
     if (rawReponse.ok) {
         const response = await rawReponse.json();
@@ -710,7 +750,7 @@ async function fetchRepliesOfPost(postId, signal, page) {
             'Content-Type': 'application/json',
             'Authorization': token
         },
-        signal:signal
+        signal: signal
     });
     if (rawReponse.ok) {
         const response = await rawReponse.json();
@@ -735,7 +775,7 @@ async function fetchRepliesOfPost(postId, signal, page) {
 
 
 
-async function fetchLikedPostsByUserId(userId,signal,page) {
+async function fetchLikedPostsByUserId(userId, signal, page) {
     const token = localStorage.getItem("token");
     const rawReponse = await fetch(`http://localhost:3000/posts/likes?userId=${userId}${page ? ('&page=' + page) : ""}`, {
         method: 'GET',
@@ -744,7 +784,7 @@ async function fetchLikedPostsByUserId(userId,signal,page) {
             'Content-Type': 'application/json',
             'Authorization': token
         },
-        signal:signal
+        signal: signal
     });
     if (rawReponse.ok) {
         const response = await rawReponse.json();
@@ -848,7 +888,7 @@ async function fetchSharedPostsByUserId(userId, signal, page) {
             'Content-Type': 'application/json',
             'Authorization': token
         },
-        signal:signal
+        signal: signal
     });
     if (rawReponse.ok) {
         const response = await rawReponse.json();
@@ -992,9 +1032,11 @@ export {
     getMe,
     editUser,
     sendUserPicture,
+    removePicture,
     fetchUserPicture,
     sendUserBackground,
     fetchUserBackground,
+    removeBackground,
     fetchAllUsers,
     fetchUserByUsername,
     searchUsers,

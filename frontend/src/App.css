@@ -1279,7 +1279,68 @@ app-root {
 
 .my-page-picture {
     align-self: flex-end;
+    position: relative;
+
+    .profile-pic{
+        cursor: default;
+    }
+
+    button {
+        outline: none;
+        border: none;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 50px;
+        height: 50px;
+        border-radius: 999px;
+        background-color: rgba(15, 20, 25, 0.6);
+        cursor: pointer;
+        transition: background-color 0.15s ease-out;
+
+    }
+
+    button:hover {
+        transition: background-color 0.15s ease-in;
+        background-color: rgba(41, 45, 48, 0.6);
+    }
 }
+
+.my-page-picture .close-button {
+    position: absolute;
+    top: auto;
+    left: auto;
+    bottom: 0px;
+    right: 0px;
+    width: 35px;
+    height: 35px;
+    background-color: rgba(0, 0, 0, 0.75);
+}
+
+.my-page-picture .change-user-picture {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50px;
+    height: 50px;
+
+    svg {
+        width: 25px;
+        height: 25px;
+
+        path {
+            opacity: 0.9;
+            stroke: var(--main-white-color);
+        }
+
+        circle {
+            opacity: 0.9;
+            fill: var(--main-white-color);
+        }
+    }
+}
+
 
 .edit-profile-button {
     background-color: transparent;
@@ -1610,6 +1671,7 @@ app-root {
 
 .user-background {
     cursor: pointer;
+    position: relative;
 
     img {
         object-fit: fill;
@@ -1617,6 +1679,63 @@ app-root {
         max-height: 200px;
     }
 }
+
+.background-actions {
+    display: flex;
+    gap: 0 25px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+
+    button {
+        outline: none;
+        border: none;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 50px;
+        height: 50px;
+        border-radius: 999px;
+        background-color: rgba(15, 20, 25, 0.6);
+        cursor: pointer;
+        transition: background-color 0.15s ease-out;
+
+    }
+
+    button:hover {
+        transition: background-color 0.15s ease-in;
+        background-color: rgba(41, 45, 48, 0.6);
+    }
+
+    .remove-background svg {
+        width: 25px;
+        height: 25px;
+
+        path {
+            fill: var(--main-white-color);
+            opacity: 0.9;
+        }
+
+    }
+
+    .change-background svg {
+        width: 25px;
+        height: 25px;
+
+        path {
+            opacity: 0.9;
+            stroke: var(--main-white-color);
+        }
+
+        circle {
+            opacity: 0.9;
+            fill: var(--main-white-color);
+        }
+    }
+}
+
+
 
 
 
