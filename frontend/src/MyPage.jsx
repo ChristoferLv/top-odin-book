@@ -46,9 +46,9 @@ function MyPage() {
     const isFollowing = userData?.following.length;
     const isFollowingMe = userData?.followedBy.length;
 
-    useEffect(() => {
-        document.getElementById("master-pane").scrollTo(0, 0);
-    }, []);
+    // useEffect(() => {
+    //     document.getElementById("master-pane").scrollTo(0, 0);
+    // }, []);
 
 
     function handleSeePosts() {

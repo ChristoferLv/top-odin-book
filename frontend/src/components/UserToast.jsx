@@ -45,8 +45,8 @@ function LogOutBalloon({ username, isOpen, onClose, toast }) {
         const rect = toast.current.getBoundingClientRect();
 
         const position = {
-            top: rect.y - 80,
-            left: rect.x
+            top: "-80px",
+            left: rect.x -200
         }
 
         setPosition(position);

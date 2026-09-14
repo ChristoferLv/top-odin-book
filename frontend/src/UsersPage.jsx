@@ -12,9 +12,9 @@ function UsersPage() {
     const [hasMore, setHasMore] = useState(true);
     const observerTarget = useRef(null);
 
-    useEffect(() => {
-        document.getElementById("master-pane").scrollTo(0, 0);
-    }, [location.pathname]);
+    // useEffect(() => {
+    //     document.getElementById("master-pane").scrollTo(0, 0);
+    // }, [location.pathname]);
 
     useEffect(() => {
         let ignore = false;

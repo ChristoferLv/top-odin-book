@@ -179,41 +179,106 @@ app-root {
 
 
 
+.content-wrapper{
+    border-right: 1px solid var(--main-border-color);
+    border-left: 1px solid var(--main-border-color);
 
+    width: 40vw;
+    flex-shrink: 0;
 
+}
 
+header {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px 0;
+    background-color: black;
+    border-left: 1px solid var(--main-border-color);
+    color: white;
+    /* padding-top: 10px; */
+    min-width: 25vw;
+    max-width: 25vw;
+    /* align-items: flex-end; */
+    /* padding-left: 15px;
+    padding-right: 20%; */
+    z-index: 3;
+    overflow-x: scroll;
+}
 
 .master-pane {
-    display: grid;
-    grid-template-columns: 40vw auto;
-    overflow-y: scroll;
+    max-width: 73vw;
+    /* display: flex;
+    flex-grow: 1; */
+    /* display: grid; */
+    /* grid-template-columns: 40vw auto; */
+    /* overflow-y: scroll; */
     /* background-color: var(--main-background-color); */
+}
+
+.master-content {
+    display: flex;
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.right-pane {
+
+    /* width: 280px; */
+    /* flex-shrink: 0; */
+    /* margin-left: 24px; */
+    /* flex-shrink: 1; */
+    position: relative;
+    /* padding-top: 20px; */
+    margin-left: 3%;
+    /* flex-grow: 0; */
+}
+
+.right-pane-content {
+    position: sticky;
+    display: flex;
+    gap: 15px;
+    flex-direction: column;
+    padding: 12px 0;
 }
 
 
 .main-page {
     height: 100%;
     max-height: 100vh;
-    display: grid;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    /* display: grid;
     grid-template-columns: 27vw auto;
-    overflow-y: hidden;
+    overflow-y: hidden; */
     /* grid-template-columns: 27vw 40vw 33vw; */
 }
 
 .navigation-pane {
     box-sizing: border-box;
     background-color: var(--main-background-color);
-    border-right: 1px solid var(--main-border-color);
+    height: 100%;
+    /* margin-right: 5%; */
+    padding-right: 8px;
+    width: 16%;
+    margin-left: 7%;
+
+    padding-bottom: 15px;
+    /* border-right: 1px solid var(--main-border-color);    */
     max-height: 100vh;
-    overflow-y: hidden;
+    /* overflow-y: hidden; */
+    position: fixed;
+    /* top: 0; */
+    /* left: 0; */
     display: flex;
     flex-direction: column;
     gap: 3px 0;
 
-    padding-top: 15px;
+    /* padding-top: 15px;
     padding-bottom: 15px;
     padding-right: 5px;
-    padding-left: 30%;
+    padding-left: 30%; */
 
     .navigation-button {
         color: var(--main-white-color);
@@ -328,11 +393,11 @@ app-root {
     transition: background-color 0.2s cubic-bezier(0, 0.55, 0.45, 1);
     cursor: pointer;
     user-select: none;
-    /* position: relative; */
+    position: relative;
 }
 
 .user-toast:hover:not(:has(.logout-balloon:hover)) {
-    background-color: #202020;
+    background-color: #373737;
 }
 
 .user-toast-info {
@@ -378,7 +443,7 @@ app-root {
     }
 
     .logout-body:hover {
-        background-color: #16181c;
+        background-color: #272b32;
     }
 
     svg {
@@ -414,7 +479,7 @@ app-root {
 
 .content-pane {
     background-color: black;
-    width: 40vw;
+    /* border-right: 1px solid var(--main-border-color); */
     /* overflow: auto; */
     /* border: solid white 1px;
     border-style: none solid; */
@@ -2923,17 +2988,7 @@ app-root {
 
 
 
-.right-pane {
-    display: flex;
-    flex-direction: column;
-    gap: 10px 0;
-    background-color: black;
-    border-left: 1px solid var(--main-border-color);
-    color: white;
-    padding-top: 10px;
-    padding-left: 15px;
-    padding-right: 20%;
-}
+
 
 .who-to-follow {
     /* margin-top: 10px; */
