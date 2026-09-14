@@ -6,8 +6,9 @@ import { USER_PICTURE_DEFAULT_SIZE } from "../utils/defaults";
 
 function UserCard({ data }) {
     const [userData, setUserData] = useState(data);
-    const [nowFollowing, setNowFollowing] = useState(data);
+    const [nowFollowing, setNowFollowing] = useState(data.following.length > 0);
     const navigate = useNavigate();
+    const isFollowingMe = userData?.followedBy.length !=0;
 
     function goToUser() {
         navigate(`/${data.username}`)
@@ -42,7 +43,10 @@ function UserCard({ data }) {
                 <div className="user-infos">
                     <div className="user-item-head">
                         <span>{userData.name}</span>
-                        <span>@{userData.username}</span>
+                        <div>
+                            <span>@{userData.username}</span>
+                            {isFollowingMe && <span className="follows-you-tag">Follows you</span>}
+                        </div>
                     </div>
                     <div className="user-item-controls">
                         {nowFollowing ?

@@ -301,12 +301,28 @@ async function unfollowUser(userId) {
             }
         });
         if (request.ok) {
-            const background = await request.json();
-            return background;
+            const result = await request.json();
+            return result;
         }
     } catch (e) {
         console.log(e);
         throw e;
+    }
+}
+
+async function deleteFollower(userId) {
+    const token = localStorage.getItem("token");
+    const request = await fetch(`http://localhost:3000/follows/remove/${userId}`, {
+        method: 'DELETE',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': token
+        }
+    });
+    if (request.ok) {
+        const result = await request.json();
+        return result;
     }
 }
 
@@ -1043,6 +1059,7 @@ export {
 
     followUser,
     unfollowUser,
+    deleteFollower,
     getFollowSuggestions,
     fetchFollowersOfUser,
     fetchWhoUserIsFollowing,

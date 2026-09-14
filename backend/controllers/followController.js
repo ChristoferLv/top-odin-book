@@ -1,6 +1,39 @@
 import { Prisma } from "../generated/prisma/index.js";
 import { prisma } from "../lib/prisma.js";
 
+async function removeFollower(req, res) {
+    const followerId = parseInt(req.params.userId);
+    const userId = req.user.id;
+
+    const isFollowing = await prisma.follows.findUnique({
+        where: {
+            followingId_followedById: {
+                followedById: followerId,
+                followingId: userId
+            }
+        }
+    });
+
+    if (!isFollowing) {
+        return res.status(400).send({ success: false, message: "This user is not following you" });
+    }
+
+    const result = await prisma.follows.delete({
+        where: {
+            followingId_followedById: {
+                followedById: followerId,
+                followingId: userId
+            }
+        }
+    });
+
+    if (!result) {
+        return res.status(500).send({ success: false });
+    }
+
+    return res.status(200).send({ success: true });
+}
+
 async function getWhoToFollow(req, res) {
     const following = await prisma.follows.findMany(
         {
@@ -15,7 +48,7 @@ async function getWhoToFollow(req, res) {
     followingIds.push(req.user.id);
 
     const result = await prisma.$queryRaw`
-        SELECT "public"."Users"."id", "public"."Users"."username", "public"."Users"."name" 
+        SELECT "public"."Users"."id", "public"."Users"."username", "public"."Users"."name", ARRAY[]::integer[] AS following, ARRAY[]::integer[] AS "followedBy"
         FROM "public"."Users" 
         WHERE "public"."Users"."id" NOT IN (${Prisma.join(followingIds)})
         ORDER BY RANDOM() ASC LIMIT 3`;
@@ -28,6 +61,7 @@ async function getWhoToFollow(req, res) {
 
 async function getFollowersOfUser(req, res) {
     const username = req.params.username;
+    const userId = req.user.id;
     const result = await prisma.follows.findMany({
         where: {
             following: {
@@ -41,7 +75,8 @@ async function getFollowersOfUser(req, res) {
                     bio: true,
                     name: true,
                     username: true,
-                    following:{select:{id:true}}
+                    following: { where: { followedById: userId, }, select: { id: true } },
+                    followedBy: { where: { followingId: userId, }, select: { id: true } },
                 }
             }
         }
@@ -58,6 +93,7 @@ async function getFollowersOfUser(req, res) {
 
 async function getWhoUserIsFollowing(req, res) {
     const username = req.params.username;
+    const userId = req.user.id;
 
     const result = await prisma.follows.findMany({
         where: {
@@ -72,6 +108,8 @@ async function getWhoUserIsFollowing(req, res) {
                     bio: true,
                     name: true,
                     username: true,
+                    following: { where: { followedById: userId, }, select: { id: true } },
+                    followedBy: { where: { followingId: userId, }, select: { id: true } },
                 }
             }
         }
@@ -81,10 +119,13 @@ async function getWhoUserIsFollowing(req, res) {
         return res.status(500).send({ success: false });
     }
 
-    return res.status(200).send({ success: true, data: result });
+    const treatedResult = result.map((it) => it.following);
+
+    return res.status(200).send({ success: true, data: treatedResult });
 }
 
 export {
+    removeFollower,
     getWhoToFollow,
     getFollowersOfUser,
     getWhoUserIsFollowing

@@ -1,4 +1,4 @@
-@token = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJ1c2VyMSIsImlhdCI6MTc4OTE2Nzg3MSwiZXhwIjoxNzg5MjU0MjcxfQ.8zwo39HB-PVBirIdN3hY6JmIbP1KM8X5O7M2n8Tn3yQ
+@token = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJ1c2VyMSIsImlhdCI6MTc4OTM0ODIzMSwiZXhwIjoxNzg5NDM0NjMxfQ.cbbJUU-r-CjzuGlmMv_hwZ5MFwZ27_0k6VksF3HHPBY
 
 POST http://localhost:3000/auth/signup
 content-type: application/json
@@ -36,7 +36,7 @@ Authorization: {{token}}
 
 ###
 
-GET http://localhost:3000/users/find/user3
+GET http://localhost:3000/users/find/user2
 Authorization: {{token}}
 
 ###

@@ -1,6 +1,6 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { use, useContext, useEffect, useRef, useState } from "react";
 import { AuthContext } from "./AuthContext";
-import { fetchLikedPosts, fetchLikedPostsByUserId, fetchMyPosts, fetchPostsByUserId, fetchRepliesByUserId, fetchSharedPostsByUserId, fetchUserByUsername, followUser, unfollowUser } from "../api/requests";
+import { deleteFollower, fetchLikedPosts, fetchLikedPostsByUserId, fetchMyPosts, fetchPostsByUserId, fetchRepliesByUserId, fetchSharedPostsByUserId, fetchUserByUsername, followUser, unfollowUser } from "../api/requests";
 import UserPicture from "./components/UserPicture";
 import UserBackground from "./components/UserBackground";
 import PostsList from "./components/PostsList";
@@ -20,7 +20,6 @@ function MyPage() {
 
     const location = useLocation();
     const parts = location.pathname.split("/");
-    console.log(parts)
     const curLocation = parts[2];
     let active = SeeingOptions.POSTS;
     let showFullReplie = true;
@@ -45,6 +44,7 @@ function MyPage() {
     const navigate = useNavigate();
     const isMyProfile = user?.id == userData?.id;
     const isFollowing = userData?.following.length;
+    const isFollowingMe = userData?.followedBy.length;
 
     useEffect(() => {
         document.getElementById("master-pane").scrollTo(0, 0);
@@ -77,6 +77,17 @@ function MyPage() {
 
     function goToFollowagePage(where) {
         navigate(where);
+    }
+
+    async function removeFollower() {
+        try {
+            const result = await deleteFollower(userData.id);
+            if (result && result.success) {
+                setUserData({ ...userData, followedBy: [] });
+            }
+        } catch (e) {
+            console.log(e);
+        }
     }
 
     async function handleFollowage() {
@@ -138,11 +149,13 @@ function MyPage() {
                             <UserPicture id={userData.id} useBorder={true} />
                         </div>
                         {isMyProfile && <button onClick={handleEditProfile} className="edit-profile-button">Edit profile</button>}
-                        {!isMyProfile && <button onClick={handleFollowage} className={`edit-profile-button ${isFollowing ? "unfollow-btn" : ""}`}>{isFollowing ? "Following" : "Follow"}</button>}
+                        {!isMyProfile && isFollowingMe && <button onClick={removeFollower} className={`unfollow-btn remove-follower`}>Remove follower</button>}
+                        {!isMyProfile && <button onClick={handleFollowage} className={`${isFollowing ? "unfollow-btn" : "follow-btn"}`}>{isFollowing ? "Following" : "Follow"}</button>}
                     </div>
                     <div className="user-profile-info">
                         <p>{userData.name}</p>
-                        <p>@{userData.username}</p>
+                        <span className="username">@{userData.username}</span>
+                        {isFollowingMe != 0 && <span className="follows-you-tag">Follows you</span>}
                     </div>
                     <div className="user-profile-bio">
                         <p>{userData.bio}</p>
@@ -195,7 +208,7 @@ function InfinitePostsList({ user, listOption, fullReplies }) {
         setPrevSearchKey(searchKey);
         setPage(1);
         setHasMore(true);
-        setLoading(false); 
+        setLoading(false);
     }
     useEffect(() => {
         let ignore = false;

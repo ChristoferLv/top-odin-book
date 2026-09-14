@@ -51,7 +51,8 @@ async function getAllUsers(req, res) {
                 id: true,
                 username: true,
                 name: true,
-                following: { where: { followedById: userId, }, select: { id: true } }
+                following: { where: { followedById: userId, }, select: { id: true } },
+                followedBy: { where: { followingId: userId, }, select: { id: true } }
             },
             orderBy: [{ following: { _count: "desc" } }, { createdAt: "asc" }],
             ...toTake
@@ -64,6 +65,7 @@ async function getAllUsers(req, res) {
 }
 
 async function getUserByUsername(req, res) {
+    const userId = req.user.id;
     const { username } = req.params;
     try {
         const user = await prisma.users.findUnique({
@@ -77,7 +79,8 @@ async function getUserByUsername(req, res) {
                 name: true,
                 bio: true,
                 createdAt: true,
-                following: { select: { id: true }, where: { followedById: req.user.id } },
+                following: { where: { followedById: userId, }, select: { id: true } },
+                followedBy: { where: { followingId: userId, }, select: { id: true } },
                 _count: {
                     /*Here what it is counting is the number of entries on the tabble "Follows" 
                         where the number of following is the id of the current user got on where
@@ -113,8 +116,28 @@ async function getUserById(req, res) {
     try {
         const user = await prisma.users.findUnique({
             where: { id: userId },
-            omit: {
-                password: true, picture: true, mime: true, background: true, bgmime: true
+            select: {
+                id: true,
+                username: true,
+                name: true,
+                bio: true,
+                createdAt: true,
+                following: { where: { followedById: userId, }, select: { id: true } },
+                followedBy: { where: { followingId: userId, }, select: { id: true } },
+                _count: {
+                    /*Here what it is counting is the number of entries on the tabble "Follows" 
+                        where the number of following is the id of the current user got on where
+                        and where the id on followdBy is the id of the current user got on where
+                        so on following shows the number of times the current user is followed
+                        and on followedBy shows the number of times the current user is following someone
+                        the confusion is caused by the name of the columns
+                    */
+                    select: {
+                        following: true,
+                        followedBy: true,
+                        posts: true
+                    }
+                }
             }
         });
 
