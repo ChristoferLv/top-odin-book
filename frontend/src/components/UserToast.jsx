@@ -27,23 +27,30 @@ function UserToast({ user }) {
 
     return (
         <>
-            {isBalloonOpen && <div style={{backgroundColor:"transparent"}} className="transparent-overlay"></div>}
+            {isBalloonOpen && <div style={{ backgroundColor: "transparent" }} className="transparent-overlay"></div>}
             {isBalloonOpen && <LogOutBalloon isOpen={isBalloonOpen} username={user.username} onClose={handleBalloon} toast={toastRef} />}
             <div onClick={handleBalloon} className="user-toast" ref={toastRef}>
                 <div className="pic-container" onClick={handleSeeUser}>
                     <div className={`profile-pic`}
-                        style={{ width: USER_PICTURE_DEFAULT_SIZE + "px", height: USER_PICTURE_DEFAULT_SIZE + "px" }}>
+                        style={{ width: 40 + "px", height: 40 + "px" }}>
                         {isPictureSet && <img src={userPictureUrl == "" ? dafaultAvatar :
                             userPictureUrl} alt="" />}
                     </div>
                 </div>
-                <div className="user-toast-info">
-                    <p>
-                        {user.name}
-                    </p>
-                    <p>
-                        @{user.username}
-                    </p>
+                <div className="user-toast-body">
+                    <div className="user-toast-info">
+                        <p>
+                            {user.name}
+                        </p>
+                        <p>
+                            @{user.username}
+                        </p>
+                    </div>
+                    <div className="more-icon">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><g>
+                            <path d="M3 12c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2zm9 2c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm7 0c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"></path></g>
+                        </svg>
+                    </div>
                 </div>
             </div>
         </>
@@ -66,7 +73,7 @@ function LogOutBalloon({ username, isOpen, onClose, toast }) {
         const rect = toast.current.getBoundingClientRect();
         const position = {
             x: rect.x,
-            y: rect.y-80
+            y: rect.y - 80
         }
 
         setPosition(position);

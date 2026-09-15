@@ -179,7 +179,7 @@ app-root {
 
 
 
-.content-wrapper{
+.content-wrapper {
     border-right: 1px solid var(--main-border-color);
     border-left: 1px solid var(--main-border-color);
 
@@ -260,9 +260,8 @@ header {
     background-color: var(--main-background-color);
     height: 100%;
     /* margin-right: 5%; */
-    padding-right: 5px;
-    width: 18%;
-    margin-left: 7%;
+    width: 17%;
+    margin-left: 8%;
 
     padding-bottom: 15px;
     /* border-right: 1px solid var(--main-border-color);    */
@@ -302,9 +301,15 @@ header {
         gap: 0 15px;
         border-radius: 99px;
         width: fit-content;
-        padding: 10px 15px;
-        padding-left: 20px;
+        padding: 10px 10px;
+        /* padding-left: 20px; */
         transition: background-color 0.2s cubic-bezier(0, 0.55, 0.45, 1);
+
+        @media (max-width: 950px) {
+            span {
+                display: none;
+            }
+        }
     }
 
     .navigation-button:hover>.main-button-inner,
@@ -368,7 +373,7 @@ header {
         border-radius: 99px;
         width: fit-content;
         padding: 5px 5px;
-        margin-left: 7px;
+        /* margin-left: 7px; */
         transition: background-color 0.2s cubic-bezier(0, 0.55, 0.45, 1);
     }
 
@@ -388,18 +393,44 @@ header {
     margin-top: auto;
     align-items: center;
     gap: 0 10px;
-    margin-left: 15px;
+    margin-left: 5px;
+    margin-right: 2px;
     padding: 10px 0;
     padding-left: 10px;
     border-radius: 99px;
-    transition: background-color 0.2s cubic-bezier(0, 0.55, 0.45, 1);
+    transition: background-color 0.2s ease-out;
     cursor: pointer;
     user-select: none;
     position: relative;
+
+    .user-toast-body{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .more-icon{
+        fill: var(--main-white-color);
+        margin-right: 15px;
+    }
+
+    svg{
+        height: 20px;
+        width: 20px;
+    }
+
+    @media (max-width: 950px) {
+        margin-left: 0;
+
+        .user-toast-info {
+            display: none;
+        }
+    }
 }
 
 .user-toast:hover:not(:has(.logout-balloon:hover)) {
-    background-color: #373737;
+    transition: background-color 0.2s ease;
+    background-color: #262626;
 }
 
 .user-toast-info {

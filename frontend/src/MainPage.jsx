@@ -11,70 +11,70 @@ import TrendingPosts from "./components/TrendingPosts";
 
 
 function useBidirectionalSticky(scrollContainerEl) {
-  const wrapperRef = useRef(null);
-  const contentRef = useRef(null);
-  const lastY = useRef(0);
-  const revealOffset = useRef(0);
+    const wrapperRef = useRef(null);
+    const contentRef = useRef(null);
+    const lastY = useRef(0);
+    const revealOffset = useRef(0);
 
-  useEffect(() => {
-    const scrollEl = scrollContainerEl || window;
+    useEffect(() => {
+        const scrollEl = scrollContainerEl || window;
 
-    const getScrollY = () =>
-      scrollEl === window ? window.scrollY : scrollEl.scrollTop;
+        const getScrollY = () =>
+            scrollEl === window ? window.scrollY : scrollEl.scrollTop;
 
-    const getViewportHeight = () =>
-      scrollEl === window ? window.innerHeight : scrollEl.clientHeight;
+        const getViewportHeight = () =>
+            scrollEl === window ? window.innerHeight : scrollEl.clientHeight;
 
-    lastY.current = getScrollY();
-    let ticking = false;
+        lastY.current = getScrollY();
+        let ticking = false;
 
-    function update() {
-      const wrapper = wrapperRef.current;
-      const content = contentRef.current;
-      if (!wrapper || !content) return;
+        function update() {
+            const wrapper = wrapperRef.current;
+            const content = contentRef.current;
+            if (!wrapper || !content) return;
 
-      const currentY = getScrollY();
-      const delta = currentY - lastY.current;
-      lastY.current = currentY;
+            const currentY = getScrollY();
+            const delta = currentY - lastY.current;
+            lastY.current = currentY;
 
-      const overflow = Math.max(0, content.offsetHeight - getViewportHeight());
+            const overflow = Math.max(0, content.offsetHeight - getViewportHeight());
 
-      if (overflow === 0) {
-        content.style.top = "0px";
-        revealOffset.current = 0;
-        return;
-      }
+            if (overflow === 0) {
+                content.style.top = "0px";
+                revealOffset.current = 0;
+                return;
+            }
 
-      const wrapperTop = wrapper.getBoundingClientRect().top;
+            const wrapperTop = wrapper.getBoundingClientRect().top;
 
-      if (wrapperTop > 0) {
-        revealOffset.current = 0;
-        content.style.top = "0px";
-        return;
-      }
+            if (wrapperTop > 0) {
+                revealOffset.current = 0;
+                content.style.top = "0px";
+                return;
+            }
 
-      revealOffset.current = Math.min(
-        overflow,
-        Math.max(0, revealOffset.current + delta)
-      );
-      content.style.top = `-${revealOffset.current}px`;
-    }
+            revealOffset.current = Math.min(
+                overflow,
+                Math.max(0, revealOffset.current + delta)
+            );
+            content.style.top = `-${revealOffset.current}px`;
+        }
 
-    function onScroll() {
-      if (!ticking) {
-        requestAnimationFrame(() => {
-          update();
-          ticking = false;
-        });
-        ticking = true;
-      }
-    }
+        function onScroll() {
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    update();
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        }
 
-    scrollEl.addEventListener("scroll", onScroll, { passive: true });
-    return () => scrollEl.removeEventListener("scroll", onScroll);
-  }, [scrollContainerEl]);
+        scrollEl.addEventListener("scroll", onScroll, { passive: true });
+        return () => scrollEl.removeEventListener("scroll", onScroll);
+    }, [scrollContainerEl]);
 
-  return { wrapperRef, contentRef };
+    return { wrapperRef, contentRef };
 }
 
 function MainPage() {
@@ -142,9 +142,6 @@ function MainPage() {
         navigate("/" + user.username);
     }
 
-    console.log(location.pathname)
-    console.log(active)
-
     if (isLoading) return <><p>Loading...</p></>;
     if (!user && !isLoading) return <Navigate to="/login" replace />
 
@@ -168,7 +165,7 @@ function MainPage() {
                                     <path d="M19.469 12.594l3.625 3.313c0.438 0.406 0.313 0.719-0.281 0.719h-2.719v8.656c0 0.594-0.5 1.125-1.094 1.125h-4.719v-6.063c0-0.594-0.531-1.125-1.125-1.125h-2.969c-0.594 0-1.125 0.531-1.125 1.125v6.063h-4.719c-0.594 0-1.125-0.531-1.125-1.125v-8.656h-2.688c-0.594 0-0.719-0.313-0.281-0.719l10.594-9.625c0.438-0.406 1.188-0.406 1.656 0l2.406 2.156v-1.719c0-0.594 0.531-1.125 1.125-1.125h2.344c0.594 0 1.094 0.531 1.094 1.125v5.875z"></path>
                                 </svg>
                             </div>
-                            Home
+                            <span>Home</span>
                         </div>
                     </div>
                     <div onClick={goToExplore} className="navigation-button">
@@ -178,7 +175,7 @@ function MainPage() {
                                     <path d="M10.25 4.25c-3.314 0-6 2.686-6 6s2.686 6 6 6c1.657 0 3.155-.67 4.243-1.757 1.087-1.088 1.757-2.586 1.757-4.243 0-3.314-2.686-6-6-6zm-9 6c0-4.971 4.029-9 9-9s9 4.029 9 9c0 1.943-.617 3.744-1.664 5.215l4.475 4.474-2.122 2.122-4.474-4.475c-1.471 1.047-3.272 1.664-5.215 1.664-4.971 0-9-4.029-9-9z"></path></g>
                                 </svg>
                             </div>
-                            Explore
+                            <span>Explore</span>
                         </div>
                     </div>
                     <div onClick={goToNotifications} className="navigation-button">
@@ -189,7 +186,7 @@ function MainPage() {
                                     <path d="M11.996 2c-4.062 0-7.49 3.021-7.999 7.051L2.866 18H7.1c.463 2.282 2.481 4 4.9 4s4.437-1.718 4.9-4h4.236l-1.143-8.958C19.48 5.017 16.054 2 11.996 2zM9.171 18h5.658c-.412 1.165-1.523 2-2.829 2s-2.417-.835-2.829-2z"></path></g>
                                 </svg>
                             </div>
-                            Notifications
+                            <span>Notifications</span>
                         </div>
                     </div>
                     <div onClick={goToBookmarks} className="navigation-button">
@@ -199,7 +196,7 @@ function MainPage() {
                                     <path d="M2 2v13.5a.5.5 0 0 0 .74.439L8 13.069l5.26 2.87A.5.5 0 0 0 14 15.5V2a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2" />
                                 </svg>
                             </div>
-                            Bookmarks
+                            <span>Bookmarks</span>
                         </div>
                     </div>
                     <div onClick={goToAllUsers} className="navigation-button">
@@ -209,7 +206,7 @@ function MainPage() {
                                     <path d="M5.5 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm18.25 13.91c-.18-2.01-.78-3.72-1.81-4.96C20.89 10.7 19.45 10 17.75 10c-.35 0-.68.03-1.01.09-.18.54-.45 1.05-.8 1.49.74.46 1.41 1.05 1.99 1.76 1.05 1.3 1.71 2.91 2.06 4.66h3.85l-.09-1.09zM18.5 9c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zM6.07 13.34c.58-.71 1.25-1.3 1.99-1.76-.35-.44-.62-.95-.8-1.49-.33-.06-.66-.09-1.01-.09-1.7 0-3.14.7-4.19 1.95C1.032 13.19.433 14.9.254 16.91L.157 18H4.01c.35-1.75 1.01-3.36 2.06-4.66zM15 8.5c0-1.66-1.34-3-3-3s-3 1.34-3 3 1.34 3 3 3 3-1.34 3-3zm-7.37 6.1c-1.07 1.32-1.69 3.15-1.88 5.31L5.66 21h12.68l-.09-1.09c-.19-2.16-.81-3.99-1.88-5.31-1.08-1.35-2.59-2.1-4.37-2.1s-3.28.75-4.37 2.1z"></path></g>
                                 </svg>
                             </div>
-                            All users
+                            <span>All users</span>
                         </div>
                     </div>
                     <div onClick={goToProfile} className="navigation-button">
@@ -219,7 +216,7 @@ function MainPage() {
                                     <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6" />
                                 </svg>
                             </div>
-                            Profile
+                            <span>Profile</span>
                         </div>
                     </div>
                     <UserToast user={user} />
