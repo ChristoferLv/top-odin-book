@@ -27,7 +27,8 @@ function UserToast({ user }) {
 
     return (
         <>
-            {isBalloonOpen && <div className="transparent-overlay"></div>}
+            {isBalloonOpen && <div style={{backgroundColor:"transparent"}} className="transparent-overlay"></div>}
+            {isBalloonOpen && <LogOutBalloon isOpen={isBalloonOpen} username={user.username} onClose={handleBalloon} toast={toastRef} />}
             <div onClick={handleBalloon} className="user-toast" ref={toastRef}>
                 <div className="pic-container" onClick={handleSeeUser}>
                     <div className={`profile-pic`}
@@ -44,7 +45,6 @@ function UserToast({ user }) {
                         @{user.username}
                     </p>
                 </div>
-                <LogOutBalloon isOpen={isBalloonOpen} username={user.username} onClose={handleBalloon} toast={toastRef} />
             </div>
         </>
     )
@@ -54,22 +54,22 @@ function UserToast({ user }) {
 function LogOutBalloon({ username, isOpen, onClose, toast }) {
     const dialogRef = useRef(null);
     const [position, setPosition] = useState(null);
+
+    function handleClose(e) {
+        e.stopPropagation();
+        onClose();
+    }
+
     useEffect(() => {
         if (!isOpen) return;
 
         const rect = toast.current.getBoundingClientRect();
-
         const position = {
-            top: "-80px",
-            left: rect.x - 200
+            x: rect.x,
+            y: rect.y-80
         }
 
         setPosition(position);
-
-        function handleClose(e) {
-            e.stopPropagation();
-            onClose();
-        }
 
         function handleClickOutside(e) {
             if (dialogRef.current && !dialogRef.current.contains(event.target)) {
@@ -84,6 +84,20 @@ function LogOutBalloon({ username, isOpen, onClose, toast }) {
         };
     }, [isOpen]);
 
+    useEffect(() => {
+        const handleEsc = (event) => {
+            if (event.key === 'Escape') {
+                console.log("close close")
+                handleClose(event);
+            }
+        };
+        window.addEventListener('keydown', handleEsc);
+
+        return () => {
+            window.removeEventListener('keydown', handleEsc);
+        };
+    }, []);
+
 
     function handleLogOut() {
         logOut();
@@ -95,7 +109,7 @@ function LogOutBalloon({ username, isOpen, onClose, toast }) {
     return (
         <>
             <div className="logout-balloon" ref={dialogRef}
-                style={{ left: position.left, top: position.top }}
+                style={{ left: position.x, top: position.y }}
             >
                 <svg viewBox="0 0 24 24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" version="1.1"><g>
                     <path d="M22 17H2L12 6l10 11z"></path></g>

@@ -426,9 +426,9 @@ header {
 
 .logout-balloon {
     width: 300px;
-    background-color: #161616;
+    background-color: #1d1d1d;
     border-radius: 10px;
-    position: absolute;
+    position: fixed;
     padding: 10px 0;
     z-index: 99999;
 
@@ -442,6 +442,7 @@ header {
 
     .logout-body {
         padding: 15px 15px;
+        cursor: pointer;
     }
 
     .logout-body:hover {
@@ -457,7 +458,7 @@ header {
         width: 20px;
         height: 20px;
 
-        fill: #141414;
+        fill: #1d1d1d;
 
     }
 
