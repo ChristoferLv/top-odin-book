@@ -4,7 +4,7 @@ import { editUser, fetchUserBackground, removeBackground, removePicture, sendUse
 import { useNavigate } from "react-router";
 import background from "../../public/bkgd.png";
 import Toast from "./Toast";
-import {PictureContext} from "./PictureContext";
+import { PictureContext } from "../PictureContext";
 
 function EditProfile() {
     const { userPictureUrl, isPictureSet, pictureSetter } = useContext(PictureContext);

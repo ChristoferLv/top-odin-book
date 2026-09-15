@@ -1,12 +1,12 @@
 import { createContext, useCallback, useState } from "react";
 
-export const MainContext = createContext({
+export const NotificationsContext = createContext({
     notificationCount: 0,
     notificationSetter: () => { },
 });
 
 
-function MainContextProvider({ children }) {
+function NotificationsContextProvider({ children }) {
     const [notificationCount, setnotificationCount] = useState(0);
 
     const notificationSetter = useCallback((value) => {
@@ -14,10 +14,10 @@ function MainContextProvider({ children }) {
     }, [])
 
     return (
-        <MainContext value={{ notificationCount, notificationSetter }} >
+        <NotificationsContext value={{ notificationCount, notificationSetter }} >
             {children}
-        </MainContext>
+        </NotificationsContext>
     );
 }
 
-export default MainContextProvider;
+export default NotificationsContextProvider;

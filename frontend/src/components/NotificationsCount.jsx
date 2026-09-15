@@ -2,13 +2,13 @@ import { useCallback, useContext, useEffect, useState } from "react"
 import { fetchNotificationsCount } from "../../api/requests";
 import socketIO from "../../socket";
 import { AuthContext } from "../AuthContext";
-import { MainContext } from "./MainContext";
+import { NotificationsContext } from "../NotificationsContext";
 
 
 
 function NotificationsCount() {
     const { user, isLoading } = useContext(AuthContext);
-    const { notificationCount, notificationSetter } = useContext(MainContext);
+    const { notificationCount, notificationSetter } = useContext(NotificationsContext);
     const [socket, setSocket] = useState(null);
 
     const getNotificationsCount = useCallback(async () => {

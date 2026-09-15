@@ -4,12 +4,12 @@ import { useLocation, useNavigate, useSearchParams } from "react-router";
 import { fetchNotifications, markNotificationsAsRead } from '../../api/requests'
 import UserPicture from './UserPicture';
 import { formatDate } from "../utils/dateUtils";
-import { MainContext } from "./MainContext";
+import { NotificationsContext } from "../NotificationsContext";
 
 
 function NotificationsPane() {
     const { user, setUser } = useContext(AuthContext);
-    const { notificationSetter } = useContext(MainContext);
+    const { notificationSetter } = useContext(NotificationsContext);
     const location = useLocation();
     const navigate = useNavigate();
     const [notificationsList, setNotificationsList] = useState([]);

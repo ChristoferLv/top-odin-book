@@ -16,9 +16,9 @@ import UsersPage from './UsersPage.jsx';
 import SeeingPicturePage from './SeeingPicturePage.jsx';
 import SearchPane from './components/SearchPane.jsx';
 import NotificationsPane from './components/NotificationsPane.jsx';
-import MainContextProvider from './components/MainContext.jsx';
 import FollowageListing from './components/FollowageListing.jsx';
-import PictureContextProvider from './components/PictureContext.jsx';
+import PictureContextProvider from './PictureContext.jsx';
+import NotificationsContextProvider from './NotificationsContext.jsx';
 
 
 const router = createBrowserRouter([
@@ -52,9 +52,9 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <AuthProvider>
       <PictureContextProvider>
-        <MainContextProvider>
+        <NotificationsContextProvider>
           <RouterProvider router={router} />
-        </MainContextProvider>
+        </NotificationsContextProvider>
       </PictureContextProvider>
     </AuthProvider>
   </StrictMode>,

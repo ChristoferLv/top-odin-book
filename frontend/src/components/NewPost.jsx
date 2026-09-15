@@ -4,7 +4,7 @@ import { USER_PICTURE_DEFAULT_SIZE } from "../utils/defaults"
 import PictureDialog from "./PictureDialog";
 import Pie from "./ProgressCircle";
 import Toast from "./Toast";
-import {PictureContext} from "./PictureContext";
+import { PictureContext } from "../PictureContext";
 
 function NewPost() {
     const { userPictureUrl, isPictureSet } = useContext(PictureContext);

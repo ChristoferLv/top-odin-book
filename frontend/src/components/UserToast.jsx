@@ -3,7 +3,7 @@ import { logOut } from "../../api/requests";
 import { USER_PICTURE_DEFAULT_SIZE } from "../utils/defaults";
 import { useNavigate } from "react-router";
 import dafaultAvatar from "../../public/avatar.png";
-import { PictureContext } from "./PictureContext";
+import { PictureContext } from "../PictureContext";
 
 
 function UserToast({ user }) {

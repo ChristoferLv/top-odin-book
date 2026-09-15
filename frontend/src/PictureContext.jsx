@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
-import { AuthContext } from "../AuthContext";
-import { fetchUserPicture } from "../../api/requests";
+import { AuthContext } from "./AuthContext";
+import { fetchUserPicture } from "../api/requests";
 
 export const PictureContext = createContext({
     setUserPicture: () => { },

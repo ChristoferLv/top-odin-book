@@ -65,7 +65,8 @@ async function markNotificationsAsRead(req, res) {
 
             const setRead = await tx.notifications.updateManyAndReturn({
                 where: {
-                    receiverId: req.user.id
+                    receiverId: req.user.id,
+                    readAt:null
                 },
                 data: {
                     read: true,

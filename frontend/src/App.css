@@ -403,18 +403,19 @@ header {
     user-select: none;
     position: relative;
 
-    .user-toast-body{
+    .user-toast-body {
+        width: 100%;
         display: flex;
         align-items: center;
         justify-content: space-between;
     }
 
-    .more-icon{
+    .more-icon {
         fill: var(--main-white-color);
         margin-right: 15px;
     }
 
-    svg{
+    svg {
         height: 20px;
         width: 20px;
     }
@@ -684,6 +685,8 @@ header {
     display: flex;
     flex-direction: column;
     padding-top: 7px;
+    cursor: pointer;
+
 
     .post-content {
         margin-top: 5px;
@@ -709,6 +712,7 @@ header {
         font-weight: inherit;
         line-height: inherit;
         color: inherit;
+        cursor: pointer;
     }
 }
 
@@ -1053,6 +1057,8 @@ header {
 
 /* Make chain inspired on how twitter layout do*/
 .post-with-comment {
+    cursor: pointer;
+
     .left-side {
         display: flex;
         flex-direction: column;
@@ -2997,8 +3003,11 @@ header {
     }
 
     .post-content {
+        padding-right: 5px;
         color: var(--shadowed-text-color);
         font-size: 16px;
+        word-break: normal;
+        overflow-wrap: anywhere;
     }
 
     .unread {
