@@ -40,7 +40,7 @@ function ReplyDialog({ isOpen, user, originalPost, onCancel, onConfirm }) {
     }
 
     async function postReply(e) {
-        console.log(fileInputRef.current, fileInputRef.current.files)
+        // console.log(fileInputRef.current, fileInputRef.current.files)
         const formData = new FormData();
         formData.append("picture", fileInputRef.current.files[0]);
         formData.append("content", replyContent)
@@ -73,6 +73,7 @@ function ReplyDialog({ isOpen, user, originalPost, onCancel, onConfirm }) {
         if (file) {
             const imageUrl = URL.createObjectURL(file);
             setImageUrl(imageUrl);
+            setCanPost(true);
         }
 
     }
@@ -81,8 +82,12 @@ function ReplyDialog({ isOpen, user, originalPost, onCancel, onConfirm }) {
         e.stopPropagation();
         setModal(false);
         setImageUrl("");
-        if (fileInputRef.current)
+        if (fileInputRef.current){
             fileInputRef.current.value = "";
+            if(replyContent.length == 0){
+                setCanPost(false);
+            }
+        }
     }
 
     function handleClose(e) {

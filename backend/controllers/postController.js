@@ -978,6 +978,13 @@ const makeReply = [
 
             let hasMidia = req.file?.size > 0;
 
+            let dimensions = null;
+            if (hasMidia) {
+                const metadata = await sharp(req.file.buffer).metadata();
+                dimensions = `${metadata.width}x${metadata.height}`;
+            }
+
+
             const result = await prisma.$transaction(async (tx) => {
                 const postResult = await tx.posts.create({
                     data: {
@@ -985,7 +992,8 @@ const makeReply = [
                         hasMidia: hasMidia,
                         postType: "REPLY",
                         originalPostId: postId,
-                        content: content
+                        content: content,
+                        dimensions:dimensions
                     }
                 });
 
