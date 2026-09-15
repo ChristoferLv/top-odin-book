@@ -57,7 +57,6 @@ function SearchPane() {
     }
 
     function handleChangeSearchOption(option) {
-        console.log("called handle change option")
         if (option == searchOption) return;
         // setPostsList([]);
         // setUsersList([]);
@@ -68,7 +67,6 @@ function SearchPane() {
         // setUsersList([]);
         // setSearchOption(option);
         const paramsObj = Object.fromEntries([...searchParams]);
-        console.log(paramsObj)
         if (!paramsObj.q || paramsObj.q == "") {
             setSearchParams({ ...paramsObj, f: option.toLowerCase() });
         } else {
@@ -224,13 +222,13 @@ function SearchPane() {
         }
 
 
-        return () => { ignore = true; controller.abort("abort"); console.log("called unmount") }
+        return () => { ignore = true; controller.abort("abort"); }
     }, [searchKey, page]);
 
     useEffect(() => {
         const observer = new IntersectionObserver(
             (entries) => {
-                console.log(entries[0].isIntersecting, hasMore, !loading, (postsList.length != 0 || usersList.length != 0))
+                // console.log(entries[0].isIntersecting, hasMore, !loading, (postsList.length != 0 || usersList.length != 0))
                 if (entries[0].isIntersecting && hasMore && !loading && (postsList.length != 0 || usersList.length != 0)) {
                     setPage((prevPage) => prevPage + 1);
                 }

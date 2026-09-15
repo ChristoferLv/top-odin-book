@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { fetchPostMidia } from "../../api/requests";
 import PictureDialog from "./PictureDialog";
 
-function PostMidia({ postId, seePhoto }) {
+function PostMidia({ postId, seePhoto, dimensions }) {
     const [midiaBuff, setMidia] = useState(null);
     const [mime, setMime] = useState(null);
     const [modal, setModal] = useState(false);
@@ -31,12 +31,37 @@ function PostMidia({ postId, seePhoto }) {
     const blob = new Blob([rawBuffer], { type: mime });
     const imageUrl = URL.createObjectURL(blob);
 
-    if (!midiaBuff) return null;
+    // if (!midiaBuff) return null;
+
+    const [width, height] = dimensions.split("x");
+
+    const MAX_HEIGHT = 600;
+
+    const ratio = Number(width) / Number(height);
+
+    const displayedHeight = Math.min(
+        Number(height),
+        MAX_HEIGHT
+    );
 
     return (
         <>
-            <div className="midia" onClick={handleSeePicture}>
-                <img src={imageUrl} alt="" />
+            <div
+                className="midia"
+                onClick={handleSeePicture}
+                style={{
+                    aspectRatio: `${width} / ${height}`,
+                    maxHeight: "600px",
+                }}
+            >
+                {midiaBuff ? (
+                    <img
+                        src={imageUrl}
+                        loading="lazy"
+                    />
+                ) : (
+                    <div />
+                )}
             </div>
 
             <PictureDialog

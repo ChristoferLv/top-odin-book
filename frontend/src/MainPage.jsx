@@ -8,6 +8,7 @@ import WhoToFollow from "./components/WhoToFollow";
 import SearchInput from "./components/SearchInput";
 import SearchFilter from "./components/SearchFilter";
 import TrendingPosts from "./components/TrendingPosts";
+import { FeedContext } from "./FeedContext";
 
 
 function useBidirectionalSticky(scrollContainerEl) {
@@ -113,12 +114,24 @@ function MainPage() {
     }
 
 
-
-
+    const { feedSetter, feed, pageOnContext, pageSetter, resetFeed, resetFeedSetter } = useContext(FeedContext);
     const { user, isLoading } = useContext(AuthContext);
     const navigate = useNavigate();
+    const [count, setCount] = useState(1);
+
+
+    function resetContext() {
+        feedSetter([]);
+        pageSetter(1);
+    }
 
     function goHome() {
+        if (location.pathname == "/") {
+            if (resetFeed) return;
+            resetContext();
+            // resetFeedSetter(true);
+            setCount(c => c + 1);
+        }
         navigate("/");
     }
 
@@ -225,8 +238,8 @@ function MainPage() {
             <div className="master-pane">
                 <div className="master-content">
                     <div className="content-wrapper">
+                        <Outlet  key={count}/>
                         <ScrollRestoration />
-                        <Outlet />
                     </div>
                     <div className="right-pane" ref={wrapperRef}>
                         <div className="right-pane-content" ref={contentRef}>

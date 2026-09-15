@@ -1,6 +1,7 @@
 import { body, matchedData, validationResult } from "express-validator";
 import { prisma } from "../lib/prisma.js";
 import { validatePost } from "../validators.js";
+import sharp from "sharp";
 
 const PAGE_SIZE = 5;
 
@@ -76,11 +77,18 @@ const makePost = [
                 reference.sharedPostId = null;
             }
 
+            let dimensions = null;
+            if (hasMidia) {
+                const metadata = await sharp(req.file.buffer).metadata();
+                dimensions = `${metadata.width}x${metadata.height}`;
+            }
+
             const result = await prisma.$transaction(async (tx) => {
                 const postResult = await tx.posts.create({
                     data: {
                         authorId: req.user.id,
                         hasMidia: hasMidia,
+                        dimensions: dimensions,
                         postType: postType,
                         ...reference,
                         content: content
@@ -128,9 +136,9 @@ async function getAllPosts(req, res) {
         const page = req.query.page;
 
         let condition = {};
-        if (req.query.onFeed == 'true') {
-            Object.assign(condition, { NOT: { AND: { authorId: userId, postType: { in: ["POST"] } } } })
-        }
+        // if (req.query.onFeed == 'true') {
+        //     Object.assign(condition, { NOT: { AND: { authorId: userId, postType: { in: ["POST"] } } } })
+        // }
         if (req.query.userId) {
             Object.assign(condition, { authorId: parseInt(req.query.userId), postType: { in: ["POST", "SHARE_REPLY"] } });
         }

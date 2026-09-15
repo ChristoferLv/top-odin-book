@@ -3,19 +3,71 @@ import NewPost from "./NewPost";
 import PostsList from "./PostsList";
 import { fetchAllPosts } from "../../api/requests";
 import { AuthContext } from "../AuthContext";
+import { FeedContext } from "../FeedContext";
+import { useLocation } from "react-router";
 
 function ContentPane() {
     const { user, setUser } = useContext(AuthContext);
+    const { feedSetter, feed, pageOnContext, pageSetter, resetFeed, resetFeedSetter } = useContext(FeedContext);
     const [postsList, setPostsList] = useState([]);
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
+    const [scrollAllowed, setScrollAllowed] = useState(false);
     const observerTarget = useRef(null);
-    const lastPage = useRef(0);
+    const location = useLocation();
+
+
+    const isRecovering = useRef(false);
+
+    useEffect(() => {
+        if (feed.length > 0) {
+            isRecovering.current = true;
+            setPostsList(feed);
+            setPage(pageOnContext);
+        } else {
+            sessionStorage.setItem("posts-scroll", 0);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (postsList.length === 0) return;
+
+        const savedScroll = sessionStorage.getItem("posts-scroll") || 0;
+        window.scrollTo(0, Number(savedScroll));
+        setScrollAllowed(true);
+    }, [postsList]);
+
+
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const savedScroll = sessionStorage.getItem("posts-scroll");
+
+            if (location.pathname == "/" && feed.length > 0 && scrollAllowed) {
+                if (savedScroll > 10 && window.scrollY == 0) return;
+                sessionStorage.setItem("posts-scroll", window.scrollY);
+            }
+
+        };
+
+        window.addEventListener("scroll", handleScroll);
+
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+        };
+    }, [scrollAllowed]);
 
     useEffect(() => {
         let ignore = false;
         const controller = new AbortController();
+
+        if (isRecovering.current) {
+            if (page === pageOnContext) {
+                isRecovering.current = false;
+            }
+            return;
+        }
 
         async function getPosts(page) {
             if (loading) return;
@@ -29,6 +81,8 @@ function ContentPane() {
                     } else {
                         setPostsList((prev) => [...prev, ...result.data]);
                     }
+                    feedSetter([...postsList, ...result.data]);
+                    pageSetter(page);
                 }
             } catch (e) {
                 console.log(e);
@@ -61,7 +115,7 @@ function ContentPane() {
                 observer.unobserve(observerTarget.current);
             }
         };
-    }, [hasMore, loading]);
+    }, [hasMore, loading, postsList]);
 
     return (<>
         <div className="content-pane">

@@ -63,8 +63,9 @@ model Posts {
   likes     Likes[]
   bookmarks Bookmarks[]
 
-  hasMidia Boolean? @default(false)
-  midia    Midias?
+  hasMidia   Boolean? @default(false)
+  midia      Midias?
+  dimensions String?
 
   notifications Notifications[]
   // @@unique([originalPostId, authorId, postType], where: raw("\"postType\" IN ('SHARE')"))
@@ -88,9 +89,9 @@ model Bookmarks {
   id              Int      @id @default(autoincrement())
   createdAt       DateTime @default(now()) @db.Timestamptz(6)
   postId          Int
-  post            Posts    @relation(fields: [postId], references: [id])
+  post            Posts    @relation(fields: [postId], references: [id], onDelete: Cascade)
   whoBookmarkedId Int
-  whoBookmarked   Users    @relation(fields: [whoBookmarkedId], references: [id])
+  whoBookmarked   Users    @relation(fields: [whoBookmarkedId], references: [id], onDelete: Cascade)
 
   @@unique([postId, whoBookmarkedId])
 }
@@ -99,9 +100,9 @@ model Follows {
   id           Int      @id @default(autoincrement())
   createdAt    DateTime @default(now()) @db.Timestamptz(6)
   followedById Int
-  followedBy   Users    @relation("followedBy", fields: [followedById], references: [id])
+  followedBy   Users    @relation("followedBy", fields: [followedById], references: [id], onDelete: Cascade)
   followingId  Int
-  following    Users    @relation("following", fields: [followingId], references: [id])
+  following    Users    @relation("following", fields: [followingId], references: [id], onDelete: Cascade)
 
   @@unique([followingId, followedById])
 }

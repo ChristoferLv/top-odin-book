@@ -214,7 +214,7 @@ function Post({ user, data }) {
                         {/* {isReply && <div><p>Original post: {usePostData.originalPostId}</p></div>} */}
                         <div className="post-content">
                             <textarea readOnly defaultValue={usePostData.content}></textarea>
-                            {hasMidia && <PostMidia postId={usePostData.id} seePhoto={goToPicturePage} />}
+                            {hasMidia && <PostMidia postId={usePostData.id} dimensions={usePostData.dimensions} seePhoto={goToPicturePage} />}
                         </div>
                         <div className="post-controls">
                             <div className="controll-wrapper">

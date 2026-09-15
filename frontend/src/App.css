@@ -2285,7 +2285,7 @@ header {
 
 .midia {
     width: 100%;
-    height: auto;
+    max-height: 600px;
     cursor: pointer;
     margin-bottom: 5px;
 
@@ -2295,8 +2295,10 @@ header {
 
     img {
         width: 100%;
-        height: 100%;
-        object-fit: fill;
+        height: auto;
+        max-height: 600px;
+        object-fit: contain;
+        display: block;
     }
 }
 

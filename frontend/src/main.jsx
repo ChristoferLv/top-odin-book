@@ -19,6 +19,7 @@ import NotificationsPane from './components/NotificationsPane.jsx';
 import FollowageListing from './components/FollowageListing.jsx';
 import PictureContextProvider from './PictureContext.jsx';
 import NotificationsContextProvider from './NotificationsContext.jsx';
+import FeedContextProvider from './FeedContext.jsx';
 
 
 const router = createBrowserRouter([
@@ -53,7 +54,9 @@ createRoot(document.getElementById('root')).render(
     <AuthProvider>
       <PictureContextProvider>
         <NotificationsContextProvider>
-          <RouterProvider router={router} />
+          <FeedContextProvider>
+            <RouterProvider router={router} />
+          </FeedContextProvider>
         </NotificationsContextProvider>
       </PictureContextProvider>
     </AuthProvider>

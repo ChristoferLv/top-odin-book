@@ -538,7 +538,7 @@ async function searchPosts(searchArgs, page, signal) {
             return null;
         }
     } catch (e) {
-        console.log(e, page)
+        console.log(e)
     }
 }
 
@@ -662,7 +662,6 @@ async function markNotificationsAsRead(signal) {
         }
     } catch (e) {
         console.log(e);
-        throw e;
     }
 }
 
