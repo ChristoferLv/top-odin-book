@@ -1,15 +1,13 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import { AuthContext } from "../AuthContext";
 import { makePost } from "../../api/requests";
-import UserPicture from "./UserPicture";
 import { USER_PICTURE_DEFAULT_SIZE } from "../utils/defaults"
 import PictureDialog from "./PictureDialog";
 import Pie from "./ProgressCircle";
 import Toast from "./Toast";
+import {PictureContext} from "./PictureContext";
 
 function NewPost() {
-    const { user, isLoading } = useContext(AuthContext);
-
+    const { userPictureUrl, isPictureSet } = useContext(PictureContext);
     const [postContent, setPostContent] = useState("");
     const [modal, setModal] = useState(false);
     const [imageUrl, setImageUrl] = useState("");
@@ -68,7 +66,7 @@ function NewPost() {
         e.stopPropagation();
         setModal(false);
         setImageUrl("");
-        if(postContent.length == 0) setCanPost(false);
+        if (postContent.length == 0) setCanPost(false);
         fileInputRef.current.value = "";
     }
 
@@ -79,7 +77,6 @@ function NewPost() {
 
     async function handlePost(e) {
         e.preventDefault();
-        console.log(fileInputRef.current, fileInputRef.current.files)
         const formData = new FormData();
         formData.append("picture", fileInputRef.current.files[0]);
         formData.append("content", postContent)
@@ -99,10 +96,22 @@ function NewPost() {
         }
     }
 
+
+    function handleSeeUser(e) {
+        e.stopPropagation();
+        navigate("/" + username);
+    }
+
     return (
         <>
             <div className="new-post">
-                <UserPicture id={user.id} username={user.username} size={USER_PICTURE_DEFAULT_SIZE} />
+                <div className="pic-container" onClick={handleSeeUser}>
+                    <div className={`profile-pic`}
+                        style={{ width: USER_PICTURE_DEFAULT_SIZE + "px", height: USER_PICTURE_DEFAULT_SIZE + "px" }}>
+                        {isPictureSet && <img src={userPictureUrl == "" ? dafaultAvatar :
+                            userPictureUrl} alt="" />}
+                    </div>
+                </div>
                 <form onSubmit={handlePost}>
                     <input
                         ref={fileInputRef}

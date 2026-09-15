@@ -1,11 +1,16 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { logOut } from "../../api/requests";
 import { USER_PICTURE_DEFAULT_SIZE } from "../utils/defaults";
-import UserPicture from "./UserPicture";
+import { useNavigate } from "react-router";
+import dafaultAvatar from "../../public/avatar.png";
+import { PictureContext } from "./PictureContext";
+
 
 function UserToast({ user }) {
+    const { userPictureUrl, isPictureSet } = useContext(PictureContext);
     const [isBalloonOpen, setIsBalloonOpen] = useState(false);
     const toastRef = useRef(null);
+    const navigate = useNavigate();
 
     function handleBalloon() {
         if (isBalloonOpen)
@@ -15,12 +20,22 @@ function UserToast({ user }) {
         }
     }
 
+    function handleSeeUser(e) {
+        e.stopPropagation();
+        navigate("/" + username);
+    }
 
     return (
         <>
             {isBalloonOpen && <div className="transparent-overlay"></div>}
             <div onClick={handleBalloon} className="user-toast" ref={toastRef}>
-                <UserPicture size={USER_PICTURE_DEFAULT_SIZE} username={user.username} user id={user.id} useBorder={false} />
+                <div className="pic-container" onClick={handleSeeUser}>
+                    <div className={`profile-pic`}
+                        style={{ width: USER_PICTURE_DEFAULT_SIZE + "px", height: USER_PICTURE_DEFAULT_SIZE + "px" }}>
+                        {isPictureSet && <img src={userPictureUrl == "" ? dafaultAvatar :
+                            userPictureUrl} alt="" />}
+                    </div>
+                </div>
                 <div className="user-toast-info">
                     <p>
                         {user.name}
@@ -46,7 +61,7 @@ function LogOutBalloon({ username, isOpen, onClose, toast }) {
 
         const position = {
             top: "-80px",
-            left: rect.x -200
+            left: rect.x - 200
         }
 
         setPosition(position);

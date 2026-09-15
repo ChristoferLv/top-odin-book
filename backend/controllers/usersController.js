@@ -352,7 +352,7 @@ async function uploadPicture(req, res) {
         let newbuffer = null;
         if (result.picture)
             newbuffer = Buffer.from(result.picture, result.picture.byteOffset, result.picture.byteLength)
-        return res.status(201).send({ success: true, data: newbuffer });
+        return res.status(201).send({ success: true, data: { buffer: newbuffer, mime: result.mime } });
     } catch (e) {
         console.log(e);
         return res.status(500).send({ success: false });

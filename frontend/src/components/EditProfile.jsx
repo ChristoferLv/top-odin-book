@@ -1,21 +1,19 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { AuthContext } from "../AuthContext";
-import UserBackground from "./UserBackground";
-import UserPicture from "./UserPicture";
-import { editUser, fetchUserBackground, fetchUserPicture, removeBackground, removePicture, sendUserBackground, sendUserPicture } from "../../api/requests";
+import { editUser, fetchUserBackground, removeBackground, removePicture, sendUserBackground, sendUserPicture } from "../../api/requests";
 import { useNavigate } from "react-router";
 import background from "../../public/bkgd.png";
 import Toast from "./Toast";
+import {PictureContext} from "./PictureContext";
 
 function EditProfile() {
+    const { userPictureUrl, isPictureSet, pictureSetter } = useContext(PictureContext);
     const { user, isLoading, setUser } = useContext(AuthContext);
     const [userData, setUserData] = useState({ name: "", bio: "" });
     const [userDataValid, setUserDataValid] = useState({ name: true, bio: true });
     const navigate = useNavigate();
     const fileInputRef = useRef(null);
     const fileBackgroundRef = useRef(null);
-    const [pictureBuff, setPicture] = useState(null);
-    const [mime, setMime] = useState(null);
     const [backgroundBuff, setBackground] = useState(null);
     const [mimeBkgd, setMimeBkgd] = useState(null);
 
@@ -100,7 +98,10 @@ function EditProfile() {
 
         const result = await sendUserPicture(formData);
         if (result.success) {
-            setPicture(result.data.data);
+            const rawBufferPicture = new Uint8Array(result.data.buffer?.data);
+            const blobPicture = new Blob([rawBufferPicture], { type: result.data.mime });
+            const imageUrlPicture = URL.createObjectURL(blobPicture);
+            pictureSetter(imageUrlPicture);
         }
     }
 
@@ -128,16 +129,16 @@ function EditProfile() {
         }
     }
 
-    useEffect(() => {
-        async function getPicture() {
-            if (user) {
-                const picture = await fetchUserPicture(user.id);
-                setPicture(picture.data.buffer?.data);
-                setMime(picture.data.mime);
-            }
-        }
-        getPicture();
-    }, [user, isLoading])
+    // useEffect(() => {
+    //     async function getPicture() {
+    //         if (user) {
+    //             const picture = await fetchUserPicture(user.id);
+    //             setPicture(picture.data.buffer?.data);
+    //             setMime(picture.data.mime);
+    //         }
+    //     }
+    //     getPicture();
+    // }, [user, isLoading])
 
     useEffect(() => {
         async function getBackground() {
@@ -158,9 +159,7 @@ function EditProfile() {
         }
     }, [user, isLoading])
 
-    const rawBufferPicture = new Uint8Array(pictureBuff);
-    const blobPicture = new Blob([rawBufferPicture], { type: mime });
-    const imageUrlPicture = URL.createObjectURL(blobPicture);
+
 
     const rawBufferBkgd = new Uint8Array(backgroundBuff);
     const blobBkgd = new Blob([rawBufferBkgd], { type: mimeBkgd });
@@ -228,8 +227,8 @@ function EditProfile() {
                             <div
                                 className="profile-pic pic-border"
                             >
-                                <img src={!pictureBuff ? "../public/avatar.png" :
-                                    imageUrlPicture} alt="" />
+                                {isPictureSet && <img src={userPictureUrl == "" ? dafaultAvatar :
+                                    userPictureUrl} alt="" />}
 
                                 <button title="Change picture" className="change-user-picture" onClick={handleClickImage}>
                                     <svg viewBox="0 0 20 20" aria-hidden="true"><g>
@@ -240,7 +239,7 @@ function EditProfile() {
                                     </svg>
                                 </button>
 
-                                {pictureBuff && <button title="Remove image" type="button" className='close-button' onClick={removeImg}>
+                                {userPictureUrl != "" && <button title="Remove image" type="button" className='close-button' onClick={removeImg}>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 14 14" fill="none">
                                         <path fillRule="evenodd" clipRule="evenodd" d="M13.7071 1.70711C14.0976 1.31658 14.0976 0.683417 13.7071 0.292893C13.3166 -0.0976311 12.6834 -0.0976311 12.2929 0.292893L7 5.58579L1.70711 0.292893C1.31658 -0.0976311 0.683417 -0.0976311 0.292893 0.292893C-0.0976311 0.683417 -0.0976311 1.31658 0.292893 1.70711L5.58579 7L0.292893 12.2929C-0.0976311 12.6834 -0.0976311 13.3166 0.292893 13.7071C0.683417 14.0976 1.31658 14.0976 1.70711 13.7071L7 8.41421L12.2929 13.7071C12.6834 14.0976 13.3166 14.0976 13.7071 13.7071C14.0976 13.3166 14.0976 12.6834 13.7071 12.2929L8.41421 7L13.7071 1.70711Z" fill="white" />
                                     </svg>

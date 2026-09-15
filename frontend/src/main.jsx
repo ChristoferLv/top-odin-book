@@ -18,6 +18,7 @@ import SearchPane from './components/SearchPane.jsx';
 import NotificationsPane from './components/NotificationsPane.jsx';
 import MainContextProvider from './components/MainContext.jsx';
 import FollowageListing from './components/FollowageListing.jsx';
+import PictureContextProvider from './components/PictureContext.jsx';
 
 
 const router = createBrowserRouter([
@@ -50,9 +51,11 @@ const router = createBrowserRouter([
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <AuthProvider>
-      <MainContextProvider>
-        <RouterProvider router={router} />
-      </MainContextProvider>
+      <PictureContextProvider>
+        <MainContextProvider>
+          <RouterProvider router={router} />
+        </MainContextProvider>
+      </PictureContextProvider>
     </AuthProvider>
   </StrictMode>,
 )
