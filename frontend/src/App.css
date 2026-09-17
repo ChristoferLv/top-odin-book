@@ -652,7 +652,7 @@ header {
     width: 100%;
 
     .midia-btn {
-        padding: 8px;
+        padding: 9px;
         border-radius: 999px;
         display: flex;
         justify-content: center;
@@ -716,6 +716,81 @@ header {
     }
 }
 
+.more-button {
+    margin-left: auto;
+    height: 20px;
+    width: 20px;
+    max-height: 20px;
+    max-width: 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+
+    .more-button-inner {
+        position: absolute;
+        border-radius: 9999px;
+        height: 35px;
+        width: 35px;
+        max-height: 35px;
+        max-width: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    svg {
+        height: 20px;
+        width: 20px;
+        fill: var(--shadowed-text-color);
+    }
+
+    &:hover {
+        .more-button-inner {
+            background-color: rgba(29, 155, 240, 0.2);
+        }
+
+        svg {
+            fill: var(--main-blue-color);
+        }
+    }
+}
+
+.delete-balloon {
+    position: absolute;
+    background-color: #1d1d1d;
+    border-radius: 5px;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    padding: 5px 0;
+
+    .delete-button {
+        display: flex;
+        gap: 0 10px;
+        align-items: center;
+        padding: 5px 15px;
+        
+        span{
+            color: red;
+            font-family: Inter;
+            font-size: 14px;
+        }
+
+        &:hover{
+            background-color: rgba(255,255,255,0.05);
+        }
+    }
+
+    svg {
+        width: 20px;
+        height: 20px;
+
+        fill: red;
+    }
+}
+
 .shared-header {
     display: flex;
     align-items: center;
@@ -754,15 +829,17 @@ header {
 }
 
 .post-head {
+    margin-top: 4px;
+    display: flex;
 
-    span:nth-child(1) {
+    &>span:nth-child(1) {
         color: var(--main-white-color);
         font-weight: bold;
         font-family: sans-serif;
         font-size: 0.94rem
     }
 
-    span:nth-child(2) {
+    &>span:nth-child(2) {
         margin-left: 7px;
         color: var(--shadowed-text-color);
     }
@@ -987,7 +1064,7 @@ header {
         gap: 0 10px;
         cursor: pointer;
         width: fit-content;
-
+        width: 100%;
         span {
             width: fit-content;
         }
@@ -2531,6 +2608,7 @@ header {
         gap: 0 10px;
         cursor: pointer;
         width: fit-content;
+        width: 100%;
 
         span {
             width: fit-content;
@@ -3257,7 +3335,7 @@ header {
     bottom: 50px;
     left: 50%;
     transform: translate(-50%, 0);
-    background-color: #1d9bf0;
+    background-color: var(--main-blue-color);
     width: 40%;
     border-radius: 10px;
     height: 60px;

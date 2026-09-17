@@ -434,9 +434,9 @@ async function makePost(postData) {
     }
 }
 
-async function fetchAllPosts(page, signal) {
+async function fetchAllPosts(page, signal, getUpToPage) {
     const token = localStorage.getItem("token");
-    const rawResponse = await fetch('http://localhost:3000/posts?onFeed=true&page=' + page, {
+    const rawResponse = await fetch(`http://localhost:3000/posts?onFeed=true&page=${page}${getUpToPage ? "&upto" : ""}`, {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
@@ -514,6 +514,18 @@ async function fetchPostById(postId) {
     } else {
         return null;
     }
+}
+
+async function deletePost(postId) {
+    const token = localStorage.getItem("token");
+    const rawResponse = await fetch(`http://localhost:3000/posts/${postId}`, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': token,
+        },
+    });
+
+    return rawResponse;
 }
 
 async function searchPosts(searchArgs, page, signal) {
@@ -1068,6 +1080,7 @@ export {
     fetchPostsByUserId,
     fetchMyPosts,
     fetchPostById,
+    deletePost,
     searchPosts,
     fetchPostMidia,
     fetchTrendingPosts,

@@ -2,14 +2,16 @@ import { formatDate } from "../utils/dateUtils";
 import UserPicture from "../components/UserPicture"
 import { PostType, USER_PICTURE_DEFAULT_SIZE } from "../utils/defaults"
 import { bookmarkPost, dislikePost, likePost, removeBookmarkPost, sharePost, unsharePost } from "../../api/requests";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import ReplyDialog from "./ReplyDialog";
 import ShareOrReplyDialog from "./ShareOrReplyDialog";
 import ShareWithComment from "./ShareWithReplyDialog";
 import PostMidia from "./PostMidia";
+import DeletePostBalloon from "./DeletePostBalloon";
+import { FeedContext } from "../FeedContext";
 
-function PostWithComment({ user, data }) {
+function PostWithComment({ user, data, onPostPage }) {
     const [postData, setPostData] = useState(data);
     const [isMeShare, setIsMeShare] = useState(data.postType == PostType.SHARE && data.author.id == user.id);
     const [isOriginalPostDialogOpen, setisOriginalPostDialogOpen] = useState(false);
@@ -18,6 +20,8 @@ function PostWithComment({ user, data }) {
     const [isOriginalShareDialogOpen, setisOriginalShareDialogOpen] = useState(false);
     const [isReplyShareDialogOpen, setisReplyShareDialogOpen] = useState(false);
     const [isShareOrReplyPosition, setIsShareOrReplyPosition] = useState({});
+    const { deletePost } = useContext(FeedContext);
+
 
 
     const navigate = useNavigate();
@@ -29,6 +33,14 @@ function PostWithComment({ user, data }) {
     // const isMeShare = data.postType == PostType.SHARE && data.author.id == user.id;
     const usePostData = isReply ? postData.originalPost : postData;
     const formatedDate = formatDate(postData.createdAt);
+
+    const isOriginalMy = data.originalPost.authorId == user.id;
+    const isReplyMy = data.authorId == user.id;
+    const [showDeleteBalloon, setShowDeleteBalloon] = useState(0);
+    const moreBtnRefOriginal = useRef(null);
+    const moreBtnRefReply = useRef(null);
+    const [isReplyDeleted, setIsReplyDeleted] = useState(data.deleted);
+    const [isOriginalDeleted, setIsOriginalDeleted] = useState(data.originalPost.deleted);
 
     async function handleLike(e, onOriginal) {
         e.stopPropagation();
@@ -222,6 +234,37 @@ function PostWithComment({ user, data }) {
             navigate(`/${postData.author.username}/post/${postData.id}/photo`);
     }
 
+    function handleMoreButton(e, onOriginal) {
+        e.stopPropagation();
+        if (showDeleteBalloon != 0) {
+            setShowDeleteBalloon(0);
+            return;
+        }
+        if (onOriginal) {
+            setShowDeleteBalloon(1);
+        } else {
+            setShowDeleteBalloon(2);
+        }
+    }
+
+    function onDelete() {
+        const postId = showDeleteBalloon == 1 ? data.originalPost.id : data.id;
+        const originalDeleted = showDeleteBalloon == 1;
+        deletePost(postId, originalDeleted);
+
+        if (showDeleteBalloon == 1) {
+            setIsOriginalDeleted(true);
+        }
+        if (showDeleteBalloon == 2) {
+            setIsReplyDeleted(true);
+        }
+        if (onPostPage && showDeleteBalloon == 2) {
+            navigate(-1);
+            return;
+        }
+        setShowDeleteBalloon(0);
+    }
+
     // useEffect(() => {
     //     const handleEsc = (event) => {
     //         if (event.key === 'Escape') {
@@ -236,10 +279,12 @@ function PostWithComment({ user, data }) {
     //     };
     // }, []);
 
+    if (isReplyDeleted) return null;
+
     return (
         <>
             <div className="post-with-comment">
-                <div className="original-post post" onClick={() => handleSeePost(true)}>
+                {!isOriginalDeleted && <div className="original-post post" onClick={() => handleSeePost(true)}>
                     {/* <div className="chain"></div> */}
                     <div className="post-body">
                         <div className="left-side">
@@ -250,9 +295,17 @@ function PostWithComment({ user, data }) {
                             <div className="post-head" onClick={(e) => { handleSeeAuthor(e, true) }}>
                                 <span>{originalPostData.author.name}</span>
                                 <span>@{originalPostData.author.username} - {formatedDate}</span>
+                                {showDeleteBalloon == 1 && <DeletePostBalloon isOpen={showDeleteBalloon} postId={postData.id} onDelete={onDelete} onClose={handleMoreButton} postRef={moreBtnRefOriginal} />}
+                                {isOriginalMy && <div className="more-button" onClick={(e) => handleMoreButton(e, true)} ref={moreBtnRefOriginal} >
+                                    <div className="more-button-inner">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true"><g>
+                                            <path d="M3 12c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2zm9 2c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm7 0c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"></path></g>
+                                        </svg>
+                                    </div>
+                                </div>}
                             </div>
                             <div className="post-content">
-                                <textarea readOnly defaultValue={originalPostData.content}></textarea>
+                                 {originalPostData.content.length > 0 && <textarea readOnly defaultValue={originalPostData.content}></textarea>}
                                 {originalHasMidia && <PostMidia postId={originalPostData.id} dimensions={originalPostData.dimensions} seePhoto={(e) => goToPicturePage(e, true)} />}
                             </div>
                             <div className="post-controls">
@@ -299,8 +352,8 @@ function PostWithComment({ user, data }) {
                             </div>
                         </div>
                     </div>
-                </div>
-                <div className="replying-post-container">
+                </div>}
+                {!isReplyDeleted && <div className="replying-post-container">
                     <div className="top-space">
                         <div className="chain-box">
                             <div className="chain"></div>
@@ -323,9 +376,17 @@ function PostWithComment({ user, data }) {
                                 <div className="post-head" onClick={(e) => { handleSeeAuthor(e, false) }}>
                                     <span>{postData.author.name}</span>
                                     <span>@{postData.author.username} - {formatedDate}</span>
+                                    {showDeleteBalloon == 2 && <DeletePostBalloon isOpen={showDeleteBalloon} postId={postData.id} onDelete={onDelete} onClose={handleMoreButton} postRef={moreBtnRefReply} />}
+                                    {isReplyMy && <div className="more-button" onClick={(e) => handleMoreButton(e, false)} ref={moreBtnRefReply} >
+                                        <div className="more-button-inner">
+                                            <svg viewBox="0 0 24 24" aria-hidden="true"><g>
+                                                <path d="M3 12c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2zm9 2c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm7 0c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"></path></g>
+                                            </svg>
+                                        </div>
+                                    </div>}
                                 </div>
                                 <div className="post-content">
-                                    <textarea readOnly defaultValue={postData.content}></textarea>
+                                     {postData.content.length > 0 && <textarea readOnly defaultValue={postData.content}></textarea>}
                                     {replyHasMidia && <PostMidia postId={postData.id} dimensions={postData.dimensions} seePhoto={(e) => goToPicturePage(e, false)} />}
                                 </div>
                                 <div className="post-controls">
@@ -373,7 +434,7 @@ function PostWithComment({ user, data }) {
                             </div>
                         </div>
                     </div>
-                </div>
+                </div>}
             </div>
             <ReplyDialog isOpen={isOriginalPostDialogOpen} originalPost={originalPostData} user={user} onCancel={handleCloseDialog} onConfirm={successReply} />
             <ReplyDialog isOpen={isReplyPostDialogOpen} originalPost={postData} user={user} onCancel={handleCloseDialog} onConfirm={successReply} />

@@ -73,7 +73,7 @@ function ContentPane() {
             if (loading) return;
             setLoading(true);
             try {
-                const result = await fetchAllPosts(page, controller.signal);
+                const result = await fetchAllPosts(page, controller.signal, false);
                 if (result && result.success) {
                     if (ignore) return;
                     if (result.data.length == 0) {
@@ -81,7 +81,7 @@ function ContentPane() {
                     } else {
                         setPostsList((prev) => [...prev, ...result.data]);
                     }
-                    feedSetter([...postsList, ...result.data]);
+                    feedSetter([...feed, ...result.data]);
                     pageSetter(page);
                 }
             } catch (e) {

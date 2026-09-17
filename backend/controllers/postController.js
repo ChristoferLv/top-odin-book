@@ -134,6 +134,7 @@ async function getAllPosts(req, res) {
     try {
         const userId = req.user.id;
         const page = req.query.page;
+        const upTo = req.query.upto;
 
         let condition = {};
         // if (req.query.onFeed == 'true') {
@@ -144,8 +145,13 @@ async function getAllPosts(req, res) {
         }
 
         let toTake = {};
-        if (page && page > 0)
-            toTake = { skip: (page - 1) * PAGE_SIZE, take: PAGE_SIZE }
+        if (page && page > 0) {
+            if (upTo) {
+                toTake = { take: PAGE_SIZE * page };
+            } else {
+                toTake = { skip: (page - 1) * PAGE_SIZE, take: PAGE_SIZE }
+            }
+        }
 
         const result = await prisma.posts.findMany({
             where: condition,
@@ -391,7 +397,9 @@ const updatePost = [
 
 async function deletePost(req, res) {
     try {
-        const postId = parseInt(req.params.id);
+        const postId = parseInt(req.params.postId);
+        console.log("DELETE POST", postId);
+        // return res.status(201).send({ success: true });
 
         const exists = await prisma.posts.findUnique({
             where: {
@@ -401,6 +409,10 @@ async function deletePost(req, res) {
 
         if (!exists) {
             return res.status(400).send({ success: false, message: "Post not found." });
+        }
+
+        if (exists.authorId != req.user.id) {
+            return res.status(403).send({ success: false, message: "You do not own this post." });
         }
 
         const result = await prisma.posts.delete({
@@ -993,7 +1005,7 @@ const makeReply = [
                         postType: "REPLY",
                         originalPostId: postId,
                         content: content,
-                        dimensions:dimensions
+                        dimensions: dimensions
                     }
                 });
 

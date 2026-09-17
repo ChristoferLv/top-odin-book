@@ -140,7 +140,7 @@ function CompactPost({ user, data }) {
                 </div>
                 <div className="compact-post-body">
                     <div className="post-content">
-                        <textarea readOnly defaultValue={usePostData.content}></textarea>
+                         {usePostData.content.length > 0 && <textarea readOnly defaultValue={usePostData.content}></textarea>}
                         {hasMidia && <PostMidia postId={postData.id} dimensions={postData.dimensions} seePhoto={goToPicturePage} />}
                     </div>
                 </div>

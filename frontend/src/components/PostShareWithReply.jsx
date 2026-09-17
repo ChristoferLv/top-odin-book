@@ -2,15 +2,18 @@ import { formatDate } from "../utils/dateUtils";
 import UserPicture from "../components/UserPicture"
 import { PostType, USER_PICTURE_DEFAULT_SIZE } from "../utils/defaults"
 import { bookmarkPost, dislikePost, likePost, removeBookmarkPost, sharePost, unsharePost } from "../../api/requests";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import CompactPost from "./CompactPost";
 import ReplyDialog from "./ReplyDialog";
 import ShareWithComment from "./ShareWithReplyDialog";
 import ShareOrReplyDialog from "./ShareOrReplyDialog";
 import PostMidia from "./PostMidia";
+import DeletePostBalloon from "./DeletePostBalloon";
+import { FeedContext } from "../FeedContext";
 
 function PostShareWithReply({ user, data }) {
+    const { deletePost } = useContext(FeedContext);
     const [postData, setPostData] = useState(data);
     const [isMeShare, setIsMeShare] = useState(data.postType == PostType.SHARE && data.author.id == user.id);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -30,6 +33,11 @@ function PostShareWithReply({ user, data }) {
     const numLikes = usePostData._count.likes;
     const numShares = usePostData._count.shares;
     const numReplies = usePostData._count.replyPost;
+
+    const isMyPost = data.authorId == user.id;
+    const [showDeleteBalloon, setShowDeleteBalloon] = useState(false);
+    const moreBtnRef = useRef(null);
+    const [isDeleted, setIsDeleted] = useState(false);
 
     async function handleLike(e) {
         e.stopPropagation();
@@ -142,6 +150,16 @@ function PostShareWithReply({ user, data }) {
         navigate(`${postData.author.username}/post/${postData.id}`);
     }
 
+    function handleMoreButton(e) {
+        e.stopPropagation();
+        setShowDeleteBalloon(c => !c);
+    }
+
+    function onDelete() {
+        deletePost(postData.id, false);
+        setIsDeleted(true);
+    }
+
     // useEffect(() => {
     //     const handleEsc = (event) => {
     //         if (event.key === 'Escape') {
@@ -155,6 +173,8 @@ function PostShareWithReply({ user, data }) {
     //     };
     // }, []);
 
+    if (isDeleted || postData.deleted) return null;
+
     return (
         <>
             <div className="post" onClick={handleSeePost}>
@@ -164,9 +184,17 @@ function PostShareWithReply({ user, data }) {
                         <div className="post-head">
                             <span>{postData.author.name}</span>
                             <span>@{postData.author.username} - {formatedDate}</span>
+                            {showDeleteBalloon && <DeletePostBalloon isOpen={showDeleteBalloon} postId={postData.id} onDelete={onDelete} onClose={handleMoreButton} postRef={moreBtnRef} />}
+                            {isMyPost && <div className="more-button" onClick={handleMoreButton} ref={moreBtnRef} >
+                                <div className="more-button-inner">
+                                    <svg viewBox="0 0 24 24" aria-hidden="true"><g>
+                                        <path d="M3 12c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2zm9 2c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm7 0c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"></path></g>
+                                    </svg>
+                                </div>
+                            </div>}
                         </div>
                         <div className="post-content">
-                            <textarea readOnly defaultValue={postData.content}></textarea>
+                            {postData.content.length > 0 && <textarea readOnly defaultValue={postData.content}></textarea>}
                             {hasMidia && <PostMidia postId={postData.id} />}
                         </div>
                         <CompactPost user={user} data={originalPostData} />

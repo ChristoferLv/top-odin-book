@@ -34,7 +34,7 @@ postRouter.get("/search", passport.authenticate('jwt', { session: false }), sear
 postRouter.get("/:postId/midia", passport.authenticate('jwt', { session: false }), getPostMidia);
 postRouter.get("/:postId", passport.authenticate('jwt', { session: false }), getPostById);
 postRouter.put("/:postId", checkUser, updatePost);
-postRouter.delete("/:postId", checkUser, deletePost);
+postRouter.delete("/:postId", passport.authenticate('jwt', { session: false }), checkUser, deletePost);
 postRouter.post("/", upload.single("picture"), passport.authenticate('jwt', { session: false }), checkUser, makePost);
 postRouter.get("/", passport.authenticate('jwt', { session: false }), checkUser, getAllPosts);
 

@@ -1,4 +1,5 @@
 import { createContext, useCallback, useState } from "react";
+import { fetchAllPosts } from "../api/requests";
 
 export const FeedContext = createContext({
     feed: [],
@@ -30,10 +31,34 @@ function FeedContextProvider({ children }) {
 
     const resetFeedSetter = useCallback((value) => {
         setResetFeed(value);
-    }, [])
+    }, []);
+
+    const deletePost = useCallback(async (postId, deleteOriginal) => {
+        try {
+            const newFeed = await fetchAllPosts(pageOnContext, null, true);
+            if (newFeed && newFeed.success) {
+                setFeed(newFeed.data);
+            }else{
+                setFeed([]);
+                setPageOnContext(1);
+            }
+        }catch(e){
+            console.log(e);
+        }        
+    }, []);
+
+    const deleteSharedPost = useCallback((postId) => {
+        const newFeed = feed.map((post) => {
+            if (post.sharedPost && post.sharedPost.id == postId) {
+                return { ...post, sharedPost: { ...post.sharedPost, deleted: true } }
+            }
+            return post;
+        });
+        setFeed(newFeed);
+    });
 
     return (
-        <FeedContext value={{ feed, feedSetter, pageOnContext, pageSetter, resetFeed, resetFeedSetter }} >
+        <FeedContext value={{ feed, feedSetter, pageOnContext, pageSetter, resetFeed, resetFeedSetter, deletePost, deleteSharedPost }} >
             {children}
         </FeedContext>
     );

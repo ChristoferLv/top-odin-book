@@ -13,10 +13,13 @@ import ShareOrReplyDialog from "./components/ShareOrReplyDialog";
 import PostMidia from "./components/PostMidia";
 import MakeReply from "./components/MakeReply";
 import LoadingSpinner from "./components/LoadingSpinner";
+import { FeedContext } from "./FeedContext";
+import DeletePostBalloon from "./components/DeletePostBalloon";
 
 function SeeingPicturePage() {
     const { user, isLoading } = useContext(AuthContext);
     const { username, postId } = useParams();
+    const { deletePost } = useContext(FeedContext);
     const navigate = useNavigate();
     const location = useLocation();
     const [postData, setPostData] = useState(null);
@@ -42,6 +45,11 @@ function SeeingPicturePage() {
     const numLikes = postData?._count.likes;
     const numShares = postData?._count.shares;
     const numReplies = postData?._count.replyPost;
+
+    const isMyPost = postData?.authorId == user?.id;
+    const [showDeleteBalloon, setShowDeleteBalloon] = useState(false);
+    const moreBtnRef = useRef(null);
+    const [isDeleted, setIsDeleted] = useState(false);
 
 
     useEffect(() => {
@@ -211,6 +219,17 @@ function SeeingPicturePage() {
         fetchReplies();
     }
 
+    function handleMoreButton(e) {
+        e.stopPropagation();
+        setShowDeleteBalloon(c => !c);
+    }
+
+    function onDelete() {
+        setIsDeleted(true);
+        deletePost(postData.id, false);
+        navigate(-1);
+    }
+
     if (!postData || !midiaBuff) return <><div className="loading">
         <p>&nbsp;</p>
     </div></>
@@ -284,10 +303,18 @@ function SeeingPicturePage() {
                                 <span>{postData.author.name}</span>
                                 <span>@{postData.author.username}</span>
                             </div>
+                            {showDeleteBalloon && <DeletePostBalloon isOpen={showDeleteBalloon} postId={postData.id} onDelete={onDelete} onClose={handleMoreButton} postRef={moreBtnRef} />}
+                            {isMyPost && <div className="more-button" onClick={handleMoreButton} ref={moreBtnRef} >
+                                <div className="more-button-inner">
+                                    <svg viewBox="0 0 24 24" aria-hidden="true"><g>
+                                        <path d="M3 12c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2zm9 2c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm7 0c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"></path></g>
+                                    </svg>
+                                </div>
+                            </div>}
                         </div>
                         <div className="actions-container-post-content">
                             <div className="post-content">
-                                <textarea readOnly defaultValue={postData.content}></textarea>
+                                {postData.content.length > 0 && <textarea readOnly defaultValue={postData.content}></textarea>}
                             </div>
                             <div className="post-hour">
                                 {adjustPostDate(new Date(postData.createdAt))}
