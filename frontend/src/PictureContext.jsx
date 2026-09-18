@@ -30,6 +30,8 @@ function PictureContextProvider({ children }) {
                     const imageUrl = URL.createObjectURL(blob);
                     setUserPicture(imageUrl);
                     setIsPictureSet(true);
+                }else{
+                    setIsPictureSet(true);
                 }
             }
         }

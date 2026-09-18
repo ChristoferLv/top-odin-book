@@ -33,7 +33,7 @@ function UserToast({ user }) {
                 <div className="pic-container" onClick={handleSeeUser}>
                     <div className={`profile-pic`}
                         style={{ width: 40 + "px", height: 40 + "px" }}>
-                        {isPictureSet && <img src={userPictureUrl == "" ? dafaultAvatar :
+                        {<img src={userPictureUrl == "" ? dafaultAvatar :
                             userPictureUrl} alt="" />}
                     </div>
                 </div>

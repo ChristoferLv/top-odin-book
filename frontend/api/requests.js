@@ -45,14 +45,7 @@ async function getMe() {
             'Authorization': token
         }
     });
-    if (meResponse.status == 200) {
-        const meContent = await meResponse.json();
-        if (meContent && meContent.success) {
-            return meContent;
-        }
-    } else {
-        return null;
-    }
+   return meResponse;
 }
 
 async function editUser(data) {

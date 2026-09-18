@@ -14,9 +14,20 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
+    async function validityTest() {
+      const validityResult = await getMe();
+      if (!validityResult.ok) {
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+        window.location = "/login";
+      }
+    }
+
     const storagedUser = localStorage.getItem('user');
     const storagedToken = localStorage.getItem('token');
     if (storagedToken) {
+      validityTest();
+
       let timerId = null;
       const exp = getJwtExpiration(storagedToken);
       const expirationTime = exp * 1000;
@@ -30,6 +41,7 @@ export function AuthProvider({ children }) {
         return;
       }
 
+
       if (user) {
         setIsLoading(false);
       }
@@ -40,10 +52,25 @@ export function AuthProvider({ children }) {
         } else if (storagedToken) {
           getMe()
             .then((meResult) => {
-              const user = meResult.data;
-              localStorage.setItem("user", JSON.stringify(user));
-              setUser(user);
-              setIsLoading(false);
+              if (meResult.ok) {
+                meResult.json().then((data) => {
+                  const user = data.data;
+                  localStorage.setItem("user", JSON.stringify(user));
+                  setUser(user);
+                  setIsLoading(false);
+                })
+              } else {
+                setUser(null)
+                setIsLoading(false);
+                localStorage.removeItem('user');
+                localStorage.removeItem('token');
+                window.location = "/login";
+              }
+            }).catch((e) => {
+              console.log(e);
+              localStorage.removeItem('user');
+              localStorage.removeItem('token');
+              window.location = "/login";
             });
         } else {
           setUser(null)

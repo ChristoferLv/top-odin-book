@@ -5,6 +5,7 @@ import { useNavigate } from "react-router";
 import background from "../../public/bkgd.png";
 import Toast from "./Toast";
 import { PictureContext } from "../PictureContext";
+import dafaultAvatar from "../../public/avatar.png";
 
 function EditProfile() {
     const { userPictureUrl, isPictureSet, pictureSetter } = useContext(PictureContext);
@@ -38,9 +39,9 @@ function EditProfile() {
             }
         }
         if (whoChanged.name == "bio") {
-            if (!value?.length || value.length == 0) {
-                valid = false;
-            }
+            // if (!value?.length || value.length == 0) {
+            //     valid = false;
+            // }
 
             if (value?.length > 160) {
                 value = value.slice(0, 160);

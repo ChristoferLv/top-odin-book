@@ -5,6 +5,8 @@ import PictureDialog from "./PictureDialog";
 import Pie from "./ProgressCircle";
 import Toast from "./Toast";
 import { PictureContext } from "../PictureContext";
+import dafaultAvatar from "../../public/avatar.png";
+
 
 function NewPost() {
     const { userPictureUrl, isPictureSet } = useContext(PictureContext);
@@ -108,7 +110,7 @@ function NewPost() {
                 <div className="pic-container" onClick={handleSeeUser}>
                     <div className={`profile-pic`}
                         style={{ width: USER_PICTURE_DEFAULT_SIZE + "px", height: USER_PICTURE_DEFAULT_SIZE + "px" }}>
-                        {isPictureSet && <img src={userPictureUrl == "" ? dafaultAvatar :
+                        {<img src={userPictureUrl == "" ? dafaultAvatar :
                             userPictureUrl} alt="" />}
                     </div>
                 </div>

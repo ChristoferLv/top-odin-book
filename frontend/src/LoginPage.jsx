@@ -42,13 +42,20 @@ function LoginPage() {
             alert("Something went wrong, try again later.");
         }
 
-        const meResult = await getMe();
-        if (!meResult) {
+        try {
+            const meResult = await getMe();
+            if (meResult.ok) {
+                const data = await meResult.json();
+                localStorage.setItem("user", JSON.stringify(data.data));
+                setUser(data.data);
+                navigate("/", { replace: true });
+            } else {
+                alert("Something went wrong, try again later.");
+            }
+        } catch (e) {
+            console.log(e);
             alert("Something went wrong, try again later.");
         }
-        localStorage.setItem("user", JSON.stringify(meResult.data));
-        setUser(meResult.data);
-        navigate("/", { replace: true });
     }
 
 

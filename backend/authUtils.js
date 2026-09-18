@@ -13,7 +13,7 @@ passport.use(new Strategy(opts, async function (jwt_payload, done) {
     const user = await prisma.users.findUnique({ where: { id: jwt_payload.id }, omit: { password: true } });
 
     if (!user) {
-      return done(new Error("User not found!"), false);
+      return done(null, false, { message: 'User not found.' });
     }
 
     if (user) {
