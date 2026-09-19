@@ -314,7 +314,7 @@ function SeeingPicturePage() {
                         </div>
                         <div className="actions-container-post-content">
                             <div className="post-content">
-                                {postData.content.length > 0 && <textarea readOnly defaultValue={postData.content}></textarea>}
+                                {postData.content?.length > 0 && <textarea readOnly defaultValue={postData.content}></textarea>}
                             </div>
                             <div className="post-hour">
                                 {adjustPostDate(new Date(postData.createdAt))}

@@ -274,7 +274,7 @@ function PostPage() {
                     </div>
                     <div className="post-view-data">
                         <div className="post-content">
-                             {postData.content.length > 0 && <textarea readOnly defaultValue={postData.content}></textarea>}
+                            {postData.content?.length > 0 && <textarea readOnly defaultValue={postData.content}></textarea>}
                             {hasMidia && <PostMidia postId={postData.id} seePhoto={goToPicturePage} dimensions={postData.dimensions} />}
                         </div>
                         <div className="post-hour">

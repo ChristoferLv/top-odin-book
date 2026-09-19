@@ -305,7 +305,7 @@ function PostWithComment({ user, data, onPostPage }) {
                                 </div>}
                             </div>
                             <div className="post-content">
-                                 {originalPostData.content.length > 0 && <textarea readOnly defaultValue={originalPostData.content}></textarea>}
+                                {originalPostData.content?.length > 0 && <textarea readOnly defaultValue={originalPostData.content}></textarea>}
                                 {originalHasMidia && <PostMidia postId={originalPostData.id} dimensions={originalPostData.dimensions} seePhoto={(e) => goToPicturePage(e, true)} />}
                             </div>
                             <div className="post-controls">
@@ -386,7 +386,7 @@ function PostWithComment({ user, data, onPostPage }) {
                                     </div>}
                                 </div>
                                 <div className="post-content">
-                                     {postData.content.length > 0 && <textarea readOnly defaultValue={postData.content}></textarea>}
+                                    {postData.content?.length > 0 && <textarea readOnly defaultValue={postData.content}></textarea>}
                                     {replyHasMidia && <PostMidia postId={postData.id} dimensions={postData.dimensions} seePhoto={(e) => goToPicturePage(e, false)} />}
                                 </div>
                                 <div className="post-controls">

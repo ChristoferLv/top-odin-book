@@ -115,7 +115,7 @@ function Comment({ user, data }) {
                         </div>
                         <div className="post-content">
                             <textarea readOnly defaultValue={postData.content}></textarea>
-                            {hasMidia && <PostMidia postId={postData.id} />}
+                            {hasMidia && <PostMidia postId={postData.id} dimensions={postData.dimensions}/>}
                         </div>
                         <div className="post-controls">
                             <div onClick={handleReply} className="comment-control-button">

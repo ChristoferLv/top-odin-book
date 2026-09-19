@@ -210,7 +210,6 @@ function Post({ user, data }) {
     // }, []);
     if (isDeleted || data.deleted) return null;
 
-
     return (
         <>
             <div className="post" onClick={handleSeePost}>
@@ -240,7 +239,7 @@ function Post({ user, data }) {
                         </div>
                         {/* {isReply && <div><p>Original post: {usePostData.originalPostId}</p></div>} */}
                         <div className="post-content">
-                             {usePostData.content.length > 0 && <textarea readOnly defaultValue={usePostData.content}></textarea>}
+                            {usePostData.content?.length > 0 && <textarea readOnly defaultValue={usePostData.content}></textarea>}
                             {hasMidia && <PostMidia postId={usePostData.id} dimensions={usePostData.dimensions} seePhoto={goToPicturePage} />}
                         </div>
                         <div className="post-controls">

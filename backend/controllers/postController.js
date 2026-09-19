@@ -648,6 +648,10 @@ async function likePost(req, res) {
             return res.status(400).send({ success: false, message: "Post not found." });
         }
 
+        if (exists.postType == "SHARE") {
+            return res.status(400).send({ success: false, message: "This type of post can not be liked." });
+        }
+
         const hasLiked = await prisma.likes.findUnique({
             where: {
                 postId_whoLikedId: { postId: postId, whoLikedId: req.user.id }
@@ -820,6 +824,9 @@ async function sharePost(req, res) {
             return res.status(400).send({ success: false, message: "Post not found." });
         }
 
+        if (exists.postType == "SHARE") {
+            return res.status(400).send({ success: false, message: "This type of post can not be shared." });
+        }
 
         const hasShared = await prisma.posts.findUnique({
             where: {
@@ -976,7 +983,6 @@ const makeReply = [
                 return res.status(400).json({ success: false, error: errors });
             }
 
-
             const postId = parseInt(req.params.postId);
             const content = req.body.content;
 
@@ -986,6 +992,10 @@ const makeReply = [
 
             if (!exists) {
                 return res.status(400).send({ success: false, message: "Post not found." });
+            }
+
+            if (exists.postType == "SHARE") {
+                return res.status(400).send({ success: false, message: "This type of post can not be replied." });
             }
 
             let hasMidia = req.file?.size > 0;
@@ -1189,6 +1199,10 @@ async function bookmarkPost(req, res) {
 
         if (!exists) {
             return res.status(400).send({ success: false, message: "Post not found." });
+        }
+
+        if (exists.postType == "SHARE") {
+            return res.status(400).send({ success: false, message: "This type of post can not be bookmarked." });
         }
 
         const hasBookmarked = await prisma.bookmarks.findUnique({

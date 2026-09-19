@@ -150,6 +150,10 @@ function PostShareWithReply({ user, data }) {
         navigate(`${postData.author.username}/post/${postData.id}`);
     }
 
+     function goToPicturePage() {
+        navigate(`/${postData.author.username}/post/${postData.id}/photo`);
+    }
+
     function handleMoreButton(e) {
         e.stopPropagation();
         setShowDeleteBalloon(c => !c);
@@ -159,6 +163,7 @@ function PostShareWithReply({ user, data }) {
         deletePost(postData.id, false);
         setIsDeleted(true);
     }
+    
 
     // useEffect(() => {
     //     const handleEsc = (event) => {
@@ -194,8 +199,8 @@ function PostShareWithReply({ user, data }) {
                             </div>}
                         </div>
                         <div className="post-content">
-                            {postData.content.length > 0 && <textarea readOnly defaultValue={postData.content}></textarea>}
-                            {hasMidia && <PostMidia postId={postData.id} />}
+                            {postData.content?.length > 0 && <textarea readOnly defaultValue={postData.content}></textarea>}
+                            {hasMidia && <PostMidia postId={postData.id} dimensions={postData.dimensions} seePhoto={goToPicturePage}/>}
                         </div>
                         <CompactPost user={user} data={originalPostData} />
                         <div className="post-controls">
