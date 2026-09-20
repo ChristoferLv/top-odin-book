@@ -132,8 +132,9 @@ function ReplyDialog({ isOpen, user, originalPost, onCancel, onConfirm }) {
                         <UserPicture id={originalPost.author.id} username={originalPost.author.username} size={USER_PICTURE_DEFAULT_SIZE} useBorder={true} />
                         <div className="reply-content">
                             <div className="post-head">
-                                <span>{originalPost.author.name}</span>
-                                <span>@{originalPost.author.username} · {formatedDate}</span>
+                                <span className="post-name">{originalPost.author.name}</span>
+                                <span className="post-username">@{originalPost.author.username}</span>
+                                <span className="post-date"> • {formatDate(originalPost.createdAt)}</span>
                             </div>
                             <div className="post-content">
                                 <textarea readOnly defaultValue={originalPost.content}></textarea>

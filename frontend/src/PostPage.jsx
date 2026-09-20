@@ -70,7 +70,9 @@ function PostPage() {
         if (top) {
             setReplies((c) => [data, ...c]);
         } else {
-            setReplies((c) => [...c, ...data]);
+            const oldIds = replies.map((c) => c.id);
+            const treatedNewList = data.filter((c) => !oldIds.includes(c.id));
+            setReplies((c) => [...c, ...treatedNewList]);
         }
     }
 

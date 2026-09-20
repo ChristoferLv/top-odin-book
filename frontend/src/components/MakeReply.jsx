@@ -71,7 +71,6 @@ function MakeReply({ postId, onSuccess, inputRef }) {
 
     async function handlePost(e) {
         e.preventDefault();
-        console.log(fileInputRef.current, fileInputRef.current.files)
         const formData = new FormData();
         formData.append("picture", fileInputRef.current.files[0]);
         formData.append("content", postContent)

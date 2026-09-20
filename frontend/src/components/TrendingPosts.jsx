@@ -46,7 +46,7 @@ function TrendingPosts() {
 
 function MiniPostItem({ data }) {
     const navigate = useNavigate();
-    const content = (data.content == "" && data.hasMidia) ? "[Midia post. Click to see]" : data.content;
+    const content = (!data.content && data.hasMidia) ? "[Midia post. Click to see]" : data.content;
     const formatedDate = formatDate(data.createdAt);
 
     function handleSeeAuthor(e) {
@@ -68,6 +68,7 @@ function MiniPostItem({ data }) {
                     <span>@{data.author.username} • {formatedDate}</span>
                 </div>
                 <div className="mini-post-body" onClick={handleSeePost}>
+                    {}
                     <p className="multi-line-truncate">{content}</p>
                 </div>
             </div>

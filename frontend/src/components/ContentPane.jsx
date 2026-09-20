@@ -20,10 +20,21 @@ function ContentPane() {
 
     const isRecovering = useRef(false);
 
+    function updatePostsList(data, top) {
+        if (top) {
+            sessionStorage.setItem("posts-scroll", 0);
+            setPostsList((c) => [data, ...c]);
+        } else {
+            const oldIds = postsList.map((c) => c.id);
+            const treatedNewList = data.filter((c) => !oldIds.includes(c.id));
+            setPostsList((c) => [...c, ...treatedNewList]);
+        }
+    }
+
     useEffect(() => {
         if (feed.length > 0) {
             isRecovering.current = true;
-            setPostsList(feed);
+            updatePostsList(feed, false);
             setPage(pageOnContext);
         } else {
             sessionStorage.setItem("posts-scroll", 0);
@@ -79,7 +90,7 @@ function ContentPane() {
                     if (result.data.length == 0) {
                         setHasMore(false);
                     } else {
-                        setPostsList((prev) => [...prev, ...result.data]);
+                        updatePostsList(result.data, false);
                     }
                     feedSetter([...feed, ...result.data]);
                     pageSetter(page);
@@ -119,7 +130,7 @@ function ContentPane() {
 
     return (<>
         <div className="content-pane">
-            <NewPost user={user}/>
+            <NewPost user={user} updatePosts={updatePostsList} />
             <PostsList hasMore={hasMore} loading={loading} observerRef={observerTarget} postsList={postsList} user={user} onUserPage={false} />
         </div>
     </>)

@@ -45,6 +45,7 @@ async function createNotificationAndNotify(req, authorId, postId, type, receiver
 const makePost = [
     validatePost,
     async (req, res) => {
+        const userId = req.user.id;
         const errors = validationResult(req);
 
         if (!errors.isEmpty()) {
@@ -92,7 +93,18 @@ const makePost = [
                         postType: postType,
                         ...reference,
                         content: content
-                    }
+                    },
+                    include:
+                    {
+                        author: {
+                            select: {
+                                id: true,
+                                name: true,
+                                username: true
+                            }
+                        },
+                        midia: false,
+                    },
                 });
 
                 if (!postResult) {
@@ -122,7 +134,20 @@ const makePost = [
                 return res.status(500).send({ success: false });
             }
 
-            return res.send({ success: true, data: result });
+            const extraInfo = {
+                "likes": [],
+                "bookmarks": [],
+                "shares": [],
+                "_count": {
+                    "likes": 0,
+                    "replyPost": 0,
+                    "shares": 0
+                }
+            }
+
+            const treatedResult = { ...result, ...extraInfo };
+
+            return res.send({ success: true, data: treatedResult });
         } catch (e) {
             console.log(e);
             return res.status(500).send({ success: false });
@@ -158,28 +183,20 @@ async function getAllPosts(req, res) {
             include:
             {
                 author: {
-                    omit:
-                    {
-                        password: true,
-                        picture: true,
-                        mime: true,
-                        background: true,
-                        bgmime: true,
-                        createdAt: true
+                    select: {
+                        id: true,
+                        name: true,
+                        username: true
                     }
                 },
                 midia: false,
                 originalPost: {
                     include: {
                         author: {
-                            omit:
-                            {
-                                password: true,
-                                picture: true,
-                                mime: true,
-                                background: true,
-                                bgmime: true,
-                                createdAt: true
+                            select: {
+                                id: true,
+                                name: true,
+                                username: true
                             }
                         },
                         likes: { where: { whoLikedId: userId }, select: { id: true } },
@@ -208,14 +225,10 @@ async function getAllPosts(req, res) {
                 sharedPost: {
                     include: {
                         author: {
-                            omit:
-                            {
-                                password: true,
-                                picture: true,
-                                mime: true,
-                                background: true,
-                                bgmime: true,
-                                createdAt: true
+                            select: {
+                                id: true,
+                                name: true,
+                                username: true
                             }
                         },
                         likes: { where: { whoLikedId: userId }, select: { id: true } },
@@ -262,27 +275,19 @@ async function getPostById(req, res) {
 
             include: {
                 author: {
-                    omit:
-                    {
-                        password: true,
-                        picture: true,
-                        mime: true,
-                        background: true,
-                        bgmime: true,
-                        createdAt: true,
+                    select: {
+                        id: true,
+                        name: true,
+                        username: true
                     }
                 },
                 originalPost: {
                     include: {
                         author: {
-                            omit:
-                            {
-                                password: true,
-                                picture: true,
-                                mime: true,
-                                background: true,
-                                bgmime: true,
-                                createdAt: true
+                            select: {
+                                id: true,
+                                name: true,
+                                username: true
                             }
                         },
                         likes: { where: { whoLikedId: req.user.id }, select: { id: true } },
@@ -302,14 +307,10 @@ async function getPostById(req, res) {
                 sharedPost: {
                     include: {
                         author: {
-                            omit:
-                            {
-                                password: true,
-                                picture: true,
-                                mime: true,
-                                background: true,
-                                bgmime: true,
-                                createdAt: true
+                            select: {
+                                id: true,
+                                name: true,
+                                username: true
                             }
                         },
                         likes: { where: { whoLikedId: req.user.id }, select: { id: true } },
@@ -487,28 +488,20 @@ async function searchPosts(req, res) {
             include:
             {
                 author: {
-                    omit:
-                    {
-                        password: true,
-                        picture: true,
-                        mime: true,
-                        background: true,
-                        bgmime: true,
-                        createdAt: true
+                    select: {
+                        id: true,
+                        name: true,
+                        username: true
                     }
                 },
                 midia: false,
                 originalPost: {
                     include: {
                         author: {
-                            omit:
-                            {
-                                password: true,
-                                picture: true,
-                                mime: true,
-                                background: true,
-                                bgmime: true,
-                                createdAt: true
+                            select: {
+                                id: true,
+                                name: true,
+                                username: true
                             }
                         },
                         likes: { where: { whoLikedId: userId }, select: { id: true } },
@@ -527,14 +520,10 @@ async function searchPosts(req, res) {
                 sharedPost: {
                     include: {
                         author: {
-                            omit:
-                            {
-                                password: true,
-                                picture: true,
-                                mime: true,
-                                background: true,
-                                bgmime: true,
-                                createdAt: true
+                            select: {
+                                id: true,
+                                name: true,
+                                username: true
                             }
                         },
                         likes: { where: { whoLikedId: userId }, select: { id: true } },
@@ -594,14 +583,10 @@ async function getLikedPosts(req, res) {
                 post: {
                     include: {
                         author: {
-                            omit:
-                            {
-                                password: true,
-                                picture: true,
-                                mime: true,
-                                background: true,
-                                bgmime: true,
-                                createdAt: true
+                            select: {
+                                id: true,
+                                name: true,
+                                username: true
                             }
                         },
                         likes: { where: { whoLikedId: userId }, select: { id: true } },
@@ -731,27 +716,19 @@ async function getSharedPosts(req, res) {
             where: condition,
             include: {
                 author: {
-                    omit:
-                    {
-                        password: true,
-                        picture: true,
-                        mime: true,
-                        background: true,
-                        bgmime: true,
-                        createdAt: true
+                    select: {
+                        id: true,
+                        name: true,
+                        username: true
                     }
                 },
                 originalPost: {
                     include: {
                         author: {
-                            omit:
-                            {
-                                password: true,
-                                picture: true,
-                                mime: true,
-                                background: true,
-                                bgmime: true,
-                                createdAt: true
+                            select: {
+                                id: true,
+                                name: true,
+                                username: true
                             }
                         },
                         likes: { where: { whoLikedId: userId }, select: { id: true } },
@@ -762,14 +739,10 @@ async function getSharedPosts(req, res) {
                 sharedPost: {
                     include: {
                         author: {
-                            omit:
-                            {
-                                password: true,
-                                picture: true,
-                                mime: true,
-                                background: true,
-                                bgmime: true,
-                                createdAt: true
+                            select: {
+                                id: true,
+                                name: true,
+                                username: true
                             }
                         },
                         likes: { where: { whoLikedId: userId }, select: { id: true } },
@@ -913,27 +886,19 @@ async function getMyReplies(req, res) {
             where: condition,
             include: {
                 author: {
-                    omit:
-                    {
-                        password: true,
-                        picture: true,
-                        mime: true,
-                        background: true,
-                        bgmime: true,
-                        createdAt: true
+                    select: {
+                        id: true,
+                        name: true,
+                        username: true
                     }
                 },
                 originalPost: {
                     include: {
                         author: {
-                            omit:
-                            {
-                                password: true,
-                                picture: true,
-                                mime: true,
-                                background: true,
-                                bgmime: true,
-                                createdAt: true
+                            select: {
+                                id: true,
+                                name: true,
+                                username: true
                             }
                         },
                         likes: { where: { whoLikedId: userId }, select: { id: true } },
@@ -1021,28 +986,20 @@ const makeReply = [
                     include:
                     {
                         author: {
-                            omit:
-                            {
-                                password: true,
-                                picture: true,
-                                mime: true,
-                                background: true,
-                                bgmime: true,
-                                createdAt: true
+                            select: {
+                                id: true,
+                                name: true,
+                                username: true
                             }
                         },
                         midia: false,
                         originalPost: {
                             include: {
                                 author: {
-                                    omit:
-                                    {
-                                        password: true,
-                                        picture: true,
-                                        mime: true,
-                                        background: true,
-                                        bgmime: true,
-                                        createdAt: true
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                        username: true
                                     }
                                 },
                                 likes: { where: { whoLikedId: userId }, select: { id: true } },
@@ -1131,14 +1088,10 @@ async function getRepliesOfPost(req, res) {
             where: { originalPostId: postId, postType: "REPLY" },
             include: {
                 author: {
-                    omit:
-                    {
-                        password: true,
-                        picture: true,
-                        mime: true,
-                        background: true,
-                        bgmime: true,
-                        createdAt: true
+                    select: {
+                        id: true,
+                        name: true,
+                        username: true
                     }
                 },
                 likes: { where: { whoLikedId: userId }, select: { id: true } },
@@ -1203,14 +1156,10 @@ async function getBookmarkedPosts(req, res) {
                 post: {
                     include: {
                         author: {
-                            omit:
-                            {
-                                password: true,
-                                picture: true,
-                                mime: true,
-                                background: true,
-                                bgmime: true,
-                                createdAt: true
+                            select: {
+                                id: true,
+                                name: true,
+                                username: true
                             }
                         },
                         likes: { where: { whoLikedId: userId }, select: { id: true } },

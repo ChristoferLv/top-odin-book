@@ -293,6 +293,16 @@ async function main() {
         hasMidia: true,
         dimensions: "486x195"
       },
+      {
+        key: 'post21',
+        authorId: users[0].id,
+        content: null,
+        postType: 'POST',
+        originalPostKey: null,
+        sharedPostKey: null,
+        hasMidia: true,
+        dimensions: "1200x675"
+      },
     ];
 
     const postIds = {};
@@ -343,6 +353,12 @@ async function main() {
           ownerId: users[8].id,
           postId: postIds.post20
         },
+        {
+          mime: postsPictures.pic5[0],
+          content: Buffer.from(postsPictures.pic5[1], "base64"),
+          ownerId: users[0].id,
+          postId: postIds.post21
+        }
       ]
     });
 
@@ -421,7 +437,12 @@ async function main() {
         { postId: postIds.post20, whoLikedId: users[0].id },
         { postId: postIds.post20, whoLikedId: users[2].id },
         { postId: postIds.post20, whoLikedId: users[6].id },
-        { postId: postIds.post20, whoLikedId: users[9].id },
+        { postId: postIds.post21, whoLikedId: users[5].id },
+        { postId: postIds.post21, whoLikedId: users[4].id },
+        { postId: postIds.post21, whoLikedId: users[9].id },
+        { postId: postIds.post21, whoLikedId: users[8].id },
+        { postId: postIds.post21, whoLikedId: users[2].id },
+        { postId: postIds.post21, whoLikedId: users[3].id },
         { postId: postIds.post4, whoLikedId: users[0].id },
         { postId: postIds.post11, whoLikedId: users[2].id },
         { postId: postIds.post1, whoLikedId: users[1].id },
@@ -442,6 +463,9 @@ async function main() {
         { postId: postIds.post8, whoLikedId: users[6].id },
         { postId: postIds.post19, whoLikedId: users[0].id },
         { postId: postIds.post20, whoLikedId: users[7].id },
+        { postId: postIds.post21, whoLikedId: users[7].id },
+        { postId: postIds.post21, whoLikedId: users[6].id },
+        { postId: postIds.post21, whoLikedId: users[0].id },
       ],
     });
 
@@ -488,6 +512,8 @@ async function main() {
         { postId: postIds.post19, whoBookmarkedId: users[7].id },
         { postId: postIds.post20, whoBookmarkedId: users[4].id },
         { postId: postIds.post20, whoBookmarkedId: users[8].id },
+        { postId: postIds.post21, whoBookmarkedId: users[7].id },
+        { postId: postIds.post21, whoBookmarkedId: users[5].id },
         { postId: postIds.post7, whoBookmarkedId: users[0].id },
         { postId: postIds.post11, whoBookmarkedId: users[4].id },
         { postId: postIds.post19, whoBookmarkedId: users[2].id },

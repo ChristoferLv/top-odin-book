@@ -295,8 +295,9 @@ function PostWithComment({ user, data, onPostPage }) {
                         </div>
                         <div className="post-data">
                             <div className="post-head" onClick={(e) => { handleSeeAuthor(e, true) }}>
-                                <span>{originalPostData.author.name}</span>
-                                <span>@{originalPostData.author.username} • {formatDate(originalPostData.createdAt)}</span>
+                                <span className="post-name">{originalPostData.author.name}</span>
+                                <span className="post-username">@{originalPostData.author.username}</span>
+                                <span className="post-date"> • {formatDate(originalPostData.createdAt)}</span>
                                 {showDeleteBalloon == 1 && <DeletePostBalloon isOpen={showDeleteBalloon} postId={postData.id} onDelete={onDelete} onClose={handleMoreButton} postRef={moreBtnRefOriginal} />}
                                 {isOriginalMy && <div className="more-button" onClick={(e) => handleMoreButton(e, true)} ref={moreBtnRefOriginal} >
                                     <div className="more-button-inner">
@@ -376,8 +377,9 @@ function PostWithComment({ user, data, onPostPage }) {
                             <UserPicture id={postData.author.id} username={postData.author.username} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
                             <div className="post-data">
                                 <div className="post-head" onClick={(e) => { handleSeeAuthor(e, false) }}>
-                                    <span>{postData.author.name}</span>
-                                    <span>@{postData.author.username} • {formatedDate}</span>
+                                    <span className="post-name">{postData.author.name}</span>
+                                    <span className="post-username">@{postData.author.username}</span>
+                                    <span className="post-date"> • {formatDate(postData.createdAt)}</span>
                                     {showDeleteBalloon == 2 && <DeletePostBalloon isOpen={showDeleteBalloon} postId={postData.id} onDelete={onDelete} onClose={handleMoreButton} postRef={moreBtnRefReply} />}
                                     {isReplyMy && <div className="more-button" onClick={(e) => handleMoreButton(e, false)} ref={moreBtnRefReply} >
                                         <div className="more-button-inner">

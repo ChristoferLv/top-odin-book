@@ -191,8 +191,9 @@ function PostShareWithReply({ user, data }) {
                     <UserPicture id={postData.author.id} username={postData.author.username} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
                     <div className="post-data">
                         <div className="post-head">
-                            <span>{postData.author.name}</span>
-                            <span>@{postData.author.username} • {formatedDate}</span>
+                            <span className="post-name">{postData.author.name}</span>
+                            <span className="post-username">@{postData.author.username}</span>
+                            <span className="post-date"> • {formatedDate}</span>
                             {showDeleteBalloon && <DeletePostBalloon isOpen={showDeleteBalloon} postId={postData.id} onDelete={onDelete} onClose={handleMoreButton} postRef={moreBtnRef} />}
                             {isMyPost && <div className="more-button" onClick={handleMoreButton} ref={moreBtnRef} >
                                 <div className="more-button-inner">
