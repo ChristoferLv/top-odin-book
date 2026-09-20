@@ -3,12 +3,13 @@ import { AuthContext } from "../AuthContext";
 import { editUser, fetchUserBackground, removeBackground, removePicture, sendUserBackground, sendUserPicture } from "../../api/requests";
 import { useNavigate } from "react-router";
 import background from "../../public/bkgd.png";
-import Toast from "./Toast";
 import { PictureContext } from "../PictureContext";
 import dafaultAvatar from "../../public/avatar.png";
+import { ToastContext } from "../ToastsContext";
 
 function EditProfile() {
     const { userPictureUrl, isPictureSet, pictureSetter } = useContext(PictureContext);
+    const { addToast } = useContext(ToastContext);
     const { user, isLoading, setUser } = useContext(AuthContext);
     const [userData, setUserData] = useState({ name: "", bio: "" });
     const [userDataValid, setUserDataValid] = useState({ name: true, bio: true });
@@ -17,13 +18,6 @@ function EditProfile() {
     const fileBackgroundRef = useRef(null);
     const [backgroundBuff, setBackground] = useState(null);
     const [mimeBkgd, setMimeBkgd] = useState(null);
-
-    const [isToastOpen, setIsToastOpen] = useState(false);
-
-    function handleCloseToast() {
-        setIsToastOpen(false);
-    }
-
 
     function handleChange(e) {
         const whoChanged = e.target;
@@ -93,7 +87,7 @@ function EditProfile() {
         formData.append("picture", fileInputRef.current.files[0]);
         fileInputRef.current.value = "";
         if (formData.get("picture").size > 5000000) {
-            setIsToastOpen(true);
+            addToast("Your file is to large. The maximum file size is 5MB");
             return;
         }
 
@@ -120,7 +114,7 @@ function EditProfile() {
         formData.append("background", fileBackgroundRef.current.files[0]);
         fileBackgroundRef.current.value = "";
         if (formData.get("background").size > 5000000) {
-            setIsToastOpen(true);
+            addToast("Your file is to large. The maximum file size is 5MB");
             return;
         }
 
@@ -272,7 +266,6 @@ function EditProfile() {
                     </div>
                 </div>
             </div>
-            {isToastOpen && <Toast message={"Your file is to large. The maximum file size is 5MB"} isOpen={isToastOpen} setIsOpen={handleCloseToast} />}
         </>
     );
 }

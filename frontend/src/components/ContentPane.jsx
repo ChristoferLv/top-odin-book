@@ -119,7 +119,7 @@ function ContentPane() {
 
     return (<>
         <div className="content-pane">
-            <NewPost />
+            <NewPost user={user}/>
             <PostsList hasMore={hasMore} loading={loading} observerRef={observerTarget} postsList={postsList} user={user} onUserPage={false} />
         </div>
     </>)

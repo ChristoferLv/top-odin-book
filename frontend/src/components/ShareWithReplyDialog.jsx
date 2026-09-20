@@ -2,26 +2,22 @@ import { formatDate } from "../utils/dateUtils";
 import UserPicture from "./UserPicture"
 import { PostType, USER_PICTURE_DEFAULT_SIZE } from "../utils/defaults"
 import { bookmarkPost, dislikePost, likePost, makePost, removeBookmarkPost, sharePost, unsharePost } from "../../api/requests";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import PictureDialog from "./PictureDialog";
 import CompactPost from "./CompactPost";
 import Pie from "./ProgressCircle";
-import Toast from "./Toast";
+import { ToastContext } from "../ToastsContext";
 
-function ShareWithComment({ isOpen, user, originalPost, onCancel, onConfirm }) {
+function ShareWithReply({ isOpen, user, originalPost, onCancel, onConfirm }) {
+    const { addToast } = useContext(ToastContext);
     const [replyContent, setReplyContent] = useState("");
     const [isActive, setIsActive] = useState(false);
     const [modal, setModal] = useState(false);
     const [imageUrl, setImageUrl] = useState("");
     const [canPost, setCanPost] = useState(false);
-    
-    const [isToastOpen, setIsToastOpen] = useState(false);
-    const fileInputRef = useRef(null);
 
-    function handleCloseToast() {
-        setIsToastOpen(false);
-    }
+    const fileInputRef = useRef(null);
 
     function handleReplyContentChange(e) {
         let newCanPost = false;
@@ -46,7 +42,7 @@ function ShareWithComment({ isOpen, user, originalPost, onCancel, onConfirm }) {
         const file = e.target.files[0];
 
         if (file.size > 5000000) {
-            setIsToastOpen(true);
+            addToast("Your file is to large. The maximum file size is 5MB");
             fileInputRef.current.value = "";
             return;
         }
@@ -199,11 +195,10 @@ function ShareWithComment({ isOpen, user, originalPost, onCancel, onConfirm }) {
                     {imageUrl != "" && <img src={imageUrl} alt="" />}
                 </div>
             </PictureDialog >
-            {isToastOpen && <Toast message={"Your file is to large. The maximum file size is 5MB"} isOpen={isToastOpen} setIsOpen={handleCloseToast} />}
         </>);
 }
 
 
 
 
-export default ShareWithComment;
+export default ShareWithReply;

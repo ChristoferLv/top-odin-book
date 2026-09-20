@@ -5,7 +5,7 @@ import { bookmarkPost, dislikePost, likePost, removeBookmarkPost, sharePost, uns
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import ReplyDialog from "./ReplyDialog";
-import ShareWithComment from "./ShareWithReplyDialog";
+import ShareWithReply from "./ShareWithReplyDialog";
 import PostMidia from "./PostMidia";
 
 function CompactPost({ user, data }) {
@@ -145,8 +145,8 @@ function CompactPost({ user, data }) {
                     </div>
                 </div>
             </div >
-            <ReplyDialog isOpen={isDialogOpen} originalPost={data} user={user} onCancel={handleCloseDialog} onConfirm={handleCloseDialog} />
-            <ShareWithComment isOpen={isShareDialogOpen} originalPost={data} user={user} onCancel={handleCloseDialog} onConfirm={handleCloseDialog} />
+            {/* <ReplyDialog isOpen={isDialogOpen} originalPost={data} user={user} onCancel={handleCloseDialog} onConfirm={handleCloseDialog} />
+            <ShareWithReply isOpen={isShareDialogOpen} originalPost={data} user={user} onCancel={handleCloseDialog} onConfirm={handleCloseDialog} /> */}
         </>
     )
 }

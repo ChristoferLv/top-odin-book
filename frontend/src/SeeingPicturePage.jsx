@@ -8,16 +8,18 @@ import { USER_PICTURE_DEFAULT_SIZE } from "./utils/defaults";
 import Post from "./components/Post";
 import Comment from "./components/Comment";
 import ReplyDialog from "./components/ReplyDialog";
-import ShareWithComment from "./components/ShareWithReplyDialog";
+import ShareWithReply from "./components/ShareWithReplyDialog";
 import ShareOrReplyDialog from "./components/ShareOrReplyDialog";
 import PostMidia from "./components/PostMidia";
 import MakeReply from "./components/MakeReply";
 import LoadingSpinner from "./components/LoadingSpinner";
 import { FeedContext } from "./FeedContext";
 import DeletePostBalloon from "./components/DeletePostBalloon";
+import { ToastContext } from "./ToastsContext";
 
 function SeeingPicturePage() {
     const { user, isLoading } = useContext(AuthContext);
+    const { addToast } = useContext(ToastContext);
     const { username, postId } = useParams();
     const { deletePost } = useContext(FeedContext);
     const navigate = useNavigate();
@@ -33,14 +35,12 @@ function SeeingPicturePage() {
     const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
     const [isShareOrReplyOpen, setIsShareOrReplyOpen] = useState(0);
 
-    const [midiaBuff, setMidia] = useState(null);
+    const [pictureURL, setPicture] = useState("");
     const [mime, setMime] = useState(null);
 
     const hasShared = postData?.shares.length;
 
-    const rawBuffer = new Uint8Array(midiaBuff);
-    const blob = new Blob([rawBuffer], { type: mime });
-    const imageUrl = URL.createObjectURL(blob);
+
 
     const numLikes = postData?._count.likes;
     const numShares = postData?._count.shares;
@@ -50,17 +50,22 @@ function SeeingPicturePage() {
     const [showDeleteBalloon, setShowDeleteBalloon] = useState(false);
     const moreBtnRef = useRef(null);
     const [isDeleted, setIsDeleted] = useState(false);
+    const [replies, setReplies] = useState([]);
+
 
 
     useEffect(() => {
         async function getMidia() {
             const midia = await fetchPostMidia(postId);
-            setMidia(midia.data.content?.data);
+            const rawBuffer = new Uint8Array(midia.data.content?.data);
+            const blob = new Blob([rawBuffer], { type: mime });
+            const imageUrl = URL.createObjectURL(blob);
+            setPicture(imageUrl);
             setMime(midia.data.mime);
         }
         getMidia();
         return () => {
-            setMidia(null);
+            setPicture("");
             setMime(null);
             setPostData(null);
         }
@@ -78,6 +83,13 @@ function SeeingPicturePage() {
     //     }
     // }, [location.pathname]);
 
+    function updateReplies(data, top) {
+        if (top) {
+            setReplies((c) => [data, ...c]);
+        } else {
+            setReplies((c) => [...c, ...data]);
+        }
+    }
 
 
     useEffect(() => {
@@ -102,17 +114,17 @@ function SeeingPicturePage() {
         navigate(-1);
     }
 
-    function handleReplyChange(e) {
-        setReplyContent(e.target.value);
-    }
+    // function handleReplyChange(e) {
+    //     setReplyContent(e.target.value);
+    // }
 
-    async function postReply() {
-        const result = await makeReply({ content: replyContent }, postId);
-        if (result.success) {
-            setReplyContent("");
-            fetchReplies();
-        }
-    }
+    // async function postReply() {
+    //     const result = await makeReply({ content: replyContent }, postId);
+    //     if (result.success) {
+    //         setReplyContent("");
+    //         fetchReplies();
+    //     }
+    // }
 
     async function handleLike() {
         if (postData.likes.length) {
@@ -148,6 +160,7 @@ function SeeingPicturePage() {
         if (postData.bookmarks.length) {
             const result = await removeBookmarkPost(postData.id);
             if (result && result.success) {
+                addToast("Removed from the bookmarks");
                 setPostData({ ...postData, bookmarks: [] });
             }
             return;
@@ -155,6 +168,7 @@ function SeeingPicturePage() {
 
         const result = await bookmarkPost(postData.id);
         if (result && result.success) {
+            addToast("Post added to the bookmarks");
             setPostData({ ...postData, bookmarks: [{ id: result.data.id }] });
         }
     }
@@ -214,9 +228,9 @@ function SeeingPicturePage() {
         setIsShareDialogOpen(true);
     }
 
-    function handleSuccessReply() {
+    function handleSuccessReply(result) {
         setPostData({ ...postData, _count: { ...postData._count, replyPost: numReplies + 1 } });
-        fetchReplies();
+        updateReplies(result, true);
     }
 
     function handleMoreButton(e) {
@@ -230,14 +244,14 @@ function SeeingPicturePage() {
         navigate(-1);
     }
 
-    if (!postData || !midiaBuff) return <><div className="loading">
+    if (!postData || pictureURL == "") return <><div className="loading">
         <p>&nbsp;</p>
     </div></>
 
-    const formatedDate = formatDate(postData.createdAt);
     return (
         <>
             <div className="see-picture-page">
+                <div className="space-filler"></div>
                 <div className="main-container">
                     <div className="picture-container">
                         <button className='close-button' onClick={goBack}>
@@ -246,10 +260,11 @@ function SeeingPicturePage() {
                             </svg>
                         </button>
                         <div className="shown-midia">
-                            <div
-                                style={{ backgroundImage: `url(${imageUrl})` }}
+                            {pictureURL != "" && <div
+                                style={{ backgroundImage: `url(${pictureURL})` }}
                                 className="the-img"></div>
-                            {/* <img src={imageUrl} alt="" /> */}
+                                /* <img src={imageUrl} alt="" /> */
+                            }
                         </div>
                     </div>
                     <div className="main-container-controls">
@@ -367,7 +382,7 @@ function SeeingPicturePage() {
                         <MakeReply postId={postData.id} onSuccess={handleSuccessReply} inputRef={commentBox} />
                     </div>
 
-                    <InfiniteRepliesList postId={postData.id} user={user} key={location.pathname} />
+                    <InfiniteRepliesList postId={postData.id} user={user} key={location.pathname} replies={replies} updateReplies={updateReplies} />
 
 
                     {/* <div className="replies-container">
@@ -378,13 +393,12 @@ function SeeingPicturePage() {
                 </div>
             </div>
             {isDialogOpen && <ReplyDialog isOpen={isDialogOpen} originalPost={postData} user={user} onCancel={handleCloseDialog} onConfirm={handleCloseDialog} />}
-            {isShareDialogOpen && <ShareWithComment isOpen={isShareDialogOpen} originalPost={postData} user={user} onCancel={handleCloseDialog} onConfirm={successShareReply} />}
+            {isShareDialogOpen && <ShareWithReply isOpen={isShareDialogOpen} originalPost={postData} user={user} onCancel={handleCloseDialog} onConfirm={successShareReply} />}
         </>
     );
 }
 
-function InfiniteRepliesList({ user, postId }) {
-    const [replies, setReplies] = useState([]);
+function InfiniteRepliesList({ user, postId, replies, updateReplies }) {
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
@@ -405,7 +419,7 @@ function InfiniteRepliesList({ user, postId }) {
                     if (result.data.length == 0) {
                         setHasMore(false);
                     } else {
-                        setReplies((prev) => [...prev, ...result.data]);
+                        updateReplies(result.data, false);
                     }
                 }
             } catch (e) {
@@ -454,8 +468,6 @@ function InfiniteRepliesList({ user, postId }) {
         </>
     );
 }
-
-
 
 
 

@@ -1,28 +1,23 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState, } from "react";
 import { makePost } from "../../api/requests";
 import { USER_PICTURE_DEFAULT_SIZE } from "../utils/defaults"
 import PictureDialog from "./PictureDialog";
 import Pie from "./ProgressCircle";
-import Toast from "./Toast";
+import { useNavigate } from "react-router";
 import { PictureContext } from "../PictureContext";
 import dafaultAvatar from "../../public/avatar.png";
+import { ToastContext } from "../ToastsContext";
 
 
-function NewPost() {
+function NewPost({ user }) {
     const { userPictureUrl, isPictureSet } = useContext(PictureContext);
+    const navigate = useNavigate();
+    const { addToast } = useContext(ToastContext);
     const [postContent, setPostContent] = useState("");
     const [modal, setModal] = useState(false);
     const [imageUrl, setImageUrl] = useState("");
     const [canPost, setCanPost] = useState(false);
     const fileInputRef = useRef(null);
-
-    const [isToastOpen, setIsToastOpen] = useState(false);
-
-    function handleCloseToast() {
-        setIsToastOpen(false);
-    }
-
-    // const imageUrl = URL.createObjectURL(loadedImage??undefined);
 
 
     function handleClickAttach(e) {
@@ -33,7 +28,7 @@ function NewPost() {
         // e.target.parentElement.requestSubmit();
         const file = e.target.files[0];
         if (file.size > 5000000) {
-            setIsToastOpen(true);
+            addToast("Your file is to large. The maximum file size is 5MB");
             fileInputRef.current.value = "";
             return;
         }
@@ -90,6 +85,7 @@ function NewPost() {
 
         const result = await makePost(formData);
         if (result && result.success) {
+            addToast("Your post was sent.");
             fileInputRef.current.value = "";
             setImageUrl("");
             setModal(false);
@@ -101,7 +97,7 @@ function NewPost() {
 
     function handleSeeUser(e) {
         e.stopPropagation();
-        navigate("/" + username);
+        navigate("/" + user.username);
     }
 
     return (
@@ -153,7 +149,6 @@ function NewPost() {
                     {imageUrl != "" && <img src={imageUrl} alt="" />}
                 </div>
             </PictureDialog >
-            {isToastOpen && <Toast message={"Your file is to large. The maximum file size is 5MB"} isOpen={isToastOpen} setIsOpen={handleCloseToast} />}
         </>
     )
 }

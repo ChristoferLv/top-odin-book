@@ -6,10 +6,11 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import ReplyDialog from "./ReplyDialog";
 import ShareOrReplyDialog from "./ShareOrReplyDialog";
-import ShareWithComment from "./ShareWithReplyDialog";
+import ShareWithReply from "./ShareWithReplyDialog";
 import PostMidia from "./PostMidia";
 import DeletePostBalloon from "./DeletePostBalloon";
 import { FeedContext } from "../FeedContext";
+import { ToastContext } from "../ToastsContext";
 
 function PostWithComment({ user, data, onPostPage }) {
     const [postData, setPostData] = useState(data);
@@ -21,8 +22,7 @@ function PostWithComment({ user, data, onPostPage }) {
     const [isReplyShareDialogOpen, setisReplyShareDialogOpen] = useState(false);
     const [isShareOrReplyPosition, setIsShareOrReplyPosition] = useState({});
     const { deletePost } = useContext(FeedContext);
-
-
+    const { addToast } = useContext(ToastContext);
 
     const navigate = useNavigate();
     const originalPostData = postData.originalPost;
@@ -99,6 +99,7 @@ function PostWithComment({ user, data, onPostPage }) {
         if (hasBookmarked) {
             const result = await removeBookmarkPost(postId);
             if (result && result.success) {
+                addToast("Removed from the bookmarks");
                 if (onOriginal) {
                     setPostData({ ...postData, originalPost: { ...originalPostData, bookmarks: [] } });
                 } else {
@@ -110,6 +111,7 @@ function PostWithComment({ user, data, onPostPage }) {
 
         const result = await bookmarkPost(postId);
         if (result && result.success) {
+            addToast("Post added to the bookmarks");
             if (onOriginal) {
                 setPostData({ ...postData, originalPost: { ...originalPostData, bookmarks: [{ id: result.data.id }] } });
             }
@@ -294,7 +296,7 @@ function PostWithComment({ user, data, onPostPage }) {
                         <div className="post-data">
                             <div className="post-head" onClick={(e) => { handleSeeAuthor(e, true) }}>
                                 <span>{originalPostData.author.name}</span>
-                                <span>@{originalPostData.author.username} - {formatedDate}</span>
+                                <span>@{originalPostData.author.username} • {formatDate(originalPostData.createdAt)}</span>
                                 {showDeleteBalloon == 1 && <DeletePostBalloon isOpen={showDeleteBalloon} postId={postData.id} onDelete={onDelete} onClose={handleMoreButton} postRef={moreBtnRefOriginal} />}
                                 {isOriginalMy && <div className="more-button" onClick={(e) => handleMoreButton(e, true)} ref={moreBtnRefOriginal} >
                                     <div className="more-button-inner">
@@ -375,7 +377,7 @@ function PostWithComment({ user, data, onPostPage }) {
                             <div className="post-data">
                                 <div className="post-head" onClick={(e) => { handleSeeAuthor(e, false) }}>
                                     <span>{postData.author.name}</span>
-                                    <span>@{postData.author.username} - {formatedDate}</span>
+                                    <span>@{postData.author.username} • {formatedDate}</span>
                                     {showDeleteBalloon == 2 && <DeletePostBalloon isOpen={showDeleteBalloon} postId={postData.id} onDelete={onDelete} onClose={handleMoreButton} postRef={moreBtnRefReply} />}
                                     {isReplyMy && <div className="more-button" onClick={(e) => handleMoreButton(e, false)} ref={moreBtnRefReply} >
                                         <div className="more-button-inner">
@@ -436,10 +438,10 @@ function PostWithComment({ user, data, onPostPage }) {
                     </div>
                 </div>}
             </div>
-            <ReplyDialog isOpen={isOriginalPostDialogOpen} originalPost={originalPostData} user={user} onCancel={handleCloseDialog} onConfirm={successReply} />
-            <ReplyDialog isOpen={isReplyPostDialogOpen} originalPost={postData} user={user} onCancel={handleCloseDialog} onConfirm={successReply} />
-            <ShareWithComment isOpen={isOriginalShareDialogOpen} originalPost={originalPostData} user={user} onCancel={handleCloseDialog} onConfirm={successShareReply} />
-            <ShareWithComment isOpen={isReplyShareDialogOpen} originalPost={postData} user={user} onCancel={handleCloseDialog} onConfirm={successShareReply} />
+            {isOriginalPostDialogOpen && <ReplyDialog isOpen={isOriginalPostDialogOpen} originalPost={originalPostData} user={user} onCancel={handleCloseDialog} onConfirm={successReply} />}
+            {isReplyPostDialogOpen && <ReplyDialog isOpen={isReplyPostDialogOpen} originalPost={postData} user={user} onCancel={handleCloseDialog} onConfirm={successReply} />}
+            {isOriginalShareDialogOpen && <ShareWithReply isOpen={isOriginalShareDialogOpen} originalPost={originalPostData} user={user} onCancel={handleCloseDialog} onConfirm={successShareReply} />}
+            {isReplyShareDialogOpen && <ShareWithReply isOpen={isReplyShareDialogOpen} originalPost={postData} user={user} onCancel={handleCloseDialog} onConfirm={successShareReply} />}
         </>
     );
 }

@@ -6,14 +6,16 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import CompactPost from "./CompactPost";
 import ReplyDialog from "./ReplyDialog";
-import ShareWithComment from "./ShareWithReplyDialog";
+import ShareWithReply from "./ShareWithReplyDialog";
 import ShareOrReplyDialog from "./ShareOrReplyDialog";
 import PostMidia from "./PostMidia";
 import DeletePostBalloon from "./DeletePostBalloon";
 import { FeedContext } from "../FeedContext";
+import { ToastContext } from "../ToastsContext";
 
 function PostShareWithReply({ user, data }) {
     const { deletePost } = useContext(FeedContext);
+    const { addToast } = useContext(ToastContext);
     const [postData, setPostData] = useState(data);
     const [isMeShare, setIsMeShare] = useState(data.postType == PostType.SHARE && data.author.id == user.id);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -76,6 +78,7 @@ function PostShareWithReply({ user, data }) {
         if (postData.bookmarks.length) {
             const result = await removeBookmarkPost(postData.id);
             if (result && result.success) {
+                addToast("Removed from the bookmarks");
                 setPostData({ ...postData, bookmarks: [] });
             }
             return;
@@ -83,6 +86,7 @@ function PostShareWithReply({ user, data }) {
 
         const result = await bookmarkPost(postData.id);
         if (result && result.success) {
+            addToast("Post added to the bookmarks");
             setPostData({ ...postData, bookmarks: [{ id: result.data.id }] });
         }
     }
@@ -150,7 +154,7 @@ function PostShareWithReply({ user, data }) {
         navigate(`${postData.author.username}/post/${postData.id}`);
     }
 
-     function goToPicturePage() {
+    function goToPicturePage() {
         navigate(`/${postData.author.username}/post/${postData.id}/photo`);
     }
 
@@ -163,7 +167,7 @@ function PostShareWithReply({ user, data }) {
         deletePost(postData.id, false);
         setIsDeleted(true);
     }
-    
+
 
     // useEffect(() => {
     //     const handleEsc = (event) => {
@@ -188,7 +192,7 @@ function PostShareWithReply({ user, data }) {
                     <div className="post-data">
                         <div className="post-head">
                             <span>{postData.author.name}</span>
-                            <span>@{postData.author.username} - {formatedDate}</span>
+                            <span>@{postData.author.username} • {formatedDate}</span>
                             {showDeleteBalloon && <DeletePostBalloon isOpen={showDeleteBalloon} postId={postData.id} onDelete={onDelete} onClose={handleMoreButton} postRef={moreBtnRef} />}
                             {isMyPost && <div className="more-button" onClick={handleMoreButton} ref={moreBtnRef} >
                                 <div className="more-button-inner">
@@ -200,7 +204,7 @@ function PostShareWithReply({ user, data }) {
                         </div>
                         <div className="post-content">
                             {postData.content?.length > 0 && <textarea readOnly defaultValue={postData.content}></textarea>}
-                            {hasMidia && <PostMidia postId={postData.id} dimensions={postData.dimensions} seePhoto={goToPicturePage}/>}
+                            {hasMidia && <PostMidia postId={postData.id} dimensions={postData.dimensions} seePhoto={goToPicturePage} />}
                         </div>
                         <CompactPost user={user} data={originalPostData} />
                         <div className="post-controls">
@@ -249,7 +253,7 @@ function PostShareWithReply({ user, data }) {
                 </div>
             </div>
             {isDialogOpen && <ReplyDialog key={crypto.randomUUID()} isOpen={isDialogOpen} originalPost={data} user={user} onCancel={handleCloseDialog} onConfirm={successReply} />}
-            {isShareDialogOpen && <ShareWithComment key={crypto.randomUUID()} isOpen={isShareDialogOpen} originalPost={data} user={user} onCancel={handleCloseDialog} onConfirm={successShareReply} />}
+            {isShareDialogOpen && <ShareWithReply key={crypto.randomUUID()} isOpen={isShareDialogOpen} originalPost={data} user={user} onCancel={handleCloseDialog} onConfirm={successShareReply} />}
         </>
     );
 

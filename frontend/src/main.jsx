@@ -20,6 +20,7 @@ import FollowageListing from './components/FollowageListing.jsx';
 import PictureContextProvider from './PictureContext.jsx';
 import NotificationsContextProvider from './NotificationsContext.jsx';
 import FeedContextProvider from './FeedContext.jsx';
+import ToastContextProvider from './ToastsContext.jsx';
 
 
 const router = createBrowserRouter([
@@ -54,9 +55,11 @@ createRoot(document.getElementById('root')).render(
     <AuthProvider>
       <PictureContextProvider>
         <NotificationsContextProvider>
-          <FeedContextProvider>
-            <RouterProvider router={router} />
-          </FeedContextProvider>
+          <ToastContextProvider>
+            <FeedContextProvider>
+              <RouterProvider router={router} />
+            </FeedContextProvider>
+          </ToastContextProvider>
         </NotificationsContextProvider>
       </PictureContextProvider>
     </AuthProvider>

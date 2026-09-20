@@ -2,13 +2,13 @@ import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router";
 import { AuthContext } from "./AuthContext";
 import { formatDate } from "./utils/dateUtils";
-import { dislikePost, fetchPostById, fetchRepliesOfPost, likePost, makeReply, sharePost, unsharePost } from "../api/requests";
+import { bookmarkPost, dislikePost, fetchPostById, fetchRepliesOfPost, likePost, makeReply, removeBookmarkPost, sharePost, unsharePost } from "../api/requests";
 import UserPicture from "./components/UserPicture";
 import { USER_PICTURE_DEFAULT_SIZE } from "./utils/defaults";
 import Post from "./components/Post";
 import Comment from "./components/Comment";
 import ReplyDialog from "./components/ReplyDialog";
-import ShareWithComment from "./components/ShareWithReplyDialog";
+import ShareWithReply from "./components/ShareWithReplyDialog";
 import ShareOrReplyDialog from "./components/ShareOrReplyDialog";
 import PostMidia from "./components/PostMidia";
 import MakeReply from "./components/MakeReply";
@@ -16,10 +16,12 @@ import PostWithComment from "./components/PostWithComment";
 import LoadingSpinner from "./components/LoadingSpinner";
 import DeletePostBalloon from "./components/DeletePostBalloon";
 import { FeedContext } from "./FeedContext";
+import { ToastContext } from "./ToastsContext";
 
 function PostPage() {
     const { user, isLoading } = useContext(AuthContext);
     const { deletePost } = useContext(FeedContext);
+    const { addToast } = useContext(ToastContext);
     const { username, postId } = useParams();
     const navigate = useNavigate();
     const location = useLocation();
@@ -36,6 +38,9 @@ function PostPage() {
     const [showDeleteBalloon, setShowDeleteBalloon] = useState(false);
     const moreBtnRef = useRef(null);
     const [isDeleted, setIsDeleted] = useState(false);
+
+    const [replies, setReplies] = useState([]);
+
 
     const hasShared = postData?.shares.length;
     const hasMidia = postData?.hasMidia;
@@ -59,6 +64,14 @@ function PostPage() {
         const day = date.toDateString().split(" ").slice(1).join(" ");
         const hour = date.toLocaleTimeString().split(":").slice(0, -1).join(":");
         return `${hour} · ${day}`;
+    }
+
+    function updateReplies(data, top) {
+        if (top) {
+            setReplies((c) => [data, ...c]);
+        } else {
+            setReplies((c) => [...c, ...data]);
+        }
     }
 
     useEffect(() => {
@@ -118,6 +131,7 @@ function PostPage() {
         if (postData.bookmarks.length) {
             const result = await removeBookmarkPost(postData.id);
             if (result && result.success) {
+                addToast("Removed from the bookmarks");
                 setPostData({ ...postData, bookmarks: [] });
             }
             return;
@@ -125,6 +139,7 @@ function PostPage() {
 
         const result = await bookmarkPost(postData.id);
         if (result && result.success) {
+            addToast("Post added to the bookmarks");
             setPostData({ ...postData, bookmarks: [{ id: result.data.id }] });
         }
     }
@@ -136,13 +151,13 @@ function PostPage() {
 
     function handleCloseDialog() {
         // e.stopPropagation();
-        fetchReplies();
         setIsDialogOpen(false);
         setIsShareDialogOpen(false);
         setIsShareOrReplyOpen(false);
     };
 
     function successShareReply(e) {
+        // fetchReplies();
         setPostData({ ...postData, _count: { ...postData._count, shares: numShares + 1 } });
         handleCloseDialog(e);
     }
@@ -184,7 +199,8 @@ function PostPage() {
 
     function handleSuccessReply(result) {
         setPostData({ ...postData, _count: { ...postData._count, replyPost: numReplies + 1 } });
-        fetchReplies();
+        updateReplies(result, true);
+        // fetchReplies();
     }
 
     function goToPicturePage() {
@@ -226,7 +242,7 @@ function PostPage() {
                 <MakeReply postId={postData.id} onSuccess={handleSuccessReply} />
             </div>
 
-            <InfiniteRepliesList postId={postData.id} user={user} key={location.pathname} />
+            <InfiniteRepliesList postId={postData.id} user={user} key={location.pathname} replies={replies} updateReplies={updateReplies} />
 
             {/* <div className="comments-list">
                 {commentsList.map((comment) => {
@@ -238,8 +254,6 @@ function PostPage() {
 
     </>);
 
-
-    const formatedDate = formatDate(postData.createdAt);
     return (
         <>
             <div className="post-page">
@@ -323,7 +337,7 @@ function PostPage() {
                     <MakeReply postId={postData.id} onSuccess={handleSuccessReply} />
                 </div>
 
-                <InfiniteRepliesList postId={postData.id} user={user} key={location.pathname} />
+                <InfiniteRepliesList postId={postData.id} user={user} key={location.pathname} replies={replies} updateReplies={updateReplies} />
 
                 {/* <div className="comments-list">
                     {commentsList.map((comment) => {
@@ -332,15 +346,14 @@ function PostPage() {
                 </div> */}
             </div>
             {isDialogOpen && <ReplyDialog isOpen={isDialogOpen} originalPost={postData} user={user} onCancel={handleCloseDialog} onConfirm={handleCloseDialog} />}
-            {isShareDialogOpen && <ShareWithComment isOpen={isShareDialogOpen} originalPost={postData} user={user} onCancel={handleCloseDialog} onConfirm={successShareReply} />}
+            {isShareDialogOpen && <ShareWithReply isOpen={isShareDialogOpen} originalPost={postData} user={user} onCancel={handleCloseDialog} onConfirm={successShareReply} />}
         </>
     )
 }
 
 
 
-function InfiniteRepliesList({ user, postId }) {
-    const [replies, setReplies] = useState([]);
+function InfiniteRepliesList({ user, postId, replies, updateReplies }) {
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
@@ -361,7 +374,7 @@ function InfiniteRepliesList({ user, postId }) {
                     if (result.data.length == 0) {
                         setHasMore(false);
                     } else {
-                        setReplies((prev) => [...prev, ...result.data]);
+                        updateReplies(result.data, false);
                     }
                 }
             } catch (e) {

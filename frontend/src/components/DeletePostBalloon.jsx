@@ -1,9 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
+import { ToastContext } from "../ToastsContext";
 import { deletePost } from "../../api/requests";
 
 function DeletePostBalloon({ isOpen, postId, onClose, onDelete, postRef }) {
     const balloonRef = useRef(null);
     const [position, setPosition] = useState(null);
+    const { addToast } = useContext(ToastContext);
 
     function handleClose(e) {
         e.stopPropagation();
@@ -60,7 +62,10 @@ function DeletePostBalloon({ isOpen, postId, onClose, onDelete, postRef }) {
             const result = await deletePost(postId);
             if (result.ok) {
                 const data = await result.json();
-                if (data.success) onDelete();
+                if (data.success){
+                    addToast("Your post was deleted");
+                    onDelete();
+                }
             }
         } catch (e) {
             console.log(e);

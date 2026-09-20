@@ -976,6 +976,7 @@ async function getMyReplies(req, res) {
 const makeReply = [
     validatePost,
     async (req, res) => {
+        const userId = req.user.id;
         try {
             const errors = validationResult(req);
 
@@ -1016,6 +1017,57 @@ const makeReply = [
                         originalPostId: postId,
                         content: content,
                         dimensions: dimensions
+                    },
+                    include:
+                    {
+                        author: {
+                            omit:
+                            {
+                                password: true,
+                                picture: true,
+                                mime: true,
+                                background: true,
+                                bgmime: true,
+                                createdAt: true
+                            }
+                        },
+                        midia: false,
+                        originalPost: {
+                            include: {
+                                author: {
+                                    omit:
+                                    {
+                                        password: true,
+                                        picture: true,
+                                        mime: true,
+                                        background: true,
+                                        bgmime: true,
+                                        createdAt: true
+                                    }
+                                },
+                                likes: { where: { whoLikedId: userId }, select: { id: true } },
+                                bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } },
+                                shares: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } },
+                                midia: false,
+                                _count: {
+                                    select: {
+                                        likes: true,
+                                        replyPost: true,
+                                        shares: true
+                                    }
+                                }
+                            }
+                        },
+                        likes: { where: { whoLikedId: userId }, select: { id: true } },
+                        bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } },
+                        shares: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } },
+                        _count: {
+                            select: {
+                                likes: true,
+                                replyPost: true,
+                                shares: true
+                            }
+                        },
                     }
                 });
 

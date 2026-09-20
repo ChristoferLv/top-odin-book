@@ -5,15 +5,17 @@ import { bookmarkPost, deletePost, dislikePost, likePost, removeBookmarkPost, sh
 import { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import ReplyDialog from "./ReplyDialog";
-import ShareWithComment from "./ShareWithReplyDialog";
+import ShareWithReply from "./ShareWithReplyDialog";
 import ShareOrReplyDialog from "./ShareOrReplyDialog";
 import PostMidia from "./PostMidia";
 import DeletePostBalloon from "./DeletePostBalloon";
 import { FeedContext } from "../FeedContext";
+import { ToastContext } from "../ToastsContext";
 
 function Post({ user, data }) {
     const [postData, setPostData] = useState(data);
     const { deletePost } = useContext(FeedContext);
+    const { addToast } = useContext(ToastContext);
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
@@ -89,6 +91,7 @@ function Post({ user, data }) {
         if (bookmarked) {
             const result = await removeBookmarkPost(usePostData.id);
             if (result && result.success) {
+                addToast("Removed from the bookmarks");
                 if (isShare) {
                     setPostData({ ...postData, [modifyKey]: { ...postData[modifyKey], bookmarks: [] } });
                 } else {
@@ -100,6 +103,7 @@ function Post({ user, data }) {
 
         const result = await bookmarkPost(usePostData.id);
         if (result && result.success) {
+            addToast("Post added to the bookmarks");
             if (isShare) {
                 setPostData({ ...postData, [modifyKey]: { ...postData[modifyKey], bookmarks: [{ id: result.data.id }] } })
             } else {
@@ -210,6 +214,7 @@ function Post({ user, data }) {
     // }, []);
     if (isDeleted || data.deleted) return null;
 
+
     return (
         <>
             <div className="post" onClick={handleSeePost}>
@@ -226,8 +231,9 @@ function Post({ user, data }) {
                     <UserPicture id={usePostData.author.id} username={usePostData.author.username} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
                     <div className="post-data">
                         <div className="post-head" onClick={handleSeeAuthor}>
-                            <span>{usePostData.author.name}</span>
-                            <span>@{usePostData.author.username} • {formatedDate}</span>
+                            <span className="post-name">{usePostData.author.name}</span>
+                            <span className="post-username">@{usePostData.author.username}</span>
+                            <span className="post-date"> • {formatedDate}</span>
                             {showDeleteBalloon && <DeletePostBalloon isOpen={showDeleteBalloon} postId={postData.id} onDelete={onDelete} onClose={handleMoreButton} postRef={moreBtnRef} />}
                             {isMyPost && <div className="more-button" onClick={handleMoreButton} ref={moreBtnRef} >
                                 <div className="more-button-inner">
@@ -288,7 +294,7 @@ function Post({ user, data }) {
                 </div>
             </div >
             {isDialogOpen && <ReplyDialog key={crypto.randomUUID()} isOpen={isDialogOpen} originalPost={usePostData} user={user} onCancel={handleCloseDialog} onConfirm={successReply} />}
-            {isShareDialogOpen && <ShareWithComment key={crypto.randomUUID()} isOpen={isShareDialogOpen} originalPost={usePostData} user={user} onCancel={handleCloseDialog} onConfirm={successShareReply} />}
+            {isShareDialogOpen && <ShareWithReply key={crypto.randomUUID()} isOpen={isShareDialogOpen} originalPost={usePostData} user={user} onCancel={handleCloseDialog} onConfirm={successShareReply} />}
         </>
     )
 }

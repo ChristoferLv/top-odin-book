@@ -4,11 +4,12 @@ import { makePost, makeReply } from "../../api/requests";
 import UserPicture from "./UserPicture";
 import { USER_PICTURE_DEFAULT_SIZE } from "../utils/defaults"
 import PictureDialog from "./PictureDialog";
-import Toast from "./Toast";
 import Pie from "./ProgressCircle";
+import { ToastContext } from "../ToastsContext";
 
 function MakeReply({ postId, onSuccess, inputRef }) {
     const { user, isLoading } = useContext(AuthContext);
+    const { addToast } = useContext(ToastContext);
 
     const [postContent, setPostContent] = useState("");
     const [modal, setModal] = useState(false);
@@ -16,12 +17,6 @@ function MakeReply({ postId, onSuccess, inputRef }) {
     const [canPost, setCanPost] = useState(false);
 
     const fileInputRef = useRef(null);
-
-    const [isToastOpen, setIsToastOpen] = useState(false);
-
-    function handleCloseToast() {
-        setIsToastOpen(false);
-    }
 
     function handleClickAttach(e) {
         fileInputRef.current.click();
@@ -31,7 +26,7 @@ function MakeReply({ postId, onSuccess, inputRef }) {
         const file = e.target.files[0];
 
         if (file.size > 5000000) {
-            setIsToastOpen(true);
+            addToast("Your file is to large. The maximum file size is 5MB");
             fileInputRef.current.value = "";
             return;
         }
@@ -82,13 +77,13 @@ function MakeReply({ postId, onSuccess, inputRef }) {
         formData.append("content", postContent)
         // const check = Object.fromEntries(payload.entries());
         // return;
-        if (postContent.length < 1 && fileInputRef.current.files[0].length == 0) {
+        if (postContent.length < 1 && fileInputRef.current.files[0]?.length == 0) {
             return;
         }
 
         const result = await makeReply(formData, postId);
         if (result && result.success) {
-            onSuccess(result);
+            onSuccess(result.data);
             fileInputRef.current.value = "";
             setImageUrl("");
             setModal(false);
@@ -138,7 +133,6 @@ function MakeReply({ postId, onSuccess, inputRef }) {
                     {imageUrl != "" && <img src={imageUrl} alt="" />}
                 </div>
             </PictureDialog >
-            {isToastOpen && <Toast message={"Your file is to large. The maximum file size is 5MB"} isOpen={isToastOpen} setIsOpen={handleCloseToast} />}
         </>
     )
 }

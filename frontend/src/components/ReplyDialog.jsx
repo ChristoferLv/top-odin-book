@@ -1,24 +1,19 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { formatDate } from "../utils/dateUtils";
 import { USER_PICTURE_DEFAULT_SIZE } from "../utils/defaults";
 import UserPicture from "./UserPicture";
 import { makeReply } from "../../api/requests";
 import PictureDialog from "./PictureDialog";
 import Pie from "./ProgressCircle";
-import Toast from "./Toast";
+import { ToastContext } from "../ToastsContext";
 
 function ReplyDialog({ isOpen, user, originalPost, onCancel, onConfirm }) {
+    const { addToast } = useContext(ToastContext);
     const [replyContent, setReplyContent] = useState("");
     const [modal, setModal] = useState(false);
     const [imageUrl, setImageUrl] = useState("");
     const [canPost, setCanPost] = useState(false);
     const fileInputRef = useRef(null);
-
-    const [isToastOpen, setIsToastOpen] = useState(false);
-
-    function handleCloseToast() {
-        setIsToastOpen(false);
-    }
 
     function handleReplyContentChange(e) {
         let newCanPost = false;
@@ -65,7 +60,7 @@ function ReplyDialog({ isOpen, user, originalPost, onCancel, onConfirm }) {
         const file = e.target.files[0];
 
         if (file.size > 5000000) {
-            setIsToastOpen(true);
+            addToast("Your file is to large. The maximum file size is 5MB");
             fileInputRef.current.value = "";
             return;
         }
@@ -82,9 +77,9 @@ function ReplyDialog({ isOpen, user, originalPost, onCancel, onConfirm }) {
         e.stopPropagation();
         setModal(false);
         setImageUrl("");
-        if (fileInputRef.current){
+        if (fileInputRef.current) {
             fileInputRef.current.value = "";
-            if(replyContent.length == 0){
+            if (replyContent.length == 0) {
                 setCanPost(false);
             }
         }
@@ -195,7 +190,6 @@ function ReplyDialog({ isOpen, user, originalPost, onCancel, onConfirm }) {
                     {imageUrl != "" && <img src={imageUrl} alt="" />}
                 </div>
             </PictureDialog >
-            {isToastOpen && <Toast message={"Your file is to large. The maximum file size is 5MB"} isOpen={isToastOpen} setIsOpen={handleCloseToast} />}
         </>);
 
 }
