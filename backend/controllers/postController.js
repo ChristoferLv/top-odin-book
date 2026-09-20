@@ -196,7 +196,7 @@ async function getAllPosts(req, res) {
                             select: {
                                 id: true,
                                 name: true,
-                                username: true
+                                username: true,
                             }
                         },
                         likes: { where: { whoLikedId: userId }, select: { id: true } },
@@ -207,7 +207,8 @@ async function getAllPosts(req, res) {
                             select: {
                                 likes: true,
                                 replyPost: true,
-                                shares: true
+                                shares: true,
+                                bookmarks:true
                             }
                         }
                     }
@@ -219,7 +220,8 @@ async function getAllPosts(req, res) {
                     select: {
                         likes: true,
                         replyPost: true,
-                        shares: true
+                        shares: true,
+                        bookmarks:true
                     }
                 },
                 sharedPost: {
@@ -239,7 +241,8 @@ async function getAllPosts(req, res) {
                             select: {
                                 likes: true,
                                 replyPost: true,
-                                shares: true
+                                shares: true,
+                                bookmarks:true
                             }
                         },
                     }
@@ -512,7 +515,8 @@ async function searchPosts(req, res) {
                             select: {
                                 likes: true,
                                 replyPost: true,
-                                shares: true
+                                shares: true,
+                                bookmarks:true
                             }
                         },
                     }
@@ -534,7 +538,8 @@ async function searchPosts(req, res) {
                             select: {
                                 likes: true,
                                 replyPost: true,
-                                shares: true
+                                shares: true,
+                                bookmarks:true
                             }
                         },
                     }
@@ -546,7 +551,8 @@ async function searchPosts(req, res) {
                     select: {
                         likes: true,
                         replyPost: true,
-                        shares: true
+                        shares: true,
+                        bookmarks:true
                     }
                 },
             },
@@ -596,7 +602,8 @@ async function getLikedPosts(req, res) {
                             select: {
                                 likes: true,
                                 replyPost: true,
-                                shares: true
+                                shares: true,
+                                bookmarks:true
                             }
                         },
                     }
@@ -752,7 +759,8 @@ async function getSharedPosts(req, res) {
                             select: {
                                 likes: true,
                                 replyPost: true,
-                                shares: true
+                                shares: true,
+                                bookmarks:true
                             }
                         },
                     }
@@ -764,7 +772,8 @@ async function getSharedPosts(req, res) {
                     select: {
                         likes: true,
                         replyPost: true,
-                        shares: true
+                        shares: true,
+                        bookmarks:true
                     }
                 },
             },
@@ -908,7 +917,8 @@ async function getMyReplies(req, res) {
                             select: {
                                 likes: true,
                                 replyPost: true,
-                                shares: true
+                                shares: true,
+                                bookmarks:true
                             }
                         },
                     }
@@ -920,7 +930,8 @@ async function getMyReplies(req, res) {
                     select: {
                         likes: true,
                         replyPost: true,
-                        shares: true
+                        shares: true,
+                        bookmarks:true
                     }
                 },
             },
@@ -1010,7 +1021,8 @@ const makeReply = [
                                     select: {
                                         likes: true,
                                         replyPost: true,
-                                        shares: true
+                                        shares: true,
+                                        bookmarks:true
                                     }
                                 }
                             }
@@ -1022,7 +1034,8 @@ const makeReply = [
                             select: {
                                 likes: true,
                                 replyPost: true,
-                                shares: true
+                                shares: true,
+                                bookmarks:true
                             }
                         },
                     }
@@ -1101,7 +1114,8 @@ async function getRepliesOfPost(req, res) {
                     select: {
                         likes: true,
                         replyPost: true,
-                        shares: true
+                        shares: true,
+                        bookmarks:true
                     }
                 },
             },
@@ -1169,7 +1183,8 @@ async function getBookmarkedPosts(req, res) {
                             select: {
                                 likes: true,
                                 replyPost: true,
-                                shares: true
+                                shares: true,
+                                bookmarks:true
                             }
                         },
                     }

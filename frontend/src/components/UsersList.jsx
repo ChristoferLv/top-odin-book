@@ -9,9 +9,9 @@ function UsersList({ usersList, observerRef, loading, hasMore, }) {
                     return <UserCard key={user.id} data={user} />
                 })}
             </div>
-            <div ref={observerRef} style={{ height: "20px", width: "100%", backgroundColor: "red" }}>
+            <div ref={observerRef} style={{ height: "20px", width: "100%" }}>
                 {loading && <LoadingSpinner />}
-                {!hasMore && <p>No more items to load.</p>}
+                {/* {!hasMore && <p>No more items to load.</p>} */}
             </div>
         </>
     );

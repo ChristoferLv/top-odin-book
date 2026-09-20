@@ -2185,8 +2185,13 @@ header {
         outline: 4px solid #141414;
     }
 
+    .post-head {
+        margin-bottom: 5px;
+    }
+
     .midia {
         position: relative;
+        cursor: auto;
     }
 
     .reply-content {
@@ -2618,17 +2623,37 @@ header {
         margin-top: 10px;
         --count-color: var(--shadowed-text-color);
 
+        &>div {
+            min-width: 0;
+            flex-shrink: 1;
+        }
+
         &>div:not(:last-of-type) {
-            flex: 1;
             justify-content: flex-start;
         }
 
+        &>div:last-of-type {
+            padding-right: 10px;
+        }
+
+        .icon-box {
+            flex-shrink: 0;
+        }
+
         p:not(.share-or-reply p) {
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
             margin: 0;
             color: var(--count-color);
             font-family: sans-serif;
             font-size: 13px;
+        }
 
+        svg {
+            width: 20px;
+            height: 20px;
         }
     }
 
@@ -2636,7 +2661,7 @@ header {
 
     .actions-container-controls>div,
     .main-container-controls>div {
-        width: 23px;
+        min-width: 23px;
         height: 23px;
         cursor: pointer;
         border-radius: 99px;
@@ -3165,7 +3190,7 @@ header {
 
 .who-to-follow {
     /* margin-top: 10px; */
-min-width: 0;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     border: 1px solid var(--main-border-color);
@@ -3416,7 +3441,7 @@ min-width: 0;
 
 .trending-posts {
     /* margin-top: 10px; */
-min-width: 0;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     border: 1px solid var(--main-border-color);

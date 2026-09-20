@@ -6,6 +6,7 @@ import { makeReply } from "../../api/requests";
 import PictureDialog from "./PictureDialog";
 import Pie from "./ProgressCircle";
 import { ToastContext } from "../ToastsContext";
+import PostMidia from "./PostMidia";
 
 function ReplyDialog({ isOpen, user, originalPost, onCancel, onConfirm }) {
     const { addToast } = useContext(ToastContext);
@@ -137,7 +138,8 @@ function ReplyDialog({ isOpen, user, originalPost, onCancel, onConfirm }) {
                                 <span className="post-date"> • {formatDate(originalPost.createdAt)}</span>
                             </div>
                             <div className="post-content">
-                                <textarea readOnly defaultValue={originalPost.content}></textarea>
+                                {originalPost.content?.length > 0 && <textarea readOnly defaultValue={originalPost.content}></textarea>}
+                                {originalPost.hasMidia && <PostMidia postId={originalPost.id} dimensions={originalPost.dimensions} seePhoto={()=>{}} />}
                             </div>
                             <div className="repliying-to">
                                 <span>Replying to&nbsp;</span>

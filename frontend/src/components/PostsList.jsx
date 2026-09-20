@@ -17,7 +17,7 @@ function PostsList({ observerRef, loading, hasMore, user, postsList, onUserPage 
             })}
         </div>
         {loading && <LoadingSpinner />}
-        <div ref={observerRef} style={{ height: "20px", width: "100%", backgroundColor: "red" }}>
+        <div ref={observerRef} style={{ height: "20px", width: "100%" }}>
             {/* {!hasMore && <p>No more items to load.</p>} */}
         </div>
     </>)
