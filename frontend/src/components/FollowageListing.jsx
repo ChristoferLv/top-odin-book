@@ -11,7 +11,7 @@ function FollowageListing() {
         FOLLOWERS: "FOLLOWERS",
     });
 
-    const { user, setUser } = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
     const location = useLocation();
     const navigate = useNavigate();
     const [userData, setUserData] = useState(null);

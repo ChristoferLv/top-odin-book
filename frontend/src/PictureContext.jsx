@@ -11,7 +11,7 @@ export const PictureContext = createContext({
 
 
 function PictureContextProvider({ children }) {
-    const { user, isLoading } = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
     const [userPictureUrl, setUserPicture] = useState("");
     const [isPictureSet, setIsPictureSet] = useState(false);
 
@@ -30,7 +30,7 @@ function PictureContextProvider({ children }) {
                     const imageUrl = URL.createObjectURL(blob);
                     setUserPicture(imageUrl);
                     setIsPictureSet(true);
-                }else{
+                } else {
                     setIsPictureSet(true);
                 }
             }

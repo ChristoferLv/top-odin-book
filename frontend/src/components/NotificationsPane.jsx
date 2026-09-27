@@ -1,6 +1,5 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import { AuthContext } from "../AuthContext";
-import { useLocation, useNavigate, useSearchParams } from "react-router";
+import { useNavigate } from "react-router";
 import { fetchNotifications, markNotificationsAsRead } from '../../api/requests'
 import UserPicture from './UserPicture';
 import { formatDate } from "../utils/dateUtils";
@@ -8,10 +7,7 @@ import { NotificationsContext } from "../NotificationsContext";
 
 
 function NotificationsPane() {
-    const { user, setUser } = useContext(AuthContext);
     const { notificationSetter } = useContext(NotificationsContext);
-    const location = useLocation();
-    const navigate = useNavigate();
     const [notificationsList, setNotificationsList] = useState([]);
     const canFetch = useRef(true);
 

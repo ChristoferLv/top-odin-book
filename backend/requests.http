@@ -78,3 +78,8 @@ Authorization: {{token}}
 
 GET http://localhost:3000/posts/trends
 Authorization: {{token}}
+
+###
+
+GET http://localhost:3000/follows
+Authorization: {{token}}

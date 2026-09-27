@@ -1,16 +1,14 @@
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router";
 import { AuthContext } from "./AuthContext";
-import { adjustPostDate, formatDate } from "./utils/dateUtils";
-import { bookmarkPost, dislikePost, fetchPostById, fetchPostMidia, fetchRepliesOfPost, likePost, makeReply, removeBookmarkPost, sharePost, unsharePost } from "../api/requests";
+import { adjustPostDate } from "./utils/dateUtils";
+import { bookmarkPost, dislikePost, fetchPostById, fetchPostMidia, fetchRepliesOfPost, likePost, removeBookmarkPost, sharePost, unsharePost } from "../api/requests";
 import UserPicture from "./components/UserPicture";
 import { USER_PICTURE_DEFAULT_SIZE } from "./utils/defaults";
 import Post from "./components/Post";
-import Comment from "./components/Comment";
 import ReplyDialog from "./components/ReplyDialog";
 import ShareWithReply from "./components/ShareWithReplyDialog";
 import ShareOrReplyDialog from "./components/ShareOrReplyDialog";
-import PostMidia from "./components/PostMidia";
 import MakeReply from "./components/MakeReply";
 import LoadingSpinner from "./components/LoadingSpinner";
 import { FeedContext } from "./FeedContext";
@@ -18,15 +16,13 @@ import DeletePostBalloon from "./components/DeletePostBalloon";
 import { ToastContext } from "./ToastsContext";
 
 function SeeingPicturePage() {
-    const { user, isLoading } = useContext(AuthContext);
+    const { user} = useContext(AuthContext);
     const { addToast } = useContext(ToastContext);
-    const { username, postId } = useParams();
+    const {  postId } = useParams();
     const { deletePost } = useContext(FeedContext);
     const navigate = useNavigate();
     const location = useLocation();
     const [postData, setPostData] = useState(null);
-    const [replyContent, setReplyContent] = useState("");
-    const [commentsList, setCommentsList] = useState([]);
     const [isShareOrReplyPosition, setIsShareOrReplyPosition] = useState({});
 
 
@@ -50,7 +46,6 @@ function SeeingPicturePage() {
     const isMyPost = postData?.authorId == user?.id;
     const [showDeleteBalloon, setShowDeleteBalloon] = useState(false);
     const moreBtnRef = useRef(null);
-    const [isDeleted, setIsDeleted] = useState(false);
     const [replies, setReplies] = useState([]);
 
 
@@ -71,18 +66,6 @@ function SeeingPicturePage() {
             setPostData(null);
         }
     }, [location.pathname]);
-
-
-    // const fetchReplies = useCallback(async () => {
-    //     try {
-    //         const result = await fetchRepliesOfPost(postId);
-    //         if (result && result.success) {
-    //             setCommentsList(result.data);
-    //         }
-    //     } catch (e) {
-    //         console.log(e);
-    //     }
-    // }, [location.pathname]);
 
     function updateReplies(data, top) {
         if (top) {
@@ -105,10 +88,6 @@ function SeeingPicturePage() {
         getPostData();
     }, [location.pathname]);
 
-    // useEffect(() => {
-    //     fetchReplies();
-    // }, [location.pathname])
-
     function goToPostAuthor() {
         navigate("/" + postData.author.username);
     }
@@ -116,18 +95,6 @@ function SeeingPicturePage() {
     function goBack() {
         navigate(-1);
     }
-
-    // function handleReplyChange(e) {
-    //     setReplyContent(e.target.value);
-    // }
-
-    // async function postReply() {
-    //     const result = await makeReply({ content: replyContent }, postId);
-    //     if (result.success) {
-    //         setReplyContent("");
-    //         fetchReplies();
-    //     }
-    // }
 
     async function handleLike() {
         if (postData.likes.length) {
@@ -179,7 +146,6 @@ function SeeingPicturePage() {
     function handleReply(e) {
         e.stopPropagation();
         commentBox.current.focus();
-        // setIsDialogOpen(true);
     }
 
     function handleCloseDialog(e) {
@@ -212,21 +178,15 @@ function SeeingPicturePage() {
 
         setIsShareOrReplyPosition(position);
 
-        // if (hasShared) {
-        //     handleShare(e);
-        //     return;
-        // }
         setIsShareOrReplyOpen(origin);
     }
 
     function selectShare(e) {
-        // e.stopPropagation();
         handleCloseDialog(e);
         handleShare();
     }
 
     function handleShareReplyDialog(e) {
-        // e.stopPropagation();
         handleCloseDialog(e);
         setIsShareDialogOpen(true);
     }
@@ -242,7 +202,6 @@ function SeeingPicturePage() {
     }
 
     function onDelete() {
-        setIsDeleted(true);
         deletePost(postData.id, false);
         navigate(-1);
     }

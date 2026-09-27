@@ -1,7 +1,6 @@
-import { useContext, useRef, useState } from "react";
-import { AuthContext } from "./AuthContext";
+import { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router";
-import { getMe, login, register } from "../api/requests";
+import { register } from "../api/requests";
 
 function RegisterPage() {
     const [userData, setUserData] = useState({ name: '', username: '', password: '', confirmPassword: '' });

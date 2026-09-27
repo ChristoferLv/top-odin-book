@@ -1,107 +1,17 @@
 import { formatDate } from "../utils/dateUtils";
 import UserPicture from "../components/UserPicture"
-import { PostType, USER_PICTURE_DEFAULT_SIZE } from "../utils/defaults"
-import { bookmarkPost, dislikePost, likePost, removeBookmarkPost, sharePost, unsharePost } from "../../api/requests";
-import { useEffect, useState } from "react";
+import { PostType } from "../utils/defaults"
+import { useState } from "react";
 import { useNavigate } from "react-router";
-import ReplyDialog from "./ReplyDialog";
-import ShareWithReply from "./ShareWithReplyDialog";
 import PostMidia from "./PostMidia";
 
 function CompactPost({ user, data }) {
-    const [postData, setPostData] = useState(data);
-    const [isMeShare, setIsMeShare] = useState(data.postType == PostType.SHARE && data.author.id == user.id);
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+    const [postData] = useState(data);
     const navigate = useNavigate();
-    const isReply = data.postType == PostType.REPLY;
     const isShare = data.postType == PostType.SHARE;
-    // const hasShared = isShare ? postData.originalPost.replyPost.length : postData.replyPost.length;
     const hasMidia = postData.hasMidia;
-    // const isMeShare = data.postType == PostType.SHARE && data.author.id == user.id;
     const usePostData = isShare ? postData.originalPost : postData;
     const formatedDate = formatDate(postData.createdAt);
-
-    async function handleLike(e) {
-        e.stopPropagation();
-        if (usePostData.likes.length) {
-            const result = await dislikePost(usePostData.id);
-            if (result && result.success) {
-                if (isShare) {
-                    setPostData({ ...postData, originalPost: { ...postData.originalPost, likes: [] } });
-                } else {
-                    setPostData({ ...postData, likes: [] });
-                }
-            }
-            return;
-        }
-
-        const result = await likePost(usePostData.id);
-        if (result && result.success) {
-            if (isShare) {
-                setPostData({ ...postData, originalPost: { ...postData.originalPost, likes: [{ id: result.data.id }] } });
-            } else {
-                setPostData({ ...postData, likes: [{ id: result.data.id }] });
-            }
-        }
-    }
-
-    async function handleShare(e) {
-        e.stopPropagation();
-        if (hasShared) {
-            const result = await unsharePost(usePostData.id);
-            if (result && result.success) {
-                if (isShare) {
-                    setPostData({ ...postData, originalPost: { ...postData.originalPost, replyPost: [] } });
-                } else {
-                    setPostData({ ...postData, replyPost: [] });
-                }
-                setIsMeShare(false);
-            }
-            return;
-        }
-
-        const result = await sharePost(usePostData.id);
-        if (result && result.success) {
-            if (isShare) {
-                setPostData({ ...postData, originalPost: { ...postData.originalPost, replyPost: [{ id: result.data.id }] } });
-            } else {
-                setPostData({ ...postData, replyPost: [{ id: result.data.id }] });
-            }
-            setIsMeShare(true);
-        }
-    }
-
-    async function handleBookmark(e) {
-        e.stopPropagation();
-        if (usePostData.bookmarks.length) {
-            const result = await removeBookmarkPost(usePostData.id);
-            if (result && result.success) {
-                setPostData({ ...usePostData, bookmarks: [] });
-            }
-            return;
-        }
-
-        const result = await bookmarkPost(usePostData.id);
-        if (result && result.success) {
-            setPostData({ ...usePostData, bookmarks: [{ id: result.data.id }] });
-        }
-    }
-
-    function handleReply(e) {
-        e.stopPropagation();
-        setIsDialogOpen(true);
-    }
-
-    function handleCloseDialog() {
-        setIsDialogOpen(false);
-        setIsShareDialogOpen(false);
-    };
-
-    function handleShareReplyDialog(e) {
-        e.stopPropagation();
-        setIsShareDialogOpen(true);
-    }
 
     function handleSeePost(e) {
         e.stopPropagation();
@@ -117,19 +27,6 @@ function CompactPost({ user, data }) {
         navigate(`/${usePostData.author.username}/post/${usePostData.id}/photo`);
     }
 
-    useEffect(() => {
-        const handleEsc = (event) => {
-            if (event.key === 'Escape') {
-                handleCloseDialog();
-            }
-        };
-        window.addEventListener('keydown', handleEsc);
-
-        return () => {
-            window.removeEventListener('keydown', handleEsc);
-        };
-    }, []);
-
     return (
         <>
             <div className="compact-post" onClick={handleSeePost}>
@@ -140,13 +37,11 @@ function CompactPost({ user, data }) {
                 </div>
                 <div className="compact-post-body">
                     <div className="post-content">
-                         {usePostData.content?.length > 0 && <textarea readOnly defaultValue={usePostData.content}></textarea>}
+                        {usePostData.content?.length > 0 && <textarea readOnly defaultValue={usePostData.content}></textarea>}
                         {hasMidia && <PostMidia postId={postData.id} dimensions={postData.dimensions} seePhoto={goToPicturePage} />}
                     </div>
                 </div>
             </div >
-            {/* <ReplyDialog isOpen={isDialogOpen} originalPost={data} user={user} onCancel={handleCloseDialog} onConfirm={handleCloseDialog} />
-            <ShareWithReply isOpen={isShareDialogOpen} originalPost={data} user={user} onCancel={handleCloseDialog} onConfirm={handleCloseDialog} /> */}
         </>
     )
 }

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState, } from "react";
+import { useContext, useRef, useState, } from "react";
 import { makePost } from "../../api/requests";
 import { USER_PICTURE_DEFAULT_SIZE } from "../utils/defaults"
 import PictureDialog from "./PictureDialog";
@@ -10,13 +10,13 @@ import { ToastContext } from "../ToastsContext";
 
 
 function NewPost({ user, updatePosts }) {
-    const { userPictureUrl, isPictureSet } = useContext(PictureContext);
-    const navigate = useNavigate();
+    const { userPictureUrl } = useContext(PictureContext);
     const { addToast } = useContext(ToastContext);
     const [postContent, setPostContent] = useState("");
     const [modal, setModal] = useState(false);
     const [imageUrl, setImageUrl] = useState("");
     const [canPost, setCanPost] = useState(false);
+    const navigate = useNavigate();
     const fileInputRef = useRef(null);
 
 
@@ -25,7 +25,6 @@ function NewPost({ user, updatePosts }) {
     }
 
     async function handleUploadImage(e) {
-        // e.target.parentElement.requestSubmit();
         const file = e.target.files[0];
         if (file.size > 5000000) {
             addToast("Your file is to large. The maximum file size is 5MB");
@@ -77,8 +76,6 @@ function NewPost({ user, updatePosts }) {
         const formData = new FormData();
         formData.append("picture", fileInputRef.current.files[0]);
         formData.append("content", postContent)
-        // const check = Object.fromEntries(payload.entries());
-        // return;
         if (postContent.length < 1 && fileInputRef.current.files[0].length == 0) {
             return;
         }

@@ -1,7 +1,6 @@
-import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { AuthContext } from "./AuthContext";
-import NewPost from "./components/NewPost";
-import { Navigate, Outlet, ScrollRestoration, useLocation, useNavigate, useParams } from "react-router";
+import { Navigate, Outlet, ScrollRestoration, useLocation, useNavigate } from "react-router";
 import UserToast from "./components/UserToast";
 import NotificationsCount from "./components/NotificationsCount";
 import WhoToFollow from "./components/WhoToFollow";

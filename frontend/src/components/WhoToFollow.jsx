@@ -15,6 +15,8 @@ function WhoToFollow() {
         getAllUsers();
     }, []);
 
+    if(usersList.length == 0) return null;
+
     return (
         <>
             <div className="who-to-follow">

@@ -1,4 +1,3 @@
-import { useRef } from "react";
 import { PostType } from "../utils/defaults";
 import Post from "./Post";
 import PostShareWithReply from "./PostShareWithReply";
@@ -9,7 +8,7 @@ function PostsList({ observerRef, loading, hasMore, user, postsList, onUserPage 
     return (<>
         <div className="posts-list">
             {postsList.map((post) => {
-                if (!onUserPage && post.postType == PostType.SHARE_REPLY)
+                if ( post.postType == PostType.SHARE_REPLY)
                     return <PostShareWithReply key={post.id} data={post} user={user} />
                 if (!onUserPage && post.postType == PostType.REPLY)
                     return <PostWithComment key={post.id} data={post} user={user} />

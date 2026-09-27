@@ -5,10 +5,9 @@ import { checkUser } from "../utils.js";
 import multer from "multer";
 
 
+const userRouter = Router();
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
-
-const userRouter = Router();
 
 
 

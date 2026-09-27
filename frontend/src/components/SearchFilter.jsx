@@ -1,12 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useSearchParams } from "react-router";
 
 function SearchFilter() {
     const [searchParams, setSearchParams] = useSearchParams();
     const [followingFilter, setFollowingFilter] = useState(searchParams.get("pf") && searchParams.get("pf") == "on");
 
-
-   
 
     function handleOptionChange(followers) {
         if (followingFilter == followers) return;

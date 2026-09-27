@@ -1,12 +1,10 @@
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router";
 import { AuthContext } from "./AuthContext";
-import { formatDate } from "./utils/dateUtils";
-import { bookmarkPost, dislikePost, fetchPostById, fetchRepliesOfPost, likePost, makeReply, removeBookmarkPost, sharePost, unsharePost } from "../api/requests";
+import { bookmarkPost, dislikePost, fetchPostById, fetchRepliesOfPost, likePost, removeBookmarkPost, sharePost, unsharePost } from "../api/requests";
 import UserPicture from "./components/UserPicture";
 import { USER_PICTURE_DEFAULT_SIZE } from "./utils/defaults";
 import Post from "./components/Post";
-import Comment from "./components/Comment";
 import ReplyDialog from "./components/ReplyDialog";
 import ShareWithReply from "./components/ShareWithReplyDialog";
 import ShareOrReplyDialog from "./components/ShareOrReplyDialog";
@@ -19,15 +17,13 @@ import { FeedContext } from "./FeedContext";
 import { ToastContext } from "./ToastsContext";
 
 function PostPage() {
-    const { user, isLoading } = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
     const { deletePost } = useContext(FeedContext);
     const { addToast } = useContext(ToastContext);
-    const { username, postId } = useParams();
     const navigate = useNavigate();
+    const { postId } = useParams();
     const location = useLocation();
     const [postData, setPostData] = useState(null);
-    const [replyContent, setReplyContent] = useState("");
-    const [commentsList, setCommentsList] = useState([]);
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
@@ -37,10 +33,8 @@ function PostPage() {
     const isMyPost = postData?.authorId == user?.id;
     const [showDeleteBalloon, setShowDeleteBalloon] = useState(false);
     const moreBtnRef = useRef(null);
-    const [isDeleted, setIsDeleted] = useState(false);
 
     const [replies, setReplies] = useState([]);
-
 
     const hasShared = postData?.shares.length;
     const hasMidia = postData?.hasMidia;
@@ -49,17 +43,6 @@ function PostPage() {
     const numShares = postData?._count.shares;
     const numReplies = postData?._count.replyPost;
     const numBookmarks = postData?._count.bookmarks;
-
-    // const fetchReplies = useCallback(async () => {
-    //     try {
-    //         const result = await fetchRepliesOfPost(postId);
-    //         if (result && result.success) {
-    //             setCommentsList(result.data);
-    //         }
-    //     } catch (e) {
-    //         console.log(e);
-    //     }
-    // }, [location.pathname]);
 
     function adjustPostDate(date) {
         const day = date.toDateString().split(" ").slice(1).join(" ");
@@ -86,15 +69,6 @@ function PostPage() {
         }
         getPostData();
     }, [location.pathname]);
-
-    // useEffect(() => {
-    //     fetchReplies();
-    // }, [location.pathname])
-
-
-    // useEffect(() => {
-    //     document.getElementById("master-pane").scrollTo(0, 0);
-    // }, [location.pathname]);
 
     function goToPostAuthor() {
         navigate("/" + postData.author.username);
@@ -153,14 +127,12 @@ function PostPage() {
     }
 
     function handleCloseDialog() {
-        // e.stopPropagation();
         setIsDialogOpen(false);
         setIsShareDialogOpen(false);
         setIsShareOrReplyOpen(false);
     };
 
     function successShareReply(e) {
-        // fetchReplies();
         setPostData({ ...postData, _count: { ...postData._count, shares: numShares + 1 } });
         handleCloseDialog(e);
     }
@@ -181,10 +153,6 @@ function PostPage() {
 
         setIsShareOrReplyPosition(position);
 
-        // if (hasShared) {
-        //     handleShare(e);
-        //     return;
-        // }
         setIsShareOrReplyOpen(true);
     }
 
@@ -203,7 +171,6 @@ function PostPage() {
     function handleSuccessReply(result) {
         setPostData({ ...postData, _count: { ...postData._count, replyPost: numReplies + 1 } });
         updateReplies(result, true);
-        // fetchReplies();
     }
 
     function goToPicturePage() {
@@ -216,7 +183,6 @@ function PostPage() {
     }
 
     function onDelete() {
-        setIsDeleted(true);
         deletePost(postData.id, false);
         navigate(-1);
     }
@@ -247,11 +213,6 @@ function PostPage() {
 
             <InfiniteRepliesList postId={postData.id} user={user} key={location.pathname} replies={replies} updateReplies={updateReplies} />
 
-            {/* <div className="comments-list">
-                {commentsList.map((comment) => {
-                    return <Post key={comment.id} data={comment} user={user} />
-                })}
-            </div> */}
         </div>
 
 
@@ -342,12 +303,6 @@ function PostPage() {
                 </div>
 
                 <InfiniteRepliesList postId={postData.id} user={user} key={location.pathname} replies={replies} updateReplies={updateReplies} />
-
-                {/* <div className="comments-list">
-                    {commentsList.map((comment) => {
-                        return <Post key={comment.id} data={comment} user={user} />
-                    })}
-                </div> */}
             </div>
             {isDialogOpen && <ReplyDialog isOpen={isDialogOpen} originalPost={postData} user={user} onCancel={handleCloseDialog} onConfirm={handleCloseDialog} />}
             {isShareDialogOpen && <ShareWithReply isOpen={isShareDialogOpen} originalPost={postData} user={user} onCancel={handleCloseDialog} onConfirm={successShareReply} />}
@@ -420,7 +375,7 @@ function InfiniteRepliesList({ user, postId, replies, updateReplies }) {
                     return <Post key={reply.id} data={reply} user={user} />
                 })}
             </div>
-            <div ref={observerTarget} style={{ height: "20px", width: "100%"}}>
+            <div ref={observerTarget} style={{ height: "20px", width: "100%" }}>
                 {loading && <LoadingSpinner />}
                 {/* {!hasMore && <p>No more items to load.</p>} */}
             </div>

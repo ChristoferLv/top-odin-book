@@ -13,11 +13,11 @@ function EditProfile() {
     const { user, isLoading, setUser } = useContext(AuthContext);
     const [userData, setUserData] = useState({ name: "", bio: "" });
     const [userDataValid, setUserDataValid] = useState({ name: true, bio: true });
+    const [backgroundBuff, setBackground] = useState(null);
+    const [mimeBkgd, setMimeBkgd] = useState(null);
     const navigate = useNavigate();
     const fileInputRef = useRef(null);
     const fileBackgroundRef = useRef(null);
-    const [backgroundBuff, setBackground] = useState(null);
-    const [mimeBkgd, setMimeBkgd] = useState(null);
 
     function handleChange(e) {
         const whoChanged = e.target;
@@ -33,10 +33,6 @@ function EditProfile() {
             }
         }
         if (whoChanged.name == "bio") {
-            // if (!value?.length || value.length == 0) {
-            //     valid = false;
-            // }
-
             if (value?.length > 160) {
                 value = value.slice(0, 160);
             }
@@ -120,20 +116,10 @@ function EditProfile() {
 
         const result = await sendUserBackground(formData);
         if (result.success) {
-            setBackground(result.data.data);
+            setBackground(result.data.buffer?.data);
+            setMimeBkgd(result.data.mime);
         }
     }
-
-    // useEffect(() => {
-    //     async function getPicture() {
-    //         if (user) {
-    //             const picture = await fetchUserPicture(user.id);
-    //             setPicture(picture.data.buffer?.data);
-    //             setMime(picture.data.mime);
-    //         }
-    //     }
-    //     getPicture();
-    // }, [user, isLoading])
 
     useEffect(() => {
         async function getBackground() {

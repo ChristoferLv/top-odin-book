@@ -5,26 +5,21 @@ import UserPicture from "./UserPicture";
 import { USER_PICTURE_DEFAULT_SIZE } from "../utils/defaults";
 
 function UserCard({ data }) {
-    const [userData, setUserData] = useState(data);
     const [nowFollowing, setNowFollowing] = useState(data.following.length > 0);
     const navigate = useNavigate();
-    const isFollowingMe = userData?.followedBy.length !=0;
-
-    function goToUser() {
-        navigate(`/${data.username}`)
-    }
+    const isFollowingMe = data.followedBy.length !=0;
 
     async function handleFollow(e) {
         e.stopPropagation();
         if (nowFollowing) {
-            const result = await unfollowUser(userData.id);
+            const result = await unfollowUser(data.id);
             if (result && result.success) {
                 setNowFollowing(false);
             }
             return;
         }
 
-        const result = await followUser(userData.id);
+        const result = await followUser(data.id);
         if (result && result.success) {
             setNowFollowing(true);
         }
@@ -32,19 +27,19 @@ function UserCard({ data }) {
 
     function handleSeeUser(e) {
         e.stopPropagation();
-        navigate("/" + userData.username);
+        navigate("/" + data.username);
     }
 
     return (
         <>
             <div className="user-item" onClick={handleSeeUser}>
-                <UserPicture id={userData.id} username={userData.username} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
+                <UserPicture id={data.id} username={data.username} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
 
                 <div className="user-infos">
                     <div className="user-item-head">
-                        <span>{userData.name}</span>
+                        <span>{data.name}</span>
                         <div>
-                            <span>@{userData.username}</span>
+                            <span>@{data.username}</span>
                             {isFollowingMe && <span className="follows-you-tag">Follows you</span>}
                         </div>
                     </div>

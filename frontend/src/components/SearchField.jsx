@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router";
 
 function SearchField({ startSearchTerm, handleSearch }) {
     const [searchTerm, setSearchTerm] = useState(startSearchTerm);

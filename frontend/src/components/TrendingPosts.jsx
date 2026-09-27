@@ -1,6 +1,5 @@
-import { fetchTrendingPosts, getFollowSuggestions } from "../../api/requests";
-import { use, useEffect, useState } from "react";
-import UserCard from "./UserCard";
+import { fetchTrendingPosts } from "../../api/requests";
+import {  useEffect, useState } from "react";
 import UserPicture from "./UserPicture";
 import { formatDate } from "../utils/dateUtils";
 import { useNavigate } from "react-router";
@@ -68,7 +67,6 @@ function MiniPostItem({ data }) {
                     <span>@{data.author.username} • {formatedDate}</span>
                 </div>
                 <div className="mini-post-body" onClick={handleSeePost}>
-                    {}
                     <p className="multi-line-truncate">{content}</p>
                 </div>
             </div>

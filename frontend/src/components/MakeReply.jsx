@@ -1,6 +1,6 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { AuthContext } from "../AuthContext";
-import { makePost, makeReply } from "../../api/requests";
+import { makeReply } from "../../api/requests";
 import UserPicture from "./UserPicture";
 import { USER_PICTURE_DEFAULT_SIZE } from "../utils/defaults"
 import PictureDialog from "./PictureDialog";
@@ -8,7 +8,7 @@ import Pie from "./ProgressCircle";
 import { ToastContext } from "../ToastsContext";
 
 function MakeReply({ postId, onSuccess, inputRef }) {
-    const { user, isLoading } = useContext(AuthContext);
+    const { user} = useContext(AuthContext);
     const { addToast } = useContext(ToastContext);
 
     const [postContent, setPostContent] = useState("");
@@ -74,8 +74,7 @@ function MakeReply({ postId, onSuccess, inputRef }) {
         const formData = new FormData();
         formData.append("picture", fileInputRef.current.files[0]);
         formData.append("content", postContent)
-        // const check = Object.fromEntries(payload.entries());
-        // return;
+     
         if (postContent.length < 1 && fileInputRef.current.files[0]?.length == 0) {
             return;
         }

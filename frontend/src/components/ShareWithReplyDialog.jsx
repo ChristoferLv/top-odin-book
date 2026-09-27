@@ -1,9 +1,8 @@
 import { formatDate } from "../utils/dateUtils";
 import UserPicture from "./UserPicture"
-import { PostType, USER_PICTURE_DEFAULT_SIZE } from "../utils/defaults"
-import { bookmarkPost, dislikePost, likePost, makePost, removeBookmarkPost, sharePost, unsharePost } from "../../api/requests";
+import { USER_PICTURE_DEFAULT_SIZE } from "../utils/defaults"
+import { makePost } from "../../api/requests";
 import { useContext, useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router";
 import PictureDialog from "./PictureDialog";
 import CompactPost from "./CompactPost";
 import Pie from "./ProgressCircle";
@@ -12,7 +11,6 @@ import { ToastContext } from "../ToastsContext";
 function ShareWithReply({ isOpen, user, originalPost, onCancel, onConfirm }) {
     const { addToast } = useContext(ToastContext);
     const [replyContent, setReplyContent] = useState("");
-    const [isActive, setIsActive] = useState(false);
     const [modal, setModal] = useState(false);
     const [imageUrl, setImageUrl] = useState("");
     const [canPost, setCanPost] = useState(false);
@@ -26,7 +24,8 @@ function ShareWithReply({ isOpen, user, originalPost, onCancel, onConfirm }) {
             value = value.slice(0, 280);
 
         }
-        if (value?.length != 0 && fileInputRef.current.files[0]?.size != 0) {
+        console.log(value?.length != 0, fileInputRef.current.files[0]?.size)
+        if (value?.length != 0 || fileInputRef.current.files[0]) {
             newCanPost = true;
         }
         setCanPost(newCanPost);
@@ -50,6 +49,7 @@ function ShareWithReply({ isOpen, user, originalPost, onCancel, onConfirm }) {
         if (file) {
             const imageUrl = URL.createObjectURL(file);
             setImageUrl(imageUrl);
+            setCanPost(true);
         }
     }
 
@@ -63,6 +63,9 @@ function ShareWithReply({ isOpen, user, originalPost, onCancel, onConfirm }) {
         setModal(false);
         setImageUrl("");
         fileInputRef.current.value = "";
+        if(replyContent.length == 0){
+            setCanPost(false);
+        }
     }
 
     function handleClose(e) {
@@ -158,20 +161,6 @@ function ShareWithReply({ isOpen, user, originalPost, onCancel, onConfirm }) {
                             </div>}
                             <CompactPost data={originalPost} user={user} />
                         </div>
-                        {/* <UserPicture id={originalPost.author.id} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
-                        <div className="post-data">
-                            <div className="post-head">
-                                <span>{originalPost.author.name}</span>
-                                <span>@{originalPost.author.username} · {formatedDate}</span>
-                            </div>
-                            <div className="post-content">
-                                <textarea readOnly defaultValue={originalPost.content}></textarea>
-                            </div>
-                            <div className="repliying-to">
-                                <span>Replying to&nbsp;</span>
-                                <span>@{originalPost.author.username}</span>
-                            </div>
-                        </div> */}
                     </div>
                     <div className='dialog-actions'>
                         <div className="new-post-controls">

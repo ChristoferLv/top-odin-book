@@ -1,4 +1,4 @@
-import { body, matchedData, validationResult } from "express-validator";
+import { matchedData, validationResult } from "express-validator";
 import { prisma } from "../lib/prisma.js";
 import { validateUpdateUser } from "../validators.js";
 
@@ -33,6 +33,7 @@ async function createNotificationAndNotify(req, authorId, receiverId) {
 
     } catch (e) {
         console.log(e);
+        res.status(500).send({ success: false });
     }
 }
 
@@ -61,6 +62,7 @@ async function getAllUsers(req, res) {
         res.status(200).send({ success: true, data: users });
     } catch (e) {
         console.log(e);
+        res.status(500).send({ success: false });
     }
 }
 
@@ -70,9 +72,6 @@ async function getUserByUsername(req, res) {
     try {
         const user = await prisma.users.findUnique({
             where: { username: username },
-            // omit: {
-            //     password: true, picture: true, mime: true, background: true, bgmime: true
-            // },
             select: {
                 id: true,
                 username: true,
@@ -104,6 +103,7 @@ async function getUserByUsername(req, res) {
         res.status(200).send({ success: true, data: user });
     } catch (e) {
         console.log(e);
+        res.status(500).send({ success: false });
     }
 }
 
@@ -147,6 +147,7 @@ async function getUserById(req, res) {
         res.status(200).send({ success: true, data: user });
     } catch (e) {
         console.log(e);
+        res.status(500).send({ success: false });
     }
 }
 
@@ -178,7 +179,8 @@ async function searchUsers(req, res) {
                             id: true,
                             username: true,
                             name: true,
-                            following: { where: { followedById: userId, }, select: { id: true } }
+                            following: { where: { followedById: userId, }, select: { id: true } },
+                            followedBy: { where: { followingId: userId, }, select: { id: true } }
                         }
                     }
                 },
@@ -203,7 +205,8 @@ async function searchUsers(req, res) {
                 id: true,
                 username: true,
                 name: true,
-                following: { where: { followedById: userId, }, select: { id: true } }
+                following: { where: { followedById: userId, }, select: { id: true } },
+                followedBy: { where: { followingId: userId, }, select: { id: true } }
             },
             orderBy: { createdAt: "asc" },
             ...toTake
@@ -212,6 +215,7 @@ async function searchUsers(req, res) {
         res.status(200).send({ success: true, data: users });
     } catch (e) {
         console.log(e);
+        res.status(500).send({ success: false });
     }
 }
 
@@ -224,7 +228,7 @@ const updateUserProfile = [
             return res.status(400).json({ success: false, error: errors });
         }
 
-        const { name, bio } = req.body;
+        const { name, bio } = matchedData(req);
         const userId = parseInt(req.user.id);
 
         try {
@@ -245,90 +249,111 @@ const updateUserProfile = [
             return res.status(200).send({ success: true, data: result });
         } catch (e) {
             console.log(e);
+            res.status(500).send({ success: false });
         }
     }
 ];
 
 async function followUser(req, res) {
-    const toFollow = parseInt(req.params.userId);
+    try {
+        const toFollow = parseInt(req.params.userId);
 
-    if (req.user.id == toFollow)
-        return res.status(400).send({ success: false, message: "You cannot follow yourself." });
+        if (req.user.id == toFollow)
+            return res.status(400).send({ success: false, message: "You cannot follow yourself." });
 
-    const alreadyFollowing = await prisma.follows.findUnique(
-        {
-            where: {
-                followingId_followedById: {
-                    followedById: req.user.id,
-                    followingId: toFollow
+        const alreadyFollowing = await prisma.follows.findUnique(
+            {
+                where: {
+                    followingId_followedById: {
+                        followedById: req.user.id,
+                        followingId: toFollow
+                    }
                 }
             }
+        );
+
+        if (alreadyFollowing) {
+            return res.status(409).send({ success: false, message: "You already follow this user." });
         }
-    );
 
-    if (alreadyFollowing) {
-        return res.status(409).send({ success: false, message: "You already follow this user." });
-    }
+        const result = await prisma.follows.create({
+            data: {
+                followedById: req.user.id,
+                followingId: toFollow
+            }
+        });
 
-    const result = await prisma.follows.create({
-        data: {
-            followedById: req.user.id,
-            followingId: toFollow
+        if (!result) {
+            return res.status(500).send({ success: false });
         }
-    });
 
-    if (!result) {
-        return res.status(500).send({ success: false });
+        createNotificationAndNotify(req, req.user.id, toFollow);
+
+        return res.status(201).send({ success: true, data: result });
+    } catch (e) {
+        console.log(e);
+        res.status(500).send({ success: false });
     }
-
-    createNotificationAndNotify(req, req.user.id, toFollow);
-
-    return res.status(201).send({ success: true, data: result });
 }
 
 async function unfollowUser(req, res) {
-    const toUnfollow = parseInt(req.params.userId);
+    try {
+        const toUnfollow = parseInt(req.params.userId);
 
-    if (req.user.id == toUnfollow)
-        return res.status(400).send({ success: false, message: "You cannot unfollow yourself." });
+        if (req.user.id == toUnfollow)
+            return res.status(400).send({ success: false, message: "You cannot unfollow yourself." });
 
-    const ifFollowing = await prisma.follows.findUnique(
-        {
+        const ifFollowing = await prisma.follows.findUnique(
+            {
+                where: {
+                    followingId_followedById: {
+                        followedById: req.user.id,
+                        followingId: toUnfollow
+                    }
+                }
+            }
+        );
+
+        if (!ifFollowing) {
+            return res.status(400).send({ success: false, message: "You do not follow this user." });
+        }
+
+        const result = await prisma.follows.delete({
             where: {
                 followingId_followedById: {
                     followedById: req.user.id,
                     followingId: toUnfollow
                 }
             }
-        }
-    );
+        });
 
-    if (!ifFollowing) {
-        return res.status(400).send({ success: false, message: "You do not follow this user." });
+        return res.status(200).send({ success: true });
+    } catch (e) {
+        console.log(e);
+        res.status(500).send({ success: false });
     }
-
-    const result = await prisma.follows.delete({
-        where: {
-            followingId_followedById: {
-                followedById: req.user.id,
-                followingId: toUnfollow
-            }
-        }
-    });
-
-    return res.status(200).send({ success: true });
 }
 
 async function getPicture(req, res) {
-    const userId = parseInt(req.params.userId);
-    const result = await prisma.users.findUnique(
-        { where: { id: userId }, select: { picture: true, mime: true } }
-    );
-    let newbuffer = null;
-    if (result.picture)
-        newbuffer = Buffer.from(result.picture, result.picture.byteOffset, result.picture.byteLength)
+    try {
+        const userId = parseInt(req.params.userId);
+        const result = await prisma.users.findUnique(
+            { where: { id: userId }, select: { picture: true, mime: true } }
+        );
 
-    res.status(200).send({ success: true, data: { buffer: newbuffer, mime: result.mime } });
+        if (!result) {
+            return res.status(400).send({ success: false });
+        }
+
+        let newbuffer = null;
+        if (result.picture)
+            newbuffer = Buffer.from(result.picture, result.picture.byteOffset, result.picture.byteLength)
+
+        res.status(200).send({ success: true, data: { buffer: newbuffer, mime: result.mime } });
+    } catch (e) {
+        console.log(e);
+        res.status(500).send({ success: false });
+    }
 }
 
 async function uploadPicture(req, res) {
@@ -349,10 +374,16 @@ async function uploadPicture(req, res) {
                 where: { id: userId }
             }
         );
+
+        if (!result) {
+            return res.status(500).send({ success: false });
+        }
+
         let newbuffer = null;
         if (result.picture)
             newbuffer = Buffer.from(result.picture, result.picture.byteOffset, result.picture.byteLength)
-        return res.status(201).send({ success: true, data: { buffer: newbuffer, mime: result.mime } });
+
+        res.status(200).send({ success: true, data: { buffer: newbuffer, mime: result.mime } });
     } catch (e) {
         console.log(e);
         return res.status(500).send({ success: false });
@@ -380,15 +411,25 @@ async function removePicture(req, res) {
 }
 
 async function getBackground(req, res) {
-    const userId = parseInt(req.params.userId);
-    const result = await prisma.users.findUnique(
-        { where: { id: userId }, select: { background: true, mime: true } }
-    );
-    let newbuffer = null;
-    if (result.background)
-        newbuffer = Buffer.from(result.background, result.background.byteOffset, result.background.byteLength)
+    try {
+        const userId = parseInt(req.params.userId);
+        const result = await prisma.users.findUnique(
+            { where: { id: userId }, select: { background: true, bgmime: true } }
+        );
 
-    res.status(200).send({ success: true, data: { buffer: newbuffer, mime: result.mime } });
+        if (!result) {
+            return res.status(500).send({ success: false });
+        }
+
+        let newbuffer = null;
+        if (result.background)
+            newbuffer = Buffer.from(result.background, result.background.byteOffset, result.background.byteLength)
+
+        res.status(200).send({ success: true, data: { buffer: newbuffer, mime: result.bgmime } });
+    } catch (e) {
+        console.log(e);
+        return res.status(500).send({ success: false });
+    }
 }
 
 async function uploadBackground(req, res) {
@@ -409,10 +450,15 @@ async function uploadBackground(req, res) {
                 where: { id: userId }
             }
         );
+        if (!result) {
+            return res.status(500).send({ success: false });
+        }
+
         let newbuffer = null;
         if (result.background)
             newbuffer = Buffer.from(result.background, result.background.byteOffset, result.background.byteLength)
-        return res.status(201).send({ success: true, data: newbuffer });
+
+        res.status(200).send({ success: true, data: { buffer: newbuffer, mime: result.bgmime } });
     } catch (e) {
         console.log(e);
         return res.status(500).send({ success: false });
@@ -433,6 +479,7 @@ async function removeBackground(req, res) {
         if (!result) {
             return res.status(500).send({ success: false });
         }
+
         return res.status(201).send({ success: true });
     } catch (e) {
         console.log(e);

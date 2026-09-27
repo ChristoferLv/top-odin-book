@@ -1,7 +1,5 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "./AuthContext";
-import UserPicture from "./components/UserPicture";
-import UserBackground from "./components/UserBackground";
 import PostsList from "./components/PostsList";
 import { fetchBookmarkedPosts } from "../api/requests";
 import { useNavigate } from "react-router";
@@ -9,7 +7,7 @@ import { useNavigate } from "react-router";
 
 
 function BookmarksPage() {
-    const { user, setUser } = useContext(AuthContext);
+    const { user} = useContext(AuthContext);
     const navigate = useNavigate();
     const [bookmarkedPosts, setBookmarkedPosts] = useState([]);
 

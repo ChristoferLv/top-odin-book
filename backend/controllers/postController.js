@@ -1,4 +1,4 @@
-import { body, matchedData, validationResult } from "express-validator";
+import { matchedData, validationResult } from "express-validator";
 import { prisma } from "../lib/prisma.js";
 import { validatePost } from "../validators.js";
 import sharp from "sharp";
@@ -39,6 +39,7 @@ async function createNotificationAndNotify(req, authorId, postId, type, receiver
 
     } catch (e) {
         console.log(e);
+        res.status(500).send({ success: false });
     }
 }
 
@@ -208,7 +209,7 @@ async function getAllPosts(req, res) {
                                 likes: true,
                                 replyPost: true,
                                 shares: true,
-                                bookmarks:true
+                                bookmarks: true
                             }
                         }
                     }
@@ -221,7 +222,7 @@ async function getAllPosts(req, res) {
                         likes: true,
                         replyPost: true,
                         shares: true,
-                        bookmarks:true
+                        bookmarks: true
                     }
                 },
                 sharedPost: {
@@ -242,7 +243,7 @@ async function getAllPosts(req, res) {
                                 likes: true,
                                 replyPost: true,
                                 shares: true,
-                                bookmarks:true
+                                bookmarks: true
                             }
                         },
                     }
@@ -259,7 +260,7 @@ async function getAllPosts(req, res) {
         return res.send({ success: true, data: result });
     } catch (e) {
         console.log(e);
-        throw e;
+        res.status(500).send({ success: false });
     }
 }
 
@@ -342,8 +343,6 @@ async function getPostById(req, res) {
                     }
                 },
             }
-
-            // select: { _count: { select: { likes: true } } }
         });
 
         if (!result) {
@@ -353,57 +352,13 @@ async function getPostById(req, res) {
         return res.status(200).send({ success: true, data: result });
     } catch (e) {
         console.log(e);
-        throw e;
+        res.status(500).send({ success: false });
     }
 }
-
-const updatePost = [
-    validatePost,
-    async (req, res) => {
-        const errors = validationResult(req);
-
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ success: false, error: errors });
-        }
-
-        try {
-            const postId = parseInt(req.params.id);
-            const { content } = matchedData(req);
-
-            const exists = await prisma.posts.findUnique({
-                where: {
-                    id: postId
-                }
-            });
-
-            if (!exists) {
-                return res.status(400).send({ success: false, message: "Post not found." });
-            }
-
-            const result = await prisma.posts.update({
-                where: { id: postId },
-                data: {
-                    content: content
-                }
-            });
-
-            if (!result) {
-                return res.status(500).send({ success: false });
-            }
-
-            return res.send({ success: true, data: result });
-        } catch (e) {
-            console.log(e);
-            throw e;
-        }
-    }
-];
 
 async function deletePost(req, res) {
     try {
         const postId = parseInt(req.params.postId);
-        console.log("DELETE POST", postId);
-        // return res.status(201).send({ success: true });
 
         const exists = await prisma.posts.findUnique({
             where: {
@@ -432,7 +387,7 @@ async function deletePost(req, res) {
         return res.send({ success: true });
     } catch (e) {
         console.log(e);
-        throw e;
+        res.status(500).send({ success: false });
     }
 }
 
@@ -516,7 +471,7 @@ async function searchPosts(req, res) {
                                 likes: true,
                                 replyPost: true,
                                 shares: true,
-                                bookmarks:true
+                                bookmarks: true
                             }
                         },
                     }
@@ -539,7 +494,7 @@ async function searchPosts(req, res) {
                                 likes: true,
                                 replyPost: true,
                                 shares: true,
-                                bookmarks:true
+                                bookmarks: true
                             }
                         },
                     }
@@ -552,7 +507,7 @@ async function searchPosts(req, res) {
                         likes: true,
                         replyPost: true,
                         shares: true,
-                        bookmarks:true
+                        bookmarks: true
                     }
                 },
             },
@@ -567,7 +522,7 @@ async function searchPosts(req, res) {
         return res.send({ success: true, data: result });
     } catch (e) {
         console.log(e);
-        throw e;
+        res.status(500).send({ success: false });
     }
 }
 
@@ -603,7 +558,7 @@ async function getLikedPosts(req, res) {
                                 likes: true,
                                 replyPost: true,
                                 shares: true,
-                                bookmarks:true
+                                bookmarks: true
                             }
                         },
                     }
@@ -622,7 +577,7 @@ async function getLikedPosts(req, res) {
         return res.send({ success: true, data: treatedResult });
     } catch (e) {
         console.log(e);
-        throw e;
+        res.status(500).send({ success: false });
     }
 }
 
@@ -669,7 +624,7 @@ async function likePost(req, res) {
         return res.send({ success: true, data: result });
     } catch (e) {
         console.log(e);
-        throw e;
+        res.status(500).send({ success: false });
     }
 }
 
@@ -702,7 +657,7 @@ async function removeLike(req, res) {
         return res.send({ success: true, data: result });
     } catch (e) {
         console.log(e);
-        throw e;
+        res.status(500).send({ success: false });
     }
 }
 
@@ -760,7 +715,7 @@ async function getSharedPosts(req, res) {
                                 likes: true,
                                 replyPost: true,
                                 shares: true,
-                                bookmarks:true
+                                bookmarks: true
                             }
                         },
                     }
@@ -773,7 +728,7 @@ async function getSharedPosts(req, res) {
                         likes: true,
                         replyPost: true,
                         shares: true,
-                        bookmarks:true
+                        bookmarks: true
                     }
                 },
             },
@@ -788,7 +743,7 @@ async function getSharedPosts(req, res) {
         return res.send({ success: true, data: result });
     } catch (e) {
         console.log(e);
-        throw e;
+        res.status(500).send({ success: false });
     }
 }
 
@@ -840,7 +795,7 @@ async function sharePost(req, res) {
         return res.send({ success: true, data: result });
     } catch (e) {
         console.log(e);
-        throw e;
+        res.status(500).send({ success: false });
     }
 }
 
@@ -875,7 +830,7 @@ async function removeShare(req, res) {
         return res.send({ success: true, data: result });
     } catch (e) {
         console.log(e);
-        throw e;
+        res.status(500).send({ success: false });
     }
 }
 
@@ -918,7 +873,7 @@ async function getMyReplies(req, res) {
                                 likes: true,
                                 replyPost: true,
                                 shares: true,
-                                bookmarks:true
+                                bookmarks: true
                             }
                         },
                     }
@@ -931,7 +886,7 @@ async function getMyReplies(req, res) {
                         likes: true,
                         replyPost: true,
                         shares: true,
-                        bookmarks:true
+                        bookmarks: true
                     }
                 },
             },
@@ -946,7 +901,7 @@ async function getMyReplies(req, res) {
         return res.send({ success: true, data: result });
     } catch (e) {
         console.log(e);
-        throw e;
+        res.status(500).send({ success: false });
     }
 }
 const makeReply = [
@@ -961,7 +916,7 @@ const makeReply = [
             }
 
             const postId = parseInt(req.params.postId);
-            const content = req.body.content;
+            const {content} = matchedData(req);
 
             const exists = await prisma.posts.findUnique({
                 where: { id: postId }
@@ -1022,7 +977,7 @@ const makeReply = [
                                         likes: true,
                                         replyPost: true,
                                         shares: true,
-                                        bookmarks:true
+                                        bookmarks: true
                                     }
                                 }
                             }
@@ -1035,7 +990,7 @@ const makeReply = [
                                 likes: true,
                                 replyPost: true,
                                 shares: true,
-                                bookmarks:true
+                                bookmarks: true
                             }
                         },
                     }
@@ -1074,7 +1029,6 @@ const makeReply = [
         } catch (e) {
             console.log(e);
             res.status(500).send({ success: false });
-            throw e;
         }
     }
 ]
@@ -1115,7 +1069,7 @@ async function getRepliesOfPost(req, res) {
                         likes: true,
                         replyPost: true,
                         shares: true,
-                        bookmarks:true
+                        bookmarks: true
                     }
                 },
             },
@@ -1130,7 +1084,7 @@ async function getRepliesOfPost(req, res) {
         return res.status(200).send({ success: true, data: result });
     } catch (e) {
         console.log(e);
-        throw e;
+        res.status(500).send({ success: false });
     }
 }
 
@@ -1157,7 +1111,7 @@ async function deleteReplie(req, res) {
         return res.status(200).send({ success: true });
     } catch (e) {
         console.log(e);
-        throw e;
+        res.status(500).send({ success: false });
     }
 }
 
@@ -1184,7 +1138,7 @@ async function getBookmarkedPosts(req, res) {
                                 likes: true,
                                 replyPost: true,
                                 shares: true,
-                                bookmarks:true
+                                bookmarks: true
                             }
                         },
                     }
@@ -1200,7 +1154,7 @@ async function getBookmarkedPosts(req, res) {
         return res.send({ success: true, data: result });
     } catch (e) {
         console.log(e);
-        throw e;
+        res.status(500).send({ success: false });
     }
 }
 
@@ -1240,7 +1194,8 @@ async function bookmarkPost(req, res) {
 
         return res.send({ success: true, data: result });
     } catch (e) {
-        throw e;
+        console.log(e);
+        res.status(500).send({ success: false });
     }
 }
 
@@ -1285,8 +1240,6 @@ async function getTrendingPosts(req, res) {
                 }
             });
 
-            // console.log("trends deleted", deletion);
-
             const getCurrent = await tx.trending.findMany(
                 {
                     include: {
@@ -1307,14 +1260,10 @@ async function getTrendingPosts(req, res) {
                 return getCurrent;
             }
 
-            // console.log("current trends", getCurrent);
-
             const newTrends = await tx.posts.findMany({
                 orderBy: [{ likes: { _count: "desc" } }, { createdAt: "desc" }],
                 take: 3
             });
-
-            // console.log("generated new trends", newTrends);
 
             const newTrendsIds = newTrends.map((it) => { return { postId: it.id } });
 
@@ -1334,7 +1283,6 @@ async function getTrendingPosts(req, res) {
                     }
                 }
             });
-            // console.log("saved new trends", saveTrends);
             return saveTrends;
         });
 
@@ -1344,7 +1292,7 @@ async function getTrendingPosts(req, res) {
         return res.status(200).send({ success: true, data: result });
     } catch (e) {
         console.log(e);
-        throw e;
+        res.status(500).send({ success: false });
     }
 }
 
@@ -1354,7 +1302,6 @@ export {
     makePost,
     getAllPosts,
     getPostById,
-    updatePost,
     deletePost,
     getPostMidia,
     searchPosts,

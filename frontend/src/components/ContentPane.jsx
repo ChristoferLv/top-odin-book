@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import NewPost from "./NewPost";
 import PostsList from "./PostsList";
 import { fetchAllPosts } from "../../api/requests";
@@ -7,8 +7,8 @@ import { FeedContext } from "../FeedContext";
 import { useLocation } from "react-router";
 
 function ContentPane() {
-    const { user, setUser } = useContext(AuthContext);
-    const { feedSetter, feed, pageOnContext, pageSetter, resetFeed, resetFeedSetter } = useContext(FeedContext);
+    const { user } = useContext(AuthContext);
+    const { feedSetter, feed, pageOnContext, pageSetter } = useContext(FeedContext);
     const [postsList, setPostsList] = useState([]);
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);

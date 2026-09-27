@@ -1,8 +1,8 @@
 import { formatDate } from "../utils/dateUtils";
 import UserPicture from "../components/UserPicture"
 import { PostType, USER_PICTURE_DEFAULT_SIZE } from "../utils/defaults"
-import { bookmarkPost, deletePost, dislikePost, likePost, removeBookmarkPost, sharePost, unsharePost } from "../../api/requests";
-import { useContext, useEffect, useRef, useState } from "react";
+import { bookmarkPost, dislikePost, likePost, removeBookmarkPost, sharePost, unsharePost } from "../../api/requests";
+import { useContext, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import ReplyDialog from "./ReplyDialog";
 import ShareWithReply from "./ShareWithReplyDialog";
@@ -158,10 +158,6 @@ function Post({ user, data }) {
 
         setIsShareOrReplyPosition(position);
 
-        // if (hasShared) {
-        //     handleShare(e);
-        //     return;
-        // }
         setIsShareOrReplyOpen(true);
     }
 
@@ -200,18 +196,6 @@ function Post({ user, data }) {
         deletePost(usePostData.id, false);
     }
 
-    // useEffect(() => {
-    //     const handleEsc = (event) => {
-    //         if (event.key === 'Escape') {
-    //             handleCloseDialog(event);
-    //         }
-    //     };
-    //     window.addEventListener('keydown', handleEsc);
-
-    //     return () => {
-    //         window.removeEventListener('keydown', handleEsc);
-    //     };
-    // }, []);
     if (isDeleted || data.deleted) return null;
 
 

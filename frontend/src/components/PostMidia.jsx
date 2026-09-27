@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { fetchPostMidia } from "../../api/requests";
 import PictureDialog from "./PictureDialog";
 
@@ -10,7 +10,6 @@ function PostMidia({ postId, seePhoto, dimensions }) {
     function handleSeePicture(e) {
         e.stopPropagation();
         seePhoto();
-        // setModal(true);
     }
 
     function handleCloseModal(e) {
@@ -30,8 +29,6 @@ function PostMidia({ postId, seePhoto, dimensions }) {
     const rawBuffer = new Uint8Array(midiaBuff);
     const blob = new Blob([rawBuffer], { type: mime });
     const imageUrl = URL.createObjectURL(blob);
-
-    // if (!midiaBuff) return null;
 
     const [width, height] = dimensions.split("x");
 

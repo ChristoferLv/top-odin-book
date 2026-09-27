@@ -1,13 +1,12 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { logOut } from "../../api/requests";
-import { USER_PICTURE_DEFAULT_SIZE } from "../utils/defaults";
 import { useNavigate } from "react-router";
 import dafaultAvatar from "../../public/avatar.png";
 import { PictureContext } from "../PictureContext";
 
 
 function UserToast({ user }) {
-    const { userPictureUrl, isPictureSet } = useContext(PictureContext);
+    const { userPictureUrl } = useContext(PictureContext);
     const [isBalloonOpen, setIsBalloonOpen] = useState(false);
     const toastRef = useRef(null);
     const navigate = useNavigate();
@@ -22,7 +21,7 @@ function UserToast({ user }) {
 
     function handleSeeUser(e) {
         e.stopPropagation();
-        navigate("/" + username);
+        navigate("/" + user.username);
     }
 
     return (

@@ -13,7 +13,6 @@ async function getMyNotificationsCount(req, res) {
     } catch (e) {
         console.log(e);
         res.status(500).send({ success: false });
-        throw e;
     }
 }
 
@@ -44,7 +43,6 @@ async function getMyNotifications(req, res) {
     } catch (e) {
         console.log(e);
         res.status(500).send({ success: false });
-        throw e;
     }
 }
 
@@ -61,24 +59,22 @@ async function markNotificationsAsRead(req, res) {
                 }
             });
 
-            console.log("deleting olds", deletingResult);
-
             const setRead = await tx.notifications.updateManyAndReturn({
                 where: {
                     receiverId: req.user.id,
-                    readAt:null
+                    readAt: null
                 },
                 data: {
                     read: true,
                     readAt: new Date()
                 }
             });
-            console.log("setted as read", setRead);
         });
 
         return res.status(204);
     } catch (e) {
         console.log(e);
+        res.status(500).send({ success: false });
     }
 }
 

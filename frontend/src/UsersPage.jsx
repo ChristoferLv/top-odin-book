@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { fetchAllUsers, followUser, unfollowUser } from "../api/requests";
+import { fetchAllUsers } from "../api/requests";
 import { useNavigate } from "react-router";
 import UsersList from "./components/UsersList";
 
@@ -11,10 +11,6 @@ function UsersPage() {
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
     const observerTarget = useRef(null);
-
-    // useEffect(() => {
-    //     document.getElementById("master-pane").scrollTo(0, 0);
-    // }, [location.pathname]);
 
     useEffect(() => {
         let ignore = false;
@@ -36,7 +32,7 @@ function UsersPage() {
             } catch (e) {
                 if (e.name === 'AbortError') {
                     // Safely ignore or log the cancellation
-                    console.log('Fetch aborted gracefully');
+                    // console.log('Fetch aborted gracefully');
                     return;
                 }
                 console.log(e);

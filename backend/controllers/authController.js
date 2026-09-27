@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import { body, matchedData, validationResult } from "express-validator";
+import { matchedData, validationResult } from "express-validator";
 import { prisma } from '../lib/prisma.js';
 import jwt from 'jsonwebtoken';
 import { validateNewUser } from '../validators.js';

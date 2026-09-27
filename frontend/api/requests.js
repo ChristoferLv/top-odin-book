@@ -7,7 +7,7 @@ async function register(data) {
         return request;
     } catch (e) {
         console.log(e);
-        throw e;
+        return null;
     }
 }
 
@@ -27,25 +27,30 @@ async function login(credentials) {
             },
             body: JSON.stringify(credentials)
         });
-
+        console.log(rawResponse)
         return rawResponse;
     } catch (error) {
         console.log(error);
-        return false;
+        return null;
     }
 }
 
 async function getMe() {
-    const token = localStorage.getItem("token");
-    const meResponse = await fetch('http://localhost:3000/auth/me', {
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': token
-        }
-    });
-   return meResponse;
+    try {
+        const token = localStorage.getItem("token");
+        const meResponse = await fetch('http://localhost:3000/auth/me', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': token
+            }
+        });
+        return meResponse;
+    } catch (e) {
+        console.log(e);
+        return null;
+    }
 }
 
 async function editUser(data) {
@@ -66,7 +71,7 @@ async function editUser(data) {
         }
     } catch (e) {
         console.log(e);
-        throw e;
+        return null;
     }
 }
 
@@ -86,7 +91,7 @@ async function sendUserPicture(formData) {
         return resultData;
     } catch (e) {
         console.log(e);
-        throw e;
+        return null;
     }
 }
 
@@ -108,7 +113,7 @@ async function removePicture() {
         }
     } catch (e) {
         console.log(e);
-        throw e;
+        return null;
     }
 }
 
@@ -129,7 +134,7 @@ async function fetchUserPicture(userId) {
         }
     } catch (e) {
         console.log(e);
-        throw e;
+        return null;
     }
 }
 
@@ -137,7 +142,6 @@ async function sendUserBackground(formData) {
     try {
         const token = localStorage.getItem("token");
         const result = await fetch("http://localhost:3000/users/background/", {
-
             method: 'Post',
             body: formData,
 
@@ -149,7 +153,7 @@ async function sendUserBackground(formData) {
         return resultData;
     } catch (e) {
         console.log(e);
-        throw e;
+        return null;
     }
 }
 
@@ -170,7 +174,7 @@ async function fetchUserBackground(userId) {
         }
     } catch (e) {
         console.log(e);
-        throw e;
+        return null;
     }
 }
 
@@ -192,7 +196,7 @@ async function removeBackground() {
         }
     } catch (e) {
         console.log(e);
-        throw e;
+        return null;
     }
 }
 
@@ -213,8 +217,12 @@ async function fetchAllUsers(signal, page) {
             return background;
         }
     } catch (e) {
+          if (e.name === 'AbortError') {
+            // Safely ignore or log the cancellation
+            return;
+        }
         console.log(e);
-        throw e;
+        return null;
     }
 }
 
@@ -235,7 +243,7 @@ async function fetchUserByUsername(username) {
         }
     } catch (e) {
         console.log(e);
-        throw e;
+        return null;
     }
 }
 
@@ -256,8 +264,12 @@ async function searchUsers(searchArgs, page, signal) {
             return result;
         }
     } catch (e) {
+          if (e.name === 'AbortError') {
+            // Safely ignore or log the cancellation
+            return;
+        }
         console.log(e);
-        throw e;
+        return null;
     }
 }
 
@@ -278,7 +290,7 @@ async function followUser(userId) {
         }
     } catch (e) {
         console.log(e);
-        throw e;
+        return null;
     }
 }
 
@@ -299,23 +311,28 @@ async function unfollowUser(userId) {
         }
     } catch (e) {
         console.log(e);
-        throw e;
+        return null;
     }
 }
 
 async function deleteFollower(userId) {
-    const token = localStorage.getItem("token");
-    const request = await fetch(`http://localhost:3000/follows/remove/${userId}`, {
-        method: 'DELETE',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': token
+    try {
+        const token = localStorage.getItem("token");
+        const request = await fetch(`http://localhost:3000/follows/remove/${userId}`, {
+            method: 'DELETE',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': token
+            }
+        });
+        if (request.ok) {
+            const result = await request.json();
+            return result;
         }
-    });
-    if (request.ok) {
-        const result = await request.json();
-        return result;
+    } catch (e) {
+        console.log(e);
+        return null;
     }
 }
 
@@ -336,10 +353,9 @@ async function getFollowSuggestions() {
         }
     } catch (e) {
         console.log(e);
-        throw e;
+        return null;
     }
 }
-
 
 async function fetchFollowersOfUser(username, signal) {
     try {
@@ -358,8 +374,12 @@ async function fetchFollowersOfUser(username, signal) {
             return result;
         }
     } catch (e) {
+          if (e.name === 'AbortError') {
+            // Safely ignore or log the cancellation
+            return;
+        }
         console.log(e);
-        throw e;
+        return null;
     }
 }
 
@@ -380,8 +400,12 @@ async function fetchWhoUserIsFollowing(username, signal) {
             return result;
         }
     } catch (e) {
+          if (e.name === 'AbortError') {
+            // Safely ignore or log the cancellation
+            return;
+        }
         console.log(e);
-        throw e;
+        return null;
     }
 }
 
@@ -423,106 +447,112 @@ async function makePost(postData) {
         }
     } catch (error) {
         console.log(error);
-        return false;
+        return null;
     }
 }
 
 async function fetchAllPosts(page, signal, getUpToPage) {
-    const token = localStorage.getItem("token");
-    const rawResponse = await fetch(`http://localhost:3000/posts?onFeed=true&page=${page}${getUpToPage ? "&upto" : ""}`, {
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': token
-        },
-        signal: signal
-    });
-    if (rawResponse.status == 200) {
-        const response = await rawResponse.json();
-        if (response && response.success) {
-            return response;
+    try {
+        const token = localStorage.getItem("token");
+        const rawResponse = await fetch(`http://localhost:3000/posts?onFeed=true&page=${page}${getUpToPage ? "&upto" : ""}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': token
+            },
+            signal: signal
+        });
+        if (rawResponse.status == 200) {
+            const response = await rawResponse.json();
+            if (response && response.success) {
+                return response;
+            }
+        } else {
+            return null;
         }
-    } else {
+    } catch (e) {
+          if (e.name === 'AbortError') {
+            // Safely ignore or log the cancellation
+            return;
+        }
+        console.log(e);
         return null;
     }
 }
 
 async function fetchPostsByUserId(userId, signal, page) {
-    const token = localStorage.getItem("token");
-    const rawResponse = await fetch(`http://localhost:3000/posts?onFeed=false&userId=${userId}&page=${page}`, {
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': token
-        }, signal: signal
-    });
-    if (rawResponse.ok) {
-        const response = await rawResponse.json();
-        if (response && response.success) {
-            return response;
+    try {
+        const token = localStorage.getItem("token");
+        const rawResponse = await fetch(`http://localhost:3000/posts?onFeed=false&userId=${userId}&page=${page}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': token
+            }, signal: signal
+        });
+        if (rawResponse.ok) {
+            const response = await rawResponse.json();
+            if (response && response.success) {
+                return response;
+            }
+        } else {
+            return null;
         }
-    } else {
-        return null;
-    }
-}
-
-//CHECK IF BEING USED, IF NOT, REMOVE ==========================================================================
-async function fetchMyPosts() {
-    const token = localStorage.getItem("token");
-    const rawResponse = await fetch('http://localhost:3000/posts', {
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': token
+    } catch (e) {
+        if (e.name === 'AbortError') {
+            // Safely ignore or log the cancellation
+            return;
         }
-    });
-    if (rawResponse.ok) {
-        const response = await rawResponse.json();
-        if (response && response.success) {
-            return response;
-        }
-    } else {
+        console.log(e);
         return null;
     }
 }
 
 async function fetchPostById(postId) {
-    const token = localStorage.getItem("token");
-    const rawResponse = await fetch('http://localhost:3000/posts/' + postId, {
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': token
+    try {
+        const token = localStorage.getItem("token");
+        const rawResponse = await fetch('http://localhost:3000/posts/' + postId, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': token
+            }
+        });
+        if (rawResponse.ok) {
+            const response = await rawResponse.json();
+            if (response && response.success) {
+                return response;
+            }
+        } else {
+            return null;
         }
-    });
-    if (rawResponse.ok) {
-        const response = await rawResponse.json();
-        if (response && response.success) {
-            return response;
-        }
-    } else {
+    } catch (e) {
+        console.log(e);
         return null;
     }
 }
 
 async function deletePost(postId) {
-    const token = localStorage.getItem("token");
-    const rawResponse = await fetch(`http://localhost:3000/posts/${postId}`, {
-        method: 'DELETE',
-        headers: {
-            'Authorization': token,
-        },
-    });
+    try {
+        const token = localStorage.getItem("token");
+        const rawResponse = await fetch(`http://localhost:3000/posts/${postId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': token,
+            },
+        });
 
-    return rawResponse;
+        return rawResponse;
+    } catch (e) {
+        console.log(e);
+        return null;
+    }
 }
 
 async function searchPosts(searchArgs, page, signal) {
-    console.log("call")
     try {
         const token = localStorage.getItem("token");
         const rawResponse = await fetch(`http://localhost:3000/posts/search?page=${page}&${searchArgs}`, {
@@ -543,7 +573,12 @@ async function searchPosts(searchArgs, page, signal) {
             return null;
         }
     } catch (e) {
-        console.log(e)
+        if (e.name === 'AbortError') {
+            // Safely ignore or log the cancellation
+            return;
+        }
+        console.log(e);
+        return null;
     }
 }
 
@@ -565,24 +600,29 @@ async function fetchPostMidia(postId) {
         }
     } catch (e) {
         console.log(e);
-        throw e;
+        return null;
     }
 }
 
 async function fetchTrendingPosts() {
-    const token = localStorage.getItem("token");
-    const rawReponse = await fetch('http://localhost:3000/posts/trending', {
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': token
+    try {
+        const token = localStorage.getItem("token");
+        const rawReponse = await fetch('http://localhost:3000/posts/trending', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': token
+            }
+        });
+        if (rawReponse.ok) {
+            const response = await rawReponse.json();
+            return response;
+        } else {
+            return null;
         }
-    });
-    if (rawReponse.ok) {
-        const response = await rawReponse.json();
-        return response;
-    } else {
+    } catch (e) {
+        console.log(e);
         return null;
     }
 }
@@ -624,7 +664,7 @@ async function fetchNotificationsCount() {
         }
     } catch (e) {
         console.log(e);
-        throw e;
+        return null;
     }
 }
 
@@ -645,7 +685,7 @@ async function fetchNotifications() {
         }
     } catch (e) {
         console.log(e);
-        throw e;
+        return null;
     }
 }
 
@@ -666,7 +706,12 @@ async function markNotificationsAsRead(signal) {
             return midia;
         }
     } catch (e) {
+          if (e.name === 'AbortError') {
+            // Safely ignore or log the cancellation
+            return;
+        }
         console.log(e);
+        return null;
     }
 }
 
@@ -697,43 +742,31 @@ async function markNotificationsAsRead(signal) {
 
 
 async function fetchRepliesByUserId(userId, signal, page) {
-    const token = localStorage.getItem("token");
-    const rawReponse = await fetch(`http://localhost:3000/posts/replies?userId=${userId}${page ? ('&page=' + page) : ""}`, {
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': token
-        },
-        signal: signal
-    });
-    if (rawReponse.ok) {
-        const response = await rawReponse.json();
-        if (response && response.success) {
-            return response;
+    try {
+        const token = localStorage.getItem("token");
+        const rawReponse = await fetch(`http://localhost:3000/posts/replies?userId=${userId}${page ? ('&page=' + page) : ""}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': token
+            },
+            signal: signal
+        });
+        if (rawReponse.ok) {
+            const response = await rawReponse.json();
+            if (response && response.success) {
+                return response;
+            }
+        } else {
+            return null;
         }
-    } else {
-        return null;
-    }
-}
-
-//CHECK IF BEING USED, IF NOT, REMOVE ==========================================================================
-async function fetchMyReplies() {
-    const token = localStorage.getItem("token");
-    const rawReponse = await fetch(`http://localhost:3000/posts/replies`, {
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': token
+    } catch (e) {
+          if (e.name === 'AbortError') {
+            // Safely ignore or log the cancellation
+            return;
         }
-    });
-    if (rawReponse.ok) {
-        const response = await rawReponse.json();
-        if (response && response.success) {
-            return response;
-        }
-    } else {
+        console.log(e);
         return null;
     }
 }
@@ -757,27 +790,36 @@ async function makeReply(data, postId) {
         }
     } catch (error) {
         console.log(error);
-        return false;
+        return null;
     }
 }
 
 async function fetchRepliesOfPost(postId, signal, page) {
-    const token = localStorage.getItem("token");
-    const rawReponse = await fetch(`http://localhost:3000/posts/${postId}/replies?page=${page}`, {
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': token
-        },
-        signal: signal
-    });
-    if (rawReponse.ok) {
-        const response = await rawReponse.json();
-        if (response && response.success) {
-            return response;
+    try {
+        const token = localStorage.getItem("token");
+        const rawReponse = await fetch(`http://localhost:3000/posts/${postId}/replies?page=${page}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': token
+            },
+            signal: signal
+        });
+        if (rawReponse.ok) {
+            const response = await rawReponse.json();
+            if (response && response.success) {
+                return response;
+            }
+        } else {
+            return null;
         }
-    } else {
+    } catch (e) {
+          if (e.name === 'AbortError') {
+            // Safely ignore or log the cancellation
+            return;
+        }
+        console.log(e);
         return null;
     }
 }
@@ -796,43 +838,31 @@ async function fetchRepliesOfPost(postId, signal, page) {
 
 
 async function fetchLikedPostsByUserId(userId, signal, page) {
-    const token = localStorage.getItem("token");
-    const rawReponse = await fetch(`http://localhost:3000/posts/likes?userId=${userId}${page ? ('&page=' + page) : ""}`, {
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': token
-        },
-        signal: signal
-    });
-    if (rawReponse.ok) {
-        const response = await rawReponse.json();
-        if (response && response.success) {
-            return response;
+    try {
+        const token = localStorage.getItem("token");
+        const rawReponse = await fetch(`http://localhost:3000/posts/likes?userId=${userId}${page ? ('&page=' + page) : ""}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': token
+            },
+            signal: signal
+        });
+        if (rawReponse.ok) {
+            const response = await rawReponse.json();
+            if (response && response.success) {
+                return response;
+            }
+        } else {
+            return null;
         }
-    } else {
-        return null;
-    }
-}
-
-//CHECK IF BEING USED, IF NOT, REMOVE ==========================================================================
-async function fetchLikedPosts() {
-    const token = localStorage.getItem("token");
-    const rawReponse = await fetch('http://localhost:3000/posts/likes', {
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': token
+    } catch (e) {
+          if (e.name === 'AbortError') {
+            // Safely ignore or log the cancellation
+            return;
         }
-    });
-    if (rawReponse.ok) {
-        const response = await rawReponse.json();
-        if (response && response.success) {
-            return response;
-        }
-    } else {
+        console.log(e);
         return null;
     }
 }
@@ -851,10 +881,10 @@ async function likePost(postId) {
             const result = await rawResponse.json();
             return result;
         }
-        return false;
+        return null;
     } catch (error) {
         console.log(error);
-        return false;
+        return null;
     }
 }
 
@@ -872,10 +902,10 @@ async function dislikePost(postId) {
             const result = await rawResponse.json();
             return result;
         }
-        return false;
+        return null;
     } catch (error) {
         console.log(error);
-        return false;
+        return null;
     }
 }
 
@@ -900,22 +930,31 @@ async function dislikePost(postId) {
 
 
 async function fetchSharedPostsByUserId(userId, signal, page) {
-    const token = localStorage.getItem("token");
-    const rawReponse = await fetch(`http://localhost:3000/posts/shares?userId=${userId}${page ? ('&page=' + page) : ""}`, {
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': token
-        },
-        signal: signal
-    });
-    if (rawReponse.ok) {
-        const response = await rawReponse.json();
-        if (response && response.success) {
-            return response;
+    try {
+        const token = localStorage.getItem("token");
+        const rawReponse = await fetch(`http://localhost:3000/posts/shares?userId=${userId}${page ? ('&page=' + page) : ""}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': token
+            },
+            signal: signal
+        });
+        if (rawReponse.ok) {
+            const response = await rawReponse.json();
+            if (response && response.success) {
+                return response;
+            }
+        } else {
+            return null;
         }
-    } else {
+    } catch (e) {
+          if (e.name === 'AbortError') {
+            // Safely ignore or log the cancellation
+            return;
+        }
+        console.log(e);
         return null;
     }
 }
@@ -934,10 +973,10 @@ async function sharePost(postId) {
             const result = await rawResponse.json();
             return result;
         }
-        return false;
+        return null;
     } catch (error) {
         console.log(error);
-        return false;
+        return null;
     }
 }
 
@@ -955,10 +994,10 @@ async function unsharePost(postId) {
             const result = await rawResponse.json();
             return result;
         }
-        return false;
+        return null;
     } catch (error) {
         console.log(error);
-        return false;
+        return null;
     }
 }
 
@@ -976,21 +1015,26 @@ async function unsharePost(postId) {
 
 
 async function fetchBookmarkedPosts() {
-    const token = localStorage.getItem("token");
-    const rawReponse = await fetch('http://localhost:3000/posts/bookmarks', {
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': token
+    try {
+        const token = localStorage.getItem("token");
+        const rawReponse = await fetch('http://localhost:3000/posts/bookmarks', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': token
+            }
+        });
+        if (rawReponse.ok) {
+            const response = await rawReponse.json();
+            if (response && response.success) {
+                return response;
+            }
+        } else {
+            return null;
         }
-    });
-    if (rawReponse.ok) {
-        const response = await rawReponse.json();
-        if (response && response.success) {
-            return response;
-        }
-    } else {
+    } catch (e) {
+        console.log(e);
         return null;
     }
 }
@@ -1009,10 +1053,10 @@ async function bookmarkPost(postId) {
             const result = await rawResponse.json();
             return result;
         }
-        return false;
+        return null;
     } catch (error) {
         console.log(error);
-        return false;
+        return null;
     }
 }
 
@@ -1030,10 +1074,10 @@ async function removeBookmarkPost(postId) {
             const result = await rawResponse.json();
             return result;
         }
-        return false;
+        return null;
     } catch (error) {
         console.log(error);
-        return false;
+        return null;
     }
 }
 
@@ -1071,7 +1115,6 @@ export {
     makePost,
     fetchAllPosts,
     fetchPostsByUserId,
-    fetchMyPosts,
     fetchPostById,
     deletePost,
     searchPosts,
@@ -1083,12 +1126,10 @@ export {
     markNotificationsAsRead,
 
     fetchRepliesByUserId,
-    fetchMyReplies,
     makeReply,
     fetchRepliesOfPost,
 
     fetchLikedPostsByUserId,
-    fetchLikedPosts,
     likePost,
     dislikePost,
 

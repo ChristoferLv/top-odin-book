@@ -1,11 +1,10 @@
-import { use, useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { AuthContext } from "./AuthContext";
-import { deleteFollower, fetchLikedPosts, fetchLikedPostsByUserId, fetchMyPosts, fetchPostsByUserId, fetchRepliesByUserId, fetchSharedPostsByUserId, fetchUserByUsername, followUser, unfollowUser } from "../api/requests";
+import { deleteFollower, fetchLikedPostsByUserId, fetchPostsByUserId, fetchRepliesByUserId, fetchSharedPostsByUserId, fetchUserByUsername, followUser, unfollowUser } from "../api/requests";
 import UserPicture from "./components/UserPicture";
 import UserBackground from "./components/UserBackground";
 import PostsList from "./components/PostsList";
 import { useLocation, useNavigate } from "react-router";
-import background from "../public/bkgd.png"
 
 const SeeingOptions = Object.freeze({
     POSTS: Symbol("posts"),
@@ -17,9 +16,9 @@ const SeeingOptions = Object.freeze({
 
 function MyPage() {
     const [userData, setUserData] = useState(null);
-
     const location = useLocation();
     const parts = location.pathname.split("/");
+    const [previousUser, setPreviousUser] = useState(parts[1]);
     const curLocation = parts[2];
     let active = SeeingOptions.POSTS;
     let showFullReplie = true;
@@ -39,35 +38,26 @@ function MyPage() {
             break;
     }
 
-    const { user, setUser } = useContext(AuthContext);
-    const [seeingOption, setSeeingOption] = useState(SeeingOptions.POSTS)
+    const { user } = useContext(AuthContext);
     const navigate = useNavigate();
     const isMyProfile = user?.id == userData?.id;
     const isFollowing = userData?.following.length;
     const isFollowingMe = userData?.followedBy.length;
 
-    // useEffect(() => {
-    //     document.getElementById("master-pane").scrollTo(0, 0);
-    // }, []);
-
 
     function handleSeePosts() {
-        // setMyPosts([]);
         navigate("/" + userData.username);
     }
 
     function handleSeeReplies() {
-        // setMyPosts([]);
         navigate("/" + userData.username + "/replies", { replace: true });
     }
 
     function handleSeeShares() {
-        // setMyPosts([]);
         navigate("/" + userData.username + "/shares", { replace: true });
     }
 
     function handleSeeLikes() {
-        // setMyPosts([]);
         navigate("/" + userData.username + "/likes", { replace: true });
     }
 
@@ -105,7 +95,6 @@ function MyPage() {
         }
     }
 
-    const [previousUser, setPreviousUser] = useState(parts[1]);
 
     useEffect(() => {
         if (previousUser != parts[1]) {
@@ -124,7 +113,6 @@ function MyPage() {
 
     if (!userData || !user) return <div className="loading"><p>Loading</p></div>
 
-    console.log("userdata", userData)
     return (
         <>
             <div className="my-page">
@@ -199,8 +187,8 @@ function InfinitePostsList({ user, listOption, fullReplies }) {
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
-    const observerTarget = useRef(null);
 
+    const observerTarget = useRef(null);
     const searchKey = location.pathname + location.search;
     const [prevSearchKey, setPrevSearchKey] = useState(searchKey);
     if (prevSearchKey !== searchKey) {
@@ -214,7 +202,6 @@ function InfinitePostsList({ user, listOption, fullReplies }) {
         let ignore = false;
         const controller = new AbortController();
 
-        // setMyPosts([]);
         async function getPosts(page) {
             if (loading) return;
             setLoading(true);
@@ -247,7 +234,6 @@ function InfinitePostsList({ user, listOption, fullReplies }) {
                     if (response.data.length == 0) {
                         setHasMore(false);
                     } else {
-                        // const treatedResponse = response.data.map((item) => { return { ...item, likes: [], bookmarks: [] } })
                         setMyPosts((prev) => [...prev, ...response.data]);
                     }
                 }
@@ -259,7 +245,6 @@ function InfinitePostsList({ user, listOption, fullReplies }) {
                         if (response.data.length == 0) {
                             setHasMore(false);
                         } else {
-                            // const treatedResponse = response.data.map((item) => item.post);
                             setMyPosts((prev) => [...prev, ...response.data]);
                         }
                     }

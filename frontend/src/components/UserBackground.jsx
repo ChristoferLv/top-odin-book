@@ -21,7 +21,6 @@ function UserBackground({id}) {
     }, [id])
 
     useEffect(() => {
-        return;
         return () => {
             if (imageUrlBkgd) URL.revokeObjectURL(imageUrlBkgd);
         }

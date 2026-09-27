@@ -63,6 +63,5 @@ export const validatePost = [
                 throw new Error("Post must have at leats 1 characteres of content.");
             return true;
         })
-        // .isLength({ min: 1 }).withMessage("Post must have at leats 1 characteres of content.")
         .isLength({ max: 280 }).withMessage("The maximum post content length is 280.")
 ];

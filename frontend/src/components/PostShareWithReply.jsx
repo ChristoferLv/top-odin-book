@@ -2,7 +2,7 @@ import { formatDate } from "../utils/dateUtils";
 import UserPicture from "../components/UserPicture"
 import { PostType, USER_PICTURE_DEFAULT_SIZE } from "../utils/defaults"
 import { bookmarkPost, dislikePost, likePost, removeBookmarkPost, sharePost, unsharePost } from "../../api/requests";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import CompactPost from "./CompactPost";
 import ReplyDialog from "./ReplyDialog";
@@ -17,7 +17,6 @@ function PostShareWithReply({ user, data }) {
     const { deletePost } = useContext(FeedContext);
     const { addToast } = useContext(ToastContext);
     const [postData, setPostData] = useState(data);
-    const [isMeShare, setIsMeShare] = useState(data.postType == PostType.SHARE && data.author.id == user.id);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
     const [isShareOrReplyOpen, setIsShareOrReplyOpen] = useState(false);
@@ -26,10 +25,7 @@ function PostShareWithReply({ user, data }) {
     const navigate = useNavigate();
     const originalPostData = postData.sharedPost;
     const isReply = data.postType == PostType.REPLY;
-    const isShare = data.postType == PostType.SHARE_REPLY;
-    const hasShared = postData.shares.length;
     const hasMidia = postData.hasMidia;
-    // const isMeShare = data.postType == PostType.SHARE && data.author.id == user.id;
     const usePostData = isReply ? postData.sharedPost : postData;
     const formatedDate = formatDate(postData.createdAt);
     const numLikes = usePostData._count.likes;
@@ -131,10 +127,6 @@ function PostShareWithReply({ user, data }) {
 
         setIsShareOrReplyPosition(position);
 
-        // if (hasShared) {
-        //     handleShare(e);
-        //     return;
-        // }
         setIsShareOrReplyOpen(true);
     }
 
@@ -167,20 +159,6 @@ function PostShareWithReply({ user, data }) {
         deletePost(postData.id, false);
         setIsDeleted(true);
     }
-
-
-    // useEffect(() => {
-    //     const handleEsc = (event) => {
-    //         if (event.key === 'Escape') {
-    //             handleCloseDialog(event);
-    //         }
-    //     };
-    //     window.addEventListener('keydown', handleEsc);
-
-    //     return () => {
-    //         window.removeEventListener('keydown', handleEsc);
-    //     };
-    // }, []);
 
     if (isDeleted || postData.deleted) return null;
 

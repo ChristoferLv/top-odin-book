@@ -2,7 +2,7 @@ import { formatDate } from "../utils/dateUtils";
 import UserPicture from "../components/UserPicture"
 import { PostType, USER_PICTURE_DEFAULT_SIZE } from "../utils/defaults"
 import { bookmarkPost, dislikePost, likePost, removeBookmarkPost, sharePost, unsharePost } from "../../api/requests";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import ReplyDialog from "./ReplyDialog";
 import ShareOrReplyDialog from "./ShareOrReplyDialog";
@@ -14,13 +14,15 @@ import { ToastContext } from "../ToastsContext";
 
 function PostWithComment({ user, data, onPostPage }) {
     const [postData, setPostData] = useState(data);
-    const [isMeShare, setIsMeShare] = useState(data.postType == PostType.SHARE && data.author.id == user.id);
     const [isOriginalPostDialogOpen, setisOriginalPostDialogOpen] = useState(false);
     const [isReplyPostDialogOpen, setisReplyPostDialogOpen] = useState(false);
     const [isShareOrReplyOpen, setIsShareOrReplyOpen] = useState(0);
     const [isOriginalShareDialogOpen, setisOriginalShareDialogOpen] = useState(false);
     const [isReplyShareDialogOpen, setisReplyShareDialogOpen] = useState(false);
     const [isShareOrReplyPosition, setIsShareOrReplyPosition] = useState({});
+    const [isReplyDeleted, setIsReplyDeleted] = useState(data.deleted);
+    const [isOriginalDeleted, setIsOriginalDeleted] = useState(data.originalPost.deleted);
+    const [showDeleteBalloon, setShowDeleteBalloon] = useState(0);
     const { deletePost } = useContext(FeedContext);
     const { addToast } = useContext(ToastContext);
 
@@ -28,19 +30,12 @@ function PostWithComment({ user, data, onPostPage }) {
     const originalPostData = postData.originalPost;
     const originalHasMidia = originalPostData.hasMidia;
     const replyHasMidia = postData.hasMidia;
-    const isReply = data.postType == PostType.REPLY;
     const isShare = data.postType == PostType.SHARE;
-    // const isMeShare = data.postType == PostType.SHARE && data.author.id == user.id;
-    const usePostData = isReply ? postData.originalPost : postData;
-    const formatedDate = formatDate(postData.createdAt);
 
     const isOriginalMy = data.originalPost.authorId == user.id;
     const isReplyMy = data.authorId == user.id;
-    const [showDeleteBalloon, setShowDeleteBalloon] = useState(0);
     const moreBtnRefOriginal = useRef(null);
     const moreBtnRefReply = useRef(null);
-    const [isReplyDeleted, setIsReplyDeleted] = useState(data.deleted);
-    const [isOriginalDeleted, setIsOriginalDeleted] = useState(data.originalPost.deleted);
 
     async function handleLike(e, onOriginal) {
         e.stopPropagation();
@@ -138,18 +133,10 @@ function PostWithComment({ user, data, onPostPage }) {
 
         setIsShareOrReplyPosition(position);
         if (onOriginal) {
-            // if (originalPostData.shares.length) {
-            //     handleShare(e, onOriginal);
-            //     return;
-            // }
             setIsShareOrReplyOpen(1);
         }
 
         if (!onOriginal) {
-            // if (postData.shares.length) {
-            //     handleShare(e, onOriginal);
-            //     return;
-            // }
             setIsShareOrReplyOpen(2);
         }
     }
@@ -206,7 +193,6 @@ function PostWithComment({ user, data, onPostPage }) {
     }
 
     function handleCloseDialog(e) {
-        // e.stopPropagation();
         setisOriginalPostDialogOpen(false);
         setisReplyPostDialogOpen(false);
         setisOriginalShareDialogOpen(false);
@@ -266,20 +252,6 @@ function PostWithComment({ user, data, onPostPage }) {
         }
         setShowDeleteBalloon(0);
     }
-
-    // useEffect(() => {
-    //     const handleEsc = (event) => {
-    //         if (event.key === 'Escape') {
-    //             console.log("called here")
-    //             handleCloseDialog(event);
-    //         }
-    //     };
-    //     window.addEventListener('keydown', handleEsc);
-
-    //     return () => {
-    //         window.removeEventListener('keydown', handleEsc);
-    //     };
-    // }, []);
 
     if (isReplyDeleted) return null;
 

@@ -5,9 +5,9 @@ import { checkUser } from "../utils.js";
 import multer from 'multer';
 
 
+const authRouter = Router();
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
-const authRouter = Router();
 
 authRouter.get("/me", passport.authenticate('jwt', { session: false }), checkUser, getMe);
 authRouter.post("/login", login);

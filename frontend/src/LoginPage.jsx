@@ -4,10 +4,10 @@ import { Link, useNavigate } from "react-router";
 import { getMe, login } from "../api/requests";
 
 function LoginPage() {
+    const { setUser } = useContext(AuthContext);
     const [credentials, setCredentials] = useState({ username: '', password: '' });
-    const { user, setUser } = useContext(AuthContext);
-    const navigate = useNavigate();
     const [errorVisible, setErrorVisible] = useState(false);
+    const navigate = useNavigate();
 
     function isAllValid() {
         const inputs = document.querySelectorAll("input");
@@ -15,10 +15,6 @@ function LoginPage() {
         return allValid;
     }
 
-    /**
-   * 
-   * @param {React.ChangeEvent<HTMLInputElement>} event 
-   */
     function handlePersonalInfo(event) {
         const whoChanged = event.target;
         setCredentials({ ...credentials, [whoChanged.name]: whoChanged.value });
@@ -30,12 +26,12 @@ function LoginPage() {
         const rawResponse = await login(credentials);
 
         setErrorVisible(false);
-        if (rawResponse.status == 401) {
+        if (rawResponse && rawResponse.status == 401) {
             setErrorVisible(true);
             return;
         }
 
-        if (rawResponse.status == 200) {
+        if (rawResponse && rawResponse.status == 200) {
             const content = await rawResponse.json();
             localStorage.setItem("token", content.token);
         } else {

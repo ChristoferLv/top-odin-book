@@ -1,8 +1,6 @@
 import 'dotenv/config';
 import express, { json, urlencoded } from "express";
-import { passport } from "./authUtils.js";
 import authRouter from "./routes/authRoutes.js";
-import { prisma } from "./lib/prisma.js";
 import cors from 'cors'
 import jwt from 'jsonwebtoken';
 import postRouter from './routes/postRoutes.js';
@@ -38,7 +36,6 @@ app.use((req, res, next) => {
       console.log(`📝 ${timestamp} - ${method} ${url}`);
       console.log("   └req.body ->", req.body)
     }
-    //console.log(req.headers.cookie)
 
     const originalJson = res.json.bind(res)
     res.json = (body) => {
@@ -59,8 +56,6 @@ app.use("/follows", followRouter);
 app.use("/notifications", notificationRouter);
 app.use("/auth", authRouter);
 app.get("/socket", (req, res) => {
-  console.log("emiting")
-  io.emit("notification", "ALOOOOO!")
   res.send({ ok: true })
 })
 

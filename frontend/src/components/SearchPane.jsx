@@ -1,7 +1,6 @@
-import { useCallback, useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
-import NewPost from "./NewPost";
+import {  useContext, useEffect,  useRef, useState } from "react";
 import PostsList from "./PostsList";
-import { fetchAllPosts, searchPosts, searchUsers } from "../../api/requests";
+import { searchPosts, searchUsers } from "../../api/requests";
 import { AuthContext } from "../AuthContext";
 import { useLocation, useNavigate, useSearchParams } from "react-router";
 import UsersList from "./UsersList";
@@ -15,14 +14,9 @@ function SearchPane() {
         PEOPLE: "PEOPLE",
     });
 
-    // useEffect(() => {
-    //     document.getElementById("master-pane").scrollTo(0, 0);
-    // }, [location.pathname+location.search]);
-
-    const { user, setUser } = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
-    // const [searchOption, setSearchOption] = useState(SearchOptions.POSTS);
     const [searchTerm, setSearchTerm] = useState(searchParams.get("q") ? searchParams.get("q") : "");
     const [postsList, setPostsList] = useState([]);
     const [usersList, setUsersList] = useState([]);
@@ -33,8 +27,6 @@ function SearchPane() {
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
     const observerTarget = useRef(null);
-    const lastPage = useRef(0);
-    const [count, setCount] = useState(0);
 
     const searchKey = location.pathname + location.search;
     const [prevSearchKey, setPrevSearchKey] = useState(searchKey);
@@ -47,25 +39,8 @@ function SearchPane() {
         setLoading(false); 
     }
 
-    function resetPagination() {
-        // console.log("reset pagination")
-        setPage(1);
-        setHasMore(true);
-        setLoading(false);
-        setPostsList([]);
-        setUsersList([]);
-    }
-
     function handleChangeSearchOption(option) {
         if (option == searchOption) return;
-        // setPostsList([]);
-        // setUsersList([]);
-        // resetPagination();
-        // lastPage.current = 0;
-
-        // setPostsList([]);
-        // setUsersList([]);
-        // setSearchOption(option);
         const paramsObj = Object.fromEntries([...searchParams]);
         if (!paramsObj.q || paramsObj.q == "") {
             setSearchParams({ ...paramsObj, f: option.toLowerCase() });
@@ -74,17 +49,7 @@ function SearchPane() {
         }
     }
 
-    // function handleSearchTerm(e) {
-    //     setSearchTerm(e.target.value);
-    // }
-
     function handleSearch(value) {
-        // console.log("called handle value")
-        // setPostsList([]);
-        // setUsersList([]);
-        // resetPagination();
-        // lastPage.current = 0;
-        // resetPagination();
         const paramsObj = Object.fromEntries([...searchParams]);
         const { q, f, pf } = { ...paramsObj };
         if (value.length == 0) {
@@ -104,74 +69,16 @@ function SearchPane() {
         setSearchTerm(value);
     }
 
-    // useLayoutEffect(() => {
-    //     setPostsList([]);
-    //     setUsersList([]);
-    //     resetPagination();
-    //     // setCount((c) => c + 1);
-    // }, [location.pathname + location.search]);
-
-    // const getPosts = useCallback(async (searchTerm, signal, page, ignore, loading) => {
-    //     console.log("called get posts", page, loading, ignore)
-    //     try {
-    //         if (loading) return;
-    //         setLoading(true);
-
-    //         const result = await searchPosts(searchTerm, page, signal);
-    //         if (ignore.ignore) return;
-    //         if (result && result.success) {
-    //             if (result.data.length == 0) {
-    //                 setHasMore(false);
-    //             } else {
-    //                 setPostsList((prev) => [...prev, ...result.data]);
-    //             }
-    //         }
-    //     } catch (e) {
-    //         console.log(e);
-    //     } finally {
-    //         if (!ignore.ignore) setLoading(false);
-    //     }
-    // }, []);
-
-    // const getUsers = useCallback(async (searchTerm, signal, page, ignore) => {
-    //     console.log("called get users", page, ignore)
-    //     try {
-    //         if (loading) return;
-    //         setLoading(true);
-
-    //         const result = await searchUsers(searchTerm, page, signal);
-    //         if (ignore) return;
-    //         if (result && result.success) {
-    //             console.log("result", result.data)
-    //             if (result.data.length == 0) {
-    //                 setHasMore(false);
-    //             } else {
-    //                 setUsersList((prev) => [...prev, ...result.data]);
-    //             }
-    //         }
-    //     } catch (e) {
-    //         console.log(e);
-    //     } finally {
-    //         if (!ignore) setLoading(false);
-    //     }
-    // }, [loading])
-
-
-
     useEffect(() => {
-        // console.log("searchkey", searchKey)
-        // console.log("recalling", page, location.pathname + location.search)
         let ignore = false;
         const controller = new AbortController();
 
         async function getPosts(searchTerm, page) {
-            // console.log("called get posts", ignore)
             try {
                 if (loading) return;
                 setLoading(true);
 
                 const result = await searchPosts(searchTerm, page, controller.signal);
-                // console.log("will ignore", ignore)
                 if (ignore) return;
                 if (result && result.success) {
                     if (result.data.length == 0) {
@@ -189,7 +96,6 @@ function SearchPane() {
 
 
         async function getUsers(searchTerm, page) {
-            // console.log("called get users", ignore)
             try {
                 if (loading) return;
                 setLoading(true);
@@ -197,7 +103,6 @@ function SearchPane() {
                 const result = await searchUsers(searchTerm, page, controller.signal);
                 if (ignore) return;
                 if (result && result.success) {
-                    // console.log("result", result.data)
                     if (result.data.length == 0) {
                         setHasMore(false);
                     } else {
@@ -222,13 +127,12 @@ function SearchPane() {
         }
 
 
-        return () => { ignore = true; controller.abort("abort"); }
+        return () => { ignore = true; controller.abort(); }
     }, [searchKey, page]);
 
     useEffect(() => {
         const observer = new IntersectionObserver(
             (entries) => {
-                // console.log(entries[0].isIntersecting, hasMore, !loading, (postsList.length != 0 || usersList.length != 0))
                 if (entries[0].isIntersecting && hasMore && !loading && (postsList.length != 0 || usersList.length != 0)) {
                     setPage((prevPage) => prevPage + 1);
                 }

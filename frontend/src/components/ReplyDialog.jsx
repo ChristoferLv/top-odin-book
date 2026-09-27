@@ -36,7 +36,6 @@ function ReplyDialog({ isOpen, user, originalPost, onCancel, onConfirm }) {
     }
 
     async function postReply(e) {
-        // console.log(fileInputRef.current, fileInputRef.current.files)
         const formData = new FormData();
         formData.append("picture", fileInputRef.current.files[0]);
         formData.append("content", replyContent)
@@ -57,7 +56,6 @@ function ReplyDialog({ isOpen, user, originalPost, onCancel, onConfirm }) {
     }
 
     async function handleUploadImage(e) {
-        // e.target.parentElement.requestSubmit();
         const file = e.target.files[0];
 
         if (file.size > 5000000) {
@@ -115,7 +113,6 @@ function ReplyDialog({ isOpen, user, originalPost, onCancel, onConfirm }) {
     }, []);
 
     if (!isOpen) return null;
-    const formatedDate = formatDate(originalPost.createdAt);
 
     return (
         <>
