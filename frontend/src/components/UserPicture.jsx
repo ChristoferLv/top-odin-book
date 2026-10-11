@@ -12,7 +12,6 @@ function UserPicture({ id, username, size, useBorder }) {
     const imageUrl = URL.createObjectURL(blob);
     const navigate = useNavigate();
 
-
     useEffect(() => {
         async function getPicture() {
             if (id) {

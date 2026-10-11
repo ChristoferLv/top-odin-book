@@ -30,7 +30,7 @@ function NotificationsPane() {
             notificationSetter(0);
             markNotificationsAsRead(controller.signal);
         }
-        return () => controller.abort("abort");
+        return () => controller.abort();
 
     }, []);
 

@@ -15,6 +15,8 @@ import LoadingSpinner from "./components/LoadingSpinner";
 import DeletePostBalloon from "./components/DeletePostBalloon";
 import { FeedContext } from "./FeedContext";
 import { ToastContext } from "./ToastsContext";
+import hoverTimer from "./OnHoverTimer";
+import UserCardInfos from "./components/UserCardInfos";
 
 function PostPage() {
     const { user } = useContext(AuthContext);
@@ -29,6 +31,8 @@ function PostPage() {
     const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
     const [isShareOrReplyOpen, setIsShareOrReplyOpen] = useState(false);
     const [isShareOrReplyPosition, setIsShareOrReplyPosition] = useState({});
+
+    const { isOpen, hoverRef, handleMouseEnter, handleMouseLeave } = hoverTimer();
 
     const isMyPost = postData?.authorId == user?.id;
     const [showDeleteBalloon, setShowDeleteBalloon] = useState(false);
@@ -68,6 +72,7 @@ function PostPage() {
             }
         }
         getPostData();
+        setReplies([]);
     }, [location.pathname]);
 
     function goToPostAuthor() {
@@ -211,7 +216,7 @@ function PostPage() {
                 <MakeReply postId={postData.id} onSuccess={handleSuccessReply} />
             </div>
 
-            <InfiniteRepliesList postId={postData.id} user={user} key={location.pathname} replies={replies} updateReplies={updateReplies} />
+            <InfiniteRepliesList postId={postData.id} user={user} key={postData.id} replies={replies} updateReplies={updateReplies} />
 
         </div>
 
@@ -221,6 +226,9 @@ function PostPage() {
     return (
         <>
             <div className="post-page">
+                <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+                    {isOpen && <UserCardInfos key={postData.author.username} username={postData.author.username} hoverRef={hoverRef} isMe={postData.author.id == user.id} />}
+                </div>
                 <div className="my-page-header">
                     <div className="my-page-top">
                         <div onClick={() => navigate(-1)} className="my-page-back-button">
@@ -236,10 +244,16 @@ function PostPage() {
                 </div>
                 <div className="post-view">
                     <div className="post-view-head" onClick={goToPostAuthor}>
-                        <UserPicture key={postData.author.id} id={postData.author.id} username={postData.author.username} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
+                        <div className="picture-wrap" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+                            <UserPicture key={postData.author.id} id={postData.author.id} username={postData.author.username} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
+                        </div>
                         <div className="post-view-user-data">
-                            <span>{postData.author.name}</span>
-                            <span>@{postData.author.username}</span>
+                            <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+                                <span className="post-name">{postData.author.name}</span>
+                            </div>
+                            <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+                                <span className="post-username">@{postData.author.username}</span>
+                            </div>
                         </div>
                         {showDeleteBalloon && <DeletePostBalloon isOpen={showDeleteBalloon} postId={postData.id} onDelete={onDelete} onClose={handleMoreButton} postRef={moreBtnRef} />}
                         {isMyPost && <div className="more-button" onClick={handleMoreButton} ref={moreBtnRef} >
@@ -302,7 +316,7 @@ function PostPage() {
                     <MakeReply postId={postData.id} onSuccess={handleSuccessReply} />
                 </div>
 
-                <InfiniteRepliesList postId={postData.id} user={user} key={location.pathname} replies={replies} updateReplies={updateReplies} />
+                <InfiniteRepliesList postId={postData.id} user={user} key={postData.id} replies={replies} updateReplies={updateReplies} />
             </div>
             {isDialogOpen && <ReplyDialog isOpen={isDialogOpen} originalPost={postData} user={user} onCancel={handleCloseDialog} onConfirm={handleCloseDialog} />}
             {isShareDialogOpen && <ShareWithReply isOpen={isShareDialogOpen} originalPost={postData} user={user} onCancel={handleCloseDialog} onConfirm={successShareReply} />}
@@ -344,7 +358,7 @@ function InfiniteRepliesList({ user, postId, replies, updateReplies }) {
         }
         getReplies(page);
 
-        return () => { ignore = true; controller.abort("abort") };
+        return () => { ignore = true; controller.abort() };
     }, [page]);
 
     useEffect(() => {

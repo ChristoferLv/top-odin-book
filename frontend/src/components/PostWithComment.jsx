@@ -11,6 +11,8 @@ import PostMidia from "./PostMidia";
 import DeletePostBalloon from "./DeletePostBalloon";
 import { FeedContext } from "../FeedContext";
 import { ToastContext } from "../ToastsContext";
+import hoverTimer from "../OnHoverTimer";
+import UserCardInfos from "./UserCardInfos";
 
 function PostWithComment({ user, data, onPostPage }) {
     const [postData, setPostData] = useState(data);
@@ -27,6 +29,8 @@ function PostWithComment({ user, data, onPostPage }) {
     const { addToast } = useContext(ToastContext);
 
     const navigate = useNavigate();
+    const { isOpen, hoverRef, handleMouseEnter, handleMouseLeave } = hoverTimer();
+
     const originalPostData = postData.originalPost;
     const originalHasMidia = originalPostData.hasMidia;
     const replyHasMidia = postData.hasMidia;
@@ -253,22 +257,42 @@ function PostWithComment({ user, data, onPostPage }) {
         setShowDeleteBalloon(0);
     }
 
+    const hoverData = useRef(null);
+    function onHoverCard(e, onOriginal) {
+        handleMouseEnter(e);
+        if (isOpen) return;
+        if (onOriginal) {
+            hoverData.current = originalPostData;
+        } else {
+            hoverData.current = postData;
+        }
+    }
+
     if (isReplyDeleted) return null;
 
     return (
         <>
             <div className="post-with-comment">
+                <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+                    {isOpen && <UserCardInfos key={hoverData.current.author.username} username={hoverData.current.author.username} hoverRef={hoverRef} isMe={hoverData.current.author.id == user.id} />}
+                </div>
                 {!isOriginalDeleted && <div className="original-post post" onClick={() => handleSeePost(true)}>
                     {/* <div className="chain"></div> */}
                     <div className="post-body">
                         <div className="left-side">
-                            <UserPicture id={originalPostData.author.id} username={originalPostData.author.username} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
+                            <div className="picture-wrap" onMouseEnter={(e) => onHoverCard(e, true)} onMouseLeave={handleMouseLeave}>
+                                <UserPicture id={originalPostData.author.id} username={originalPostData.author.username} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
+                            </div>
                             <div className="chain"></div>
                         </div>
                         <div className="post-data">
                             <div className="post-head" onClick={(e) => { handleSeeAuthor(e, true) }}>
-                                <span className="post-name">{originalPostData.author.name}</span>
-                                <span className="post-username">@{originalPostData.author.username}</span>
+                                <div onMouseEnter={(e) => onHoverCard(e, true)} onMouseLeave={handleMouseLeave}>
+                                    <span className="post-name">{originalPostData.author.name}</span>
+                                </div>
+                                <div onMouseEnter={(e) => onHoverCard(e, true)} onMouseLeave={handleMouseLeave}>
+                                    <span className="post-username">@{originalPostData.author.username}</span>
+                                </div>
                                 <span className="post-date"> • {formatDate(originalPostData.createdAt)}</span>
                                 {showDeleteBalloon == 1 && <DeletePostBalloon isOpen={showDeleteBalloon} postId={postData.id} onDelete={onDelete} onClose={handleMoreButton} postRef={moreBtnRefOriginal} />}
                                 {isOriginalMy && <div className="more-button" onClick={(e) => handleMoreButton(e, true)} ref={moreBtnRefOriginal} >
@@ -347,11 +371,17 @@ function PostWithComment({ user, data, onPostPage }) {
                         </div>
                         }
                         <div className="post-body">
-                            <UserPicture id={postData.author.id} username={postData.author.username} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
+                            <div className="picture-wrap" onMouseEnter={(e) => onHoverCard(e, false)} onMouseLeave={handleMouseLeave}>
+                                <UserPicture id={postData.author.id} username={postData.author.username} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
+                            </div>
                             <div className="post-data">
                                 <div className="post-head" onClick={(e) => { handleSeeAuthor(e, false) }}>
-                                    <span className="post-name">{postData.author.name}</span>
-                                    <span className="post-username">@{postData.author.username}</span>
+                                    <div onMouseEnter={(e) => onHoverCard(e, false)} onMouseLeave={handleMouseLeave}>
+                                        <span className="post-name">{postData.author.name}</span>
+                                    </div>
+                                    <div onMouseEnter={(e) => onHoverCard(e, false)} onMouseLeave={handleMouseLeave}>
+                                        <span className="post-username">@{postData.author.username}</span>
+                                    </div>
                                     <span className="post-date"> • {formatDate(postData.createdAt)}</span>
                                     {showDeleteBalloon == 2 && <DeletePostBalloon isOpen={showDeleteBalloon} postId={postData.id} onDelete={onDelete} onClose={handleMoreButton} postRef={moreBtnRefReply} />}
                                     {isReplyMy && <div className="more-button" onClick={(e) => handleMoreButton(e, false)} ref={moreBtnRefReply} >

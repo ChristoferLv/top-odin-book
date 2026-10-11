@@ -108,7 +108,7 @@ function MyPage() {
             }
         }
         fetchUserData();
-    }, [location.pathname])
+    }, [location.pathname]);
 
 
     if (!userData || !user) return <div className="loading"><p>Loading</p></div>
@@ -257,7 +257,7 @@ function InfinitePostsList({ user, listOption, fullReplies }) {
         }
         getPosts(page);
 
-        return () => { ignore = true; controller.abort("abort") };
+        return () => { ignore = true; controller.abort() };
     }, [searchKey, page]);
 
     useEffect(() => {

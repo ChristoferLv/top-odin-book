@@ -43,7 +43,7 @@ function UsersPage() {
 
         getAllUsers();
 
-        return () => { ignore = true; controller.abort("cancel") }
+        return () => { ignore = true; controller.abort() }
 
     }, [page]);
 

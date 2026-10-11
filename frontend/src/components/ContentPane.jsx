@@ -34,7 +34,7 @@ function ContentPane() {
     useEffect(() => {
         if (feed.length > 0) {
             isRecovering.current = true;
-            updatePostsList(feed, false);
+            setPostsList(feed);
             setPage(pageOnContext);
         } else {
             sessionStorage.setItem("posts-scroll", 0);
@@ -104,7 +104,7 @@ function ContentPane() {
 
         getPosts(page);
 
-        return () => { ignore = true; controller.abort("abort") }
+        return () => { ignore = true; controller.abort() }
     }, [page]);
 
     useEffect(() => {

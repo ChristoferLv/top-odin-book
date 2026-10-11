@@ -12,6 +12,8 @@ import PostMidia from "./PostMidia";
 import DeletePostBalloon from "./DeletePostBalloon";
 import { FeedContext } from "../FeedContext";
 import { ToastContext } from "../ToastsContext";
+import hoverTimer from "../OnHoverTimer";
+import UserCardInfos from "./UserCardInfos";
 
 function PostShareWithReply({ user, data }) {
     const { deletePost } = useContext(FeedContext);
@@ -23,6 +25,8 @@ function PostShareWithReply({ user, data }) {
     const [isShareOrReplyPosition, setIsShareOrReplyPosition] = useState({});
 
     const navigate = useNavigate();
+    const { isOpen, hoverRef, handleMouseEnter, handleMouseLeave } = hoverTimer();
+
     const originalPostData = postData.sharedPost;
     const isReply = data.postType == PostType.REPLY;
     const hasMidia = postData.hasMidia;
@@ -165,12 +169,21 @@ function PostShareWithReply({ user, data }) {
     return (
         <>
             <div className="post" onClick={handleSeePost}>
+                <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+                    {isOpen && <UserCardInfos key={usePostData.author.username} username={usePostData.author.username} hoverRef={hoverRef} isMe={usePostData.author.id == user.id} />}
+                </div>
                 <div className="post-body">
-                    <UserPicture id={postData.author.id} username={postData.author.username} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
+                    <div className="picture-wrap" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+                        <UserPicture id={postData.author.id} username={postData.author.username} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
+                    </div>
                     <div className="post-data">
                         <div className="post-head">
-                            <span className="post-name">{postData.author.name}</span>
-                            <span className="post-username">@{postData.author.username}</span>
+                            <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+                                <span className="post-name">{postData.author.name}</span>
+                            </div>
+                            <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+                                <span className="post-username">@{postData.author.username}</span>
+                            </div>
                             <span className="post-date"> • {formatedDate}</span>
                             {showDeleteBalloon && <DeletePostBalloon isOpen={showDeleteBalloon} postId={postData.id} onDelete={onDelete} onClose={handleMoreButton} postRef={moreBtnRef} />}
                             {isMyPost && <div className="more-button" onClick={handleMoreButton} ref={moreBtnRef} >

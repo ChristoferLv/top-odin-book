@@ -80,7 +80,7 @@ function FollowageListing() {
             getFollowersOfUser();
         }
 
-        return () => { setUsersList([]); controller.abort("cancel"); }
+        return () => { setUsersList([]); controller.abort(); }
 
     }, [location.pathname + location.search]);
 

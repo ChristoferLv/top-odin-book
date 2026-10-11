@@ -14,16 +14,19 @@ import LoadingSpinner from "./components/LoadingSpinner";
 import { FeedContext } from "./FeedContext";
 import DeletePostBalloon from "./components/DeletePostBalloon";
 import { ToastContext } from "./ToastsContext";
+import hoverTimer from "./OnHoverTimer";
+import UserCardInfos from "./components/UserCardInfos";
 
 function SeeingPicturePage() {
-    const { user} = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
     const { addToast } = useContext(ToastContext);
-    const {  postId } = useParams();
+    const { postId } = useParams();
     const { deletePost } = useContext(FeedContext);
     const navigate = useNavigate();
     const location = useLocation();
     const [postData, setPostData] = useState(null);
     const [isShareOrReplyPosition, setIsShareOrReplyPosition] = useState({});
+    const { isOpen, hoverRef, handleMouseEnter, handleMouseLeave } = hoverTimer();
 
 
     const commentBox = useRef();
@@ -274,12 +277,21 @@ function SeeingPicturePage() {
                     </div>
                 </div>
                 <div className="side-container">
+                    <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+                        {isOpen && <UserCardInfos key={postData.author.username} username={postData.author.username} hoverRef={hoverRef} isMe={postData.author.id == user.id} />}
+                    </div>
                     <div className="actions-container">
                         <div onClick={goToPostAuthor} className="actions-container-header">
-                            <UserPicture id={postData.author.id} username={postData.author.username} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
+                            <div className="picture-wrap" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+                                <UserPicture id={postData.author.id} username={postData.author.username} size={USER_PICTURE_DEFAULT_SIZE} useBorder={false} />
+                            </div>
                             <div className="actions-container-user-data">
-                                <span>{postData.author.name}</span>
-                                <span>@{postData.author.username}</span>
+                                <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+                                    <span className="post-name">{postData.author.name}</span>
+                                </div>
+                                <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+                                    <span className="post-username">@{postData.author.username}</span>
+                                </div>
                             </div>
                             {showDeleteBalloon && <DeletePostBalloon isOpen={showDeleteBalloon} postId={postData.id} onDelete={onDelete} onClose={handleMoreButton} postRef={moreBtnRef} />}
                             {isMyPost && <div className="more-button" onClick={handleMoreButton} ref={moreBtnRef} >
@@ -394,7 +406,7 @@ function InfiniteRepliesList({ user, postId, replies, updateReplies }) {
         }
         getReplies(page);
 
-        return () => { ignore = true; controller.abort("abort") };
+        return () => { ignore = true; controller.abort() };
     }, [page]);
 
     useEffect(() => {

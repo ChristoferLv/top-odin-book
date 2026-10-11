@@ -27,7 +27,6 @@ async function login(credentials) {
             },
             body: JSON.stringify(credentials)
         });
-        console.log(rawResponse)
         return rawResponse;
     } catch (error) {
         console.log(error);
