@@ -3308,13 +3308,13 @@ header {
             font-size: 0.94rem
         }
 
-        span:nth-of-type(1) {
+        .post-name {
             color: var(--main-white-color);
             font-weight: bold;
         }
 
-        span:nth-of-type(2) {
-            margin-left: 7px;
+        .post-username {
+            margin-left: 5px;
             color: var(--shadowed-text-color);
         }
     }
@@ -3325,6 +3325,40 @@ header {
         -webkit-box-orient: vertical;
         overflow: hidden;
         word-break: break-word;
+    }
+
+    .only-midia-wrap {
+        display: flex;
+        align-items: center;
+        gap: 0 10px;
+
+        p {
+            margin: 0;
+            color: var(--shadowed-text-color);
+        }
+    }
+
+    .midia {
+        width: 40px;
+        height: 40px;
+    }
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: fill;
+    }
+
+    .picture-card-hover {
+        position: absolute;
+        flex-direction: column;
+        background-color: var(--main-dialog-color);
+        border-radius: 20px;
+        padding: 20px;
+        z-index: 9;
+        width: 300px;
+        max-height: 280px;
+        min-width: 0;
     }
 }
 
@@ -3346,12 +3380,9 @@ header {
 
 .user-card-hover {
     position: absolute;
-    display: hidden;
     flex-direction: column;
     background-color: var(--main-dialog-color);
     border-radius: 20px;
-    /* top: 10px;
-    left: 10px; */
     padding: 20px;
     z-index: 9;
     width: 300px;
