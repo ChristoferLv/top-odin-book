@@ -1209,6 +1209,7 @@ header {
 
 .picture-wrap {
     height: min-content;
+    width: min-content;
 }
 
 .pic-container {
@@ -2941,6 +2942,7 @@ header {
         gap: 0 10px;
         padding: 10px 0;
         border-bottom: solid 1px var(--main-border-color);
+        cursor: pointer;
     }
 
 
@@ -2977,6 +2979,12 @@ header {
 
     .unread {
         background-color: #041622;
+    }
+
+    .notifications-empty{
+        display: flex;
+        justify-content: center;
+        margin-top: 10px;
     }
 }
 

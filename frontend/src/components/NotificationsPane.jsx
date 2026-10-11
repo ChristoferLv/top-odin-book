@@ -4,6 +4,8 @@ import { fetchNotifications, markNotificationsAsRead } from '../../api/requests'
 import UserPicture from './UserPicture';
 import { formatDate } from "../utils/dateUtils";
 import { NotificationsContext } from "../NotificationsContext";
+import hoverTimer from "../OnHoverTimer";
+import UserCardInfos from "./UserCardInfos";
 
 
 function NotificationsPane() {
@@ -42,17 +44,24 @@ function NotificationsPane() {
                 </div>
             </div>
             <div className="notifications-list">
-                {notificationsList.map((notification) => {
-                    return <Notification key={notification.id} data={notification} />
-                })}
+                {notificationsList.length == 0 ?
+                    (<div className="notifications-empty">
+                        <p>No notifications yet!</p>
+                    </div>)
+
+                    : (notificationsList.map((notification) => {
+                        return <Notification key={notification.id} data={notification} />
+                    }))
+                }
             </div>
-        </div >
+        </div>
     </>)
 }
 
 
 function Notification({ data }) {
     const navigate = useNavigate();
+    const { isOpen, hoverRef, handleMouseEnter, handleMouseLeave } = hoverTimer();
     let action = "";
     let target = "";
     const formatedDate = formatDate(data.createdAt);
@@ -94,6 +103,9 @@ function Notification({ data }) {
 
     return (
         <>
+            <div className="card-container" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+                {isOpen && <UserCardInfos key={data.author.username} username={data.author.username} hoverRef={hoverRef} isMe={false} />}
+            </div>
             <div className={`notification-item ${isRead ? "" : "unread"}`} onClick={() => navigate(destination)}>
                 <div className="notification-type">
                     <div className="notification-icon">
@@ -117,7 +129,11 @@ function Notification({ data }) {
                 </div>
                 <div className="notification-body">
                     <div className="notification-head">
-                        <UserPicture id={data.authorId} username={data.username} size={32} useBorder={false} />
+                        <div className="picture-wrap">
+                            <div className="picture-wrap" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+                                <UserPicture id={data.authorId} username={data.author.username} size={32} useBorder={false} />
+                            </div>
+                        </div>
                     </div>
                     <div className="notification-content">
                         {action}
