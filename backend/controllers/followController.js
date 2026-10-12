@@ -1,6 +1,8 @@
 import { Prisma } from "../generated/prisma/index.js";
 import { prisma } from "../lib/prisma.js";
 
+const PAGE_SIZE = 15;
+
 async function removeFollower(req, res) {
     try {
 
@@ -73,9 +75,14 @@ async function getWhoToFollow(req, res) {
 
 async function getFollowersOfUser(req, res) {
     try {
-
+        const page = req.query.page;
         const username = req.params.username;
         const userId = req.user.id;
+
+        let toTake = {};
+        if (page && page > 0) {
+            toTake = { skip: (page - 1) * PAGE_SIZE, take: PAGE_SIZE }
+        }
         const result = await prisma.follows.findMany({
             where: {
                 following: {
@@ -93,7 +100,8 @@ async function getFollowersOfUser(req, res) {
                         followedBy: { where: { followingId: userId, }, select: { id: true } },
                     }
                 }
-            }
+            },
+            ...toTake
         });
 
         if (!result) {
@@ -112,9 +120,14 @@ async function getFollowersOfUser(req, res) {
 
 async function getWhoUserIsFollowing(req, res) {
     try {
-
+        const page = req.query.page;
         const username = req.params.username;
         const userId = req.user.id;
+
+        let toTake = {};
+        if (page && page > 0) {
+            toTake = { skip: (page - 1) * PAGE_SIZE, take: PAGE_SIZE }
+        }
 
         const result = await prisma.follows.findMany({
             where: {
@@ -133,7 +146,8 @@ async function getWhoUserIsFollowing(req, res) {
                         followedBy: { where: { followingId: userId, }, select: { id: true } },
                     }
                 }
-            }
+            },
+            ...toTake
         });
 
         if (!result) {

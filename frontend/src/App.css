@@ -3529,3 +3529,11 @@ header {
         transform: rotate(360deg);
     }
 }
+
+.list-empty{
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    color: white;
+    font-family: sans-serif;
+}

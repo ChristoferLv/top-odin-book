@@ -356,10 +356,10 @@ async function getFollowSuggestions() {
     }
 }
 
-async function fetchFollowersOfUser(username, signal) {
+async function fetchFollowersOfUser(username, signal, page) {
     try {
         const token = localStorage.getItem("token");
-        const request = await fetch(`http://localhost:3000/follows/${username}/followers`, {
+        const request = await fetch(`http://localhost:3000/follows/${username}/followers?page=${page}`, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -382,10 +382,10 @@ async function fetchFollowersOfUser(username, signal) {
     }
 }
 
-async function fetchWhoUserIsFollowing(username, signal) {
+async function fetchWhoUserIsFollowing(username, signal, page) {
     try {
         const token = localStorage.getItem("token");
-        const request = await fetch(`http://localhost:3000/follows/${username}/following`, {
+        const request = await fetch(`http://localhost:3000/follows/${username}/following?page=${page}`, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',

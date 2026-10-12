@@ -1,21 +1,19 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { fetchFollowersOfUser, fetchUserByUsername, fetchWhoUserIsFollowing } from "../../api/requests";
 import { AuthContext } from "../AuthContext";
 import { useLocation, useNavigate } from "react-router";
 import UsersList from "./UsersList";
 
+const SearchOptions = Object.freeze({
+    FOLLOWING: "FOLLOWING",
+    FOLLOWERS: "FOLLOWERS",
+});
 
 function FollowageListing() {
-    const SearchOptions = Object.freeze({
-        FOLLOWING: "FOLLOWING",
-        FOLLOWERS: "FOLLOWERS",
-    });
-
     const { user } = useContext(AuthContext);
     const location = useLocation();
     const navigate = useNavigate();
     const [userData, setUserData] = useState(null);
-    const [usersList, setUsersList] = useState([]);
 
     const parts = location.pathname.split("/");
     const curLocation = parts.at(-1);
@@ -23,11 +21,9 @@ function FollowageListing() {
     let searchOption = SearchOptions.FOLLOWING;
     if (curLocation == "followers") searchOption = SearchOptions.FOLLOWERS;
 
-
     function handleChangeSearchOption(option) {
         if (option == searchOption) return;
 
-        setUsersList([]);
         if (option == SearchOptions.FOLLOWING) {
             navigate(`/${userToList}/following`);
         }
@@ -46,43 +42,6 @@ function FollowageListing() {
         }
         fetchUserData();
     }, []);
-
-    useEffect(() => {
-        const controller = new AbortController();
-
-        async function getFollowersOfUser() {
-            try {
-                const result = await fetchFollowersOfUser(userToList, controller.signal);
-                if (result && result.success) {
-                    setUsersList(result.data)
-                }
-            } catch (e) {
-                if (controller.signal.aborted)
-                    return;
-            }
-        }
-
-        async function getWhoUserIsFollowing() {
-            try {
-                const result = await fetchWhoUserIsFollowing(userToList, controller.signal);
-                if (result && result.success) {
-                    setUsersList(result.data)
-                }
-            } catch (e) {
-                if (controller.signal.aborted)
-                    return;
-            }
-        }
-
-        if (searchOption == SearchOptions.FOLLOWING) {
-            getWhoUserIsFollowing();
-        } else {
-            getFollowersOfUser();
-        }
-
-        return () => { setUsersList([]); controller.abort(); }
-
-    }, [location.pathname + location.search]);
 
     if (!userData || !user) return <div className="loading"><p>Loading</p></div>
 
@@ -118,9 +77,110 @@ function FollowageListing() {
                     </div>
                 </div>
             </div>
-            {usersList.length != 0 && <UsersList usersList={usersList} />}
+            <InfiniteFollowageList key={location.pathname + user.id} listOption={searchOption} userToList={userToList} />
         </div >
     </>)
+}
+
+
+
+function InfiniteFollowageList({ userToList, listOption }) {
+    const [page, setPage] = useState(1);
+    const [loading, setLoading] = useState(false);
+    const [hasMore, setHasMore] = useState(true);
+    const [usersList, setUsersList] = useState([]);
+    const location = useLocation();
+
+    const observerTarget = useRef(null);
+    const searchKey = location.pathname + location.search;
+    const [prevSearchKey, setPrevSearchKey] = useState(searchKey);
+    if (prevSearchKey !== searchKey) {
+        setPrevSearchKey(searchKey);
+        setPage(1);
+        setHasMore(true);
+        setLoading(false);
+    }
+    useEffect(() => {
+        let ignore = false;
+        const controller = new AbortController();
+
+        async function getFollowage(page) {
+            if (loading) return;
+            setLoading(true);
+
+            try {
+                if (listOption == SearchOptions.FOLLOWING) {
+                    const result = await fetchWhoUserIsFollowing(userToList, controller.signal, page);
+                    if (ignore) return;
+                    if (result.data.length == 0) {
+                        setHasMore(false);
+                    } else {
+                        setUsersList((prev) => [...prev, ...result.data]);
+                    }
+                } else {
+                    const result = await fetchFollowersOfUser(userToList, controller.signal, page);
+                    if (ignore) return;
+                    if (result.data.length == 0) {
+                        setHasMore(false);
+                    } else {
+                        setUsersList((prev) => [...prev, ...result.data]);
+                    }
+                }
+            } catch (e) {
+                if (controller.signal.aborted)
+                    return;
+            } finally {
+                if (!ignore) setLoading(false);
+            }
+        }
+
+        getFollowage(page);
+
+        return () => { ignore = true; controller.abort(); };
+    }, [searchKey, page]);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting && hasMore && !loading && usersList.length != 0) {
+                    setPage((prevPage) => prevPage + 1);
+                }
+            },
+            { threshold: 0.5 }
+        );
+
+        if (observerTarget.current) {
+            observer.observe(observerTarget.current);
+        }
+
+        return () => {
+            if (observerTarget.current) {
+                observer.unobserve(observerTarget.current);
+            }
+        };
+    }, [hasMore, loading]);
+
+    if (usersList.length == 0 && !loading) {
+        if (listOption == SearchOptions.FOLLOWING) {
+            return (
+                <div className="list-empty">
+                    <p>You are not following anyone.</p>
+                </div>
+            );
+        } else {
+            return (
+                <div className="list-empty">
+                    <p>You do not have followers.</p>
+                </div>
+            );
+        }
+    }
+
+    return (
+        <>
+            {usersList.length != 0 && <UsersList key={searchKey} usersList={usersList} hasMore={hasMore} loading={loading} observerRef={observerTarget} />}
+        </>
+    );
 }
 
 
