@@ -21,7 +21,7 @@ function SeeingPicturePage() {
     const { user } = useContext(AuthContext);
     const { addToast } = useContext(ToastContext);
     const { postId } = useParams();
-    const { deletePost } = useContext(FeedContext);
+    const { deletePost, updateFeed } = useContext(FeedContext);
     const navigate = useNavigate();
     const location = useLocation();
     const [postData, setPostData] = useState(null);
@@ -100,41 +100,56 @@ function SeeingPicturePage() {
     }
 
     async function handleLike() {
+        const counts = postData._count;
+
         if (postData.likes.length) {
             const result = await dislikePost(postData.id);
             if (result && result.success) {
-                setPostData({ ...postData, likes: [], _count: { ...postData._count, likes: numLikes - 1 } });
+                counts.likes = counts.likes - 1;
+                setPostData({ ...postData, likes: [], _count: counts });
+                updateFeed(postData.id, { _count: counts, likes: [], bookmarks: postData.bookmarks, shares: postData.shares });
             }
             return;
         }
 
         const result = await likePost(postData.id);
         if (result && result.success) {
-            setPostData({ ...postData, likes: [{ id: result.data.id }], _count: { ...postData._count, likes: numLikes + 1 } });
+            counts.likes = counts.likes + 1;
+            setPostData({ ...postData, likes: [{ id: result.data.id }], _count: counts });
+            updateFeed(postData.id, { _count: counts, likes: [{ id: result.data.id }], bookmarks: postData.bookmarks, shares: postData.shares });
         }
     }
 
     async function handleShare() {
+        const counts = postData._count;
         if (hasShared) {
             const result = await unsharePost(postData.id);
             if (result && result.success) {
-                setPostData({ ...postData, shares: [], _count: { ...postData._count, shares: numShares - 1 } });
+                counts.shares = counts.shares - 1;
+                setPostData({ ...postData, shares: [], _count: counts });
+                updateFeed(postData.id, { _count: counts, shares: [], bookmarks: postData.bookmarks, likes: postData.likes });
             }
             return;
         }
 
         const result = await sharePost(postData.id);
         if (result && result.success) {
-            setPostData({ ...postData, shares: [{ id: result.data.id }], _count: { ...postData._count, shares: numShares + 1 } });
+            counts.shares = counts.shares + 1;
+            setPostData({ ...postData, shares: [{ id: result.data.id }], _count: counts });
+            updateFeed(postData.id, { _count: counts, shares: [{ id: result.data.id }], bookmarks: postData.bookmarks, likes: postData.likes });
         }
     }
 
     async function handleBookmark() {
+        const counts = postData._count;
+
         if (postData.bookmarks.length) {
             const result = await removeBookmarkPost(postData.id);
             if (result && result.success) {
                 addToast("Removed from the bookmarks");
-                setPostData({ ...postData, bookmarks: [], _count: { ...postData._count, bookmarks: numBookmarks - 1 } });
+                counts.bookmarks = counts.bookmarks - 1;
+                setPostData({ ...postData, bookmarks: [], _count: counts });
+                updateFeed(postData.id, { _count: counts, bookmarks: [], shares: postData.shares, likes: postData.likes });
             }
             return;
         }
@@ -142,7 +157,9 @@ function SeeingPicturePage() {
         const result = await bookmarkPost(postData.id);
         if (result && result.success) {
             addToast("Post added to the bookmarks");
-            setPostData({ ...postData, bookmarks: [{ id: result.data.id }], _count: { ...postData._count, bookmarks: numBookmarks + 1 } });
+            counts.bookmarks = counts.bookmarks + 1;
+            setPostData({ ...postData, bookmarks: [{ id: result.data.id }], _count: counts });
+            updateFeed(postData.id, { _count: counts, bookmarks: [{ id: result.data.id }], shares: postData.shares, likes: postData.likes });
         }
     }
 
@@ -160,7 +177,6 @@ function SeeingPicturePage() {
 
 
     function successShareReply(e) {
-        setPostData({ ...postData, _count: { ...postData._count, shares: numShares + 1 } });
         handleCloseDialog(e);
     }
 
@@ -195,7 +211,10 @@ function SeeingPicturePage() {
     }
 
     function handleSuccessReply(result) {
-        setPostData({ ...postData, _count: { ...postData._count, replyPost: numReplies + 1 } });
+        const counts = postData._count;
+        counts.replyPost = counts.replyPost + 1;
+        setPostData({ ...postData, _count: counts });
+        updateFeed(postData.id, { _count: counts, bookmarks: postData.bookmarks, shares: postData.shares, likes: postData.likes });
         updateReplies(result, true);
     }
 

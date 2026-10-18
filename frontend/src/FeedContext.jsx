@@ -5,17 +5,17 @@ export const FeedContext = createContext({
     feed: [],
     feedSetter: () => { },
     pageOnContext: 0,
-    feedSetter: () => { },
-    allowLoad: false,
-    setAllowLoad: () => { },
+    pageSetter: () => { },
+    deletePost: () => { },
+    updateFeed: () => { },
+    feedCount: 0
 });
 
 
 function FeedContextProvider({ children }) {
     const [feed, setFeed] = useState([]);
     const [pageOnContext, setPageOnContext] = useState(0);
-    const [allowLoad, setAllowLoad] = useState(false);
-    const [resetFeed, setResetFeed] = useState(false);
+    const [feedCount, setFeedCount] = useState(0);
 
     const feedSetter = useCallback((value) => {
         setFeed(value);
@@ -25,40 +25,46 @@ function FeedContextProvider({ children }) {
         setPageOnContext(value);
     }, []);
 
-    const allowLoadSetter = useCallback(() => {
-        setAllowLoad(true);
-    }, [])
-
-    const resetFeedSetter = useCallback((value) => {
-        setResetFeed(value);
-    }, []);
-
-    const deletePost = useCallback(async (postId, deleteOriginal) => {
+    const deletePost = useCallback(async () => {
         try {
             const newFeed = await fetchAllPosts(pageOnContext, null, true);
             if (newFeed && newFeed.success) {
                 setFeed(newFeed.data);
-            }else{
+            } else {
                 setFeed([]);
                 setPageOnContext(1);
             }
-        }catch(e){
+        } catch (e) {
             console.log(e);
-        }        
+        }
     }, []);
 
-    const deleteSharedPost = useCallback((postId) => {
+    const updateFeed = useCallback((postId, newValues) => {
+        setFeedCount(c => c + 1);
         const newFeed = feed.map((post) => {
             if (post.sharedPost && post.sharedPost.id == postId) {
-                return { ...post, sharedPost: { ...post.sharedPost, deleted: true } }
+                const updatedValues = { ...post.sharedPost, ...newValues };
+                return { ...post, sharedPost: updatedValues };
             }
+
+            if (post.originalPost && post.originalPost.id == postId) {
+                const updatedValues = { ...post.originalPost, ...newValues };
+                return { ...post, originalPost: updatedValues };
+            }
+
+            if (post.id == postId) {
+                const updatedValues = { ...post, ...newValues };
+                return updatedValues;
+            }
+
             return post;
         });
+
         setFeed(newFeed);
-    });
+    }, [feed]);
 
     return (
-        <FeedContext value={{ feed, feedSetter, pageOnContext, pageSetter, resetFeed, resetFeedSetter, deletePost, deleteSharedPost }} >
+        <FeedContext value={{ feed, feedSetter, pageOnContext, pageSetter, deletePost, updateFeed, feedCount }} >
             {children}
         </FeedContext>
     );

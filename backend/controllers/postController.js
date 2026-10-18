@@ -208,7 +208,7 @@ async function getAllPosts(req, res) {
                             select: {
                                 likes: true,
                                 replyPost: true,
-                                shares: true,
+                                shares: { where: { postType: { equals: "SHARE" } } },
                                 bookmarks: true
                             }
                         }
@@ -221,7 +221,7 @@ async function getAllPosts(req, res) {
                     select: {
                         likes: true,
                         replyPost: true,
-                        shares: true,
+                        shares: { where: { postType: { equals: "SHARE" } } },
                         bookmarks: true
                     }
                 },
@@ -242,14 +242,17 @@ async function getAllPosts(req, res) {
                             select: {
                                 likes: true,
                                 replyPost: true,
-                                shares: true,
+                                shares: { where: { postType: { equals: "SHARE" } } },
                                 bookmarks: true
                             }
                         },
                     }
                 },
             },
-            orderBy: { createdAt: "desc" },
+            orderBy: [
+                { createdAt: "desc" },
+                { id: "desc" },
+            ],
             ...toTake
         });
 
@@ -302,7 +305,7 @@ async function getPostById(req, res) {
                             select: {
                                 likes: true,
                                 replyPost: true,
-                                shares: true,
+                                shares: { where: { postType: { equals: "SHARE" } } },
                                 bookmarks: true
                             }
                         },
@@ -325,7 +328,7 @@ async function getPostById(req, res) {
                             select: {
                                 likes: true,
                                 replyPost: true,
-                                shares: true,
+                                shares: { where: { postType: { equals: "SHARE" } } },
                                 bookmarks: true
                             }
                         },
@@ -338,7 +341,7 @@ async function getPostById(req, res) {
                     select: {
                         likes: true,
                         replyPost: true,
-                        shares: true,
+                        shares: { where: { postType: { equals: "SHARE" } } },
                         bookmarks: true
                     }
                 },
@@ -470,7 +473,7 @@ async function searchPosts(req, res) {
                             select: {
                                 likes: true,
                                 replyPost: true,
-                                shares: true,
+                                shares: { where: { postType: { equals: "SHARE" } } },
                                 bookmarks: true
                             }
                         },
@@ -493,7 +496,7 @@ async function searchPosts(req, res) {
                             select: {
                                 likes: true,
                                 replyPost: true,
-                                shares: true,
+                                shares: { where: { postType: { equals: "SHARE" } } },
                                 bookmarks: true
                             }
                         },
@@ -506,7 +509,7 @@ async function searchPosts(req, res) {
                     select: {
                         likes: true,
                         replyPost: true,
-                        shares: true,
+                        shares: { where: { postType: { equals: "SHARE" } } },
                         bookmarks: true
                     }
                 },
@@ -557,8 +560,31 @@ async function getLikedPosts(req, res) {
                             select: {
                                 likes: true,
                                 replyPost: true,
-                                shares: true,
+                                shares: { where: { postType: { equals: "SHARE" } } },
                                 bookmarks: true
+                            }
+                        },
+                        sharedPost: {
+                            include: {
+                                author: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                        username: true
+                                    }
+                                },
+                                likes: { where: { whoLikedId: userId }, select: { id: true } },
+                                bookmarks: { where: { whoBookmarkedId: userId }, select: { id: true } },
+                                shares: { where: { authorId: userId, postType: "SHARE" }, select: { id: true } },
+                                midia: false,
+                                _count: {
+                                    select: {
+                                        likes: true,
+                                        replyPost: true,
+                                        shares: { where: { postType: { equals: "SHARE" } } },
+                                        bookmarks: true
+                                    }
+                                },
                             }
                         },
                     }
@@ -714,7 +740,7 @@ async function getSharedPosts(req, res) {
                             select: {
                                 likes: true,
                                 replyPost: true,
-                                shares: true,
+                                shares: { where: { postType: { equals: "SHARE" } } },
                                 bookmarks: true
                             }
                         },
@@ -727,7 +753,7 @@ async function getSharedPosts(req, res) {
                     select: {
                         likes: true,
                         replyPost: true,
-                        shares: true,
+                        shares: { where: { postType: { equals: "SHARE" } } },
                         bookmarks: true
                     }
                 },
@@ -872,7 +898,7 @@ async function getMyReplies(req, res) {
                             select: {
                                 likes: true,
                                 replyPost: true,
-                                shares: true,
+                                shares: { where: { postType: { equals: "SHARE" } } },
                                 bookmarks: true
                             }
                         },
@@ -885,7 +911,7 @@ async function getMyReplies(req, res) {
                     select: {
                         likes: true,
                         replyPost: true,
-                        shares: true,
+                        shares: { where: { postType: { equals: "SHARE" } } },
                         bookmarks: true
                     }
                 },
@@ -916,7 +942,7 @@ const makeReply = [
             }
 
             const postId = parseInt(req.params.postId);
-            const {content} = matchedData(req);
+            const { content } = matchedData(req);
 
             const exists = await prisma.posts.findUnique({
                 where: { id: postId }
@@ -976,7 +1002,7 @@ const makeReply = [
                                     select: {
                                         likes: true,
                                         replyPost: true,
-                                        shares: true,
+                                        shares: { where: { postType: { equals: "SHARE" } } },
                                         bookmarks: true
                                     }
                                 }
@@ -989,7 +1015,7 @@ const makeReply = [
                             select: {
                                 likes: true,
                                 replyPost: true,
-                                shares: true,
+                                shares: { where: { postType: { equals: "SHARE" } } },
                                 bookmarks: true
                             }
                         },
@@ -1068,7 +1094,7 @@ async function getRepliesOfPost(req, res) {
                     select: {
                         likes: true,
                         replyPost: true,
-                        shares: true,
+                        shares: { where: { postType: { equals: "SHARE" } } },
                         bookmarks: true
                     }
                 },
@@ -1137,7 +1163,7 @@ async function getBookmarkedPosts(req, res) {
                             select: {
                                 likes: true,
                                 replyPost: true,
-                                shares: true,
+                                shares: { where: { postType: { equals: "SHARE" } } },
                                 bookmarks: true
                             }
                         },
@@ -1231,7 +1257,7 @@ async function removePostBookmark(req, res) {
 
 async function getTrendingPosts(req, res) {
     const timeAgo = new Date();
-    timeAgo.setMinutes(timeAgo.getMinutes() - 1);
+    timeAgo.setMinutes(timeAgo.getMinutes() - 1); //Simbolic time just for easy testing
     try {
         const result = await prisma.$transaction(async (tx) => {
             const deletion = await tx.trending.deleteMany({
@@ -1256,6 +1282,8 @@ async function getTrendingPosts(req, res) {
                         }
                     }
                 });
+
+            // >0 0r >= would be the same since they are created and deleted 3 by 3 always
             if (getCurrent.length > 0) {
                 return getCurrent;
             }
@@ -1265,7 +1293,8 @@ async function getTrendingPosts(req, res) {
                 take: 3
             });
 
-            const newTrendsIds = newTrends.map((it) => { return { postId: it.id } });
+            const creationTime = new Date();
+            const newTrendsIds = newTrends.map((it) => { return { postId: it.id, createdAt: creationTime } });
 
             const saveTrends = await tx.trending.createManyAndReturn({
                 data: newTrendsIds,

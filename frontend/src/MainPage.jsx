@@ -113,7 +113,7 @@ function MainPage() {
     }
 
 
-    const { feedSetter, feed, pageOnContext, pageSetter, resetFeed, resetFeedSetter } = useContext(FeedContext);
+    const { feedSetter, pageSetter} = useContext(FeedContext);
     const { user, isLoading } = useContext(AuthContext);
     const navigate = useNavigate();
     const [count, setCount] = useState(1);
@@ -126,9 +126,7 @@ function MainPage() {
 
     function goHome() {
         if (location.pathname == "/") {
-            if (resetFeed) return;
             resetContext();
-            // resetFeedSetter(true);
             setCount(c => c + 1);
         }
         navigate("/");

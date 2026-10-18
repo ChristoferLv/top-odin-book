@@ -8,7 +8,7 @@ import { useLocation } from "react-router";
 
 function ContentPane() {
     const { user } = useContext(AuthContext);
-    const { feedSetter, feed, pageOnContext, pageSetter } = useContext(FeedContext);
+    const { feedSetter, feed, pageOnContext, pageSetter, feedCount } = useContext(FeedContext);
     const [postsList, setPostsList] = useState([]);
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
@@ -28,6 +28,7 @@ function ContentPane() {
             const oldIds = postsList.map((c) => c.id);
             const treatedNewList = data.filter((c) => !oldIds.includes(c.id));
             setPostsList((c) => [...c, ...treatedNewList]);
+            feedSetter([...postsList, ...treatedNewList]);
         }
     }
 
@@ -92,7 +93,6 @@ function ContentPane() {
                     } else {
                         updatePostsList(result.data, false);
                     }
-                    feedSetter([...feed, ...result.data]);
                     pageSetter(page);
                 }
             } catch (e) {
@@ -128,10 +128,14 @@ function ContentPane() {
         };
     }, [hasMore, loading, postsList]);
 
+    useEffect(() => {
+        setPostsList(feed);
+    }, [feedCount])
+
     return (<>
         <div className="content-pane">
             <NewPost user={user} updatePosts={updatePostsList} />
-            <PostsList hasMore={hasMore} loading={loading} observerRef={observerTarget} postsList={postsList} user={user} onUserPage={false} />
+            <PostsList hasMore={hasMore} loading={loading} observerRef={observerTarget} postsList={postsList} user={user} fullReplies={true} onBookmarksPage={false} onFeed={true}/>
         </div>
     </>)
 }

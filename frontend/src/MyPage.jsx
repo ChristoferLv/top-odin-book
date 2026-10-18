@@ -21,7 +21,7 @@ function MyPage() {
     const [previousUser, setPreviousUser] = useState(parts[1]);
     const curLocation = parts[2];
     let active = SeeingOptions.POSTS;
-    let showFullReplie = true;
+    let showFullReplie = false;
     switch (curLocation) {
         case "":
             active = SeeingOptions.POSTS;
@@ -34,7 +34,7 @@ function MyPage() {
             break;
         case "replies":
             active = SeeingOptions.REPLIES;
-            showFullReplie = false;
+            showFullReplie = true;
             break;
     }
 
@@ -283,7 +283,7 @@ function InfinitePostsList({ user, listOption, fullReplies }) {
 
     return (
         <>
-            <PostsList key={searchKey} observerRef={observerTarget} hasMore={hasMore} loading={loading} postsList={myPosts} user={user} onUserPage={fullReplies} />
+            <PostsList key={searchKey} observerRef={observerTarget} hasMore={hasMore} loading={loading} postsList={myPosts} user={user} fullReplies={fullReplies} onBookmarksPage={false} onFeed={false}/>
         </>
     );
 }

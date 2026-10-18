@@ -14,7 +14,7 @@ import { ToastContext } from "../ToastsContext";
 import hoverTimer from "../OnHoverTimer";
 import UserCardInfos from "./UserCardInfos";
 
-function PostWithComment({ user, data, onPostPage }) {
+function PostWithComment({ user, data, onPostPage, onFeed }) {
     const [postData, setPostData] = useState(data);
     const [isOriginalPostDialogOpen, setisOriginalPostDialogOpen] = useState(false);
     const [isReplyPostDialogOpen, setisReplyPostDialogOpen] = useState(false);
@@ -25,86 +25,108 @@ function PostWithComment({ user, data, onPostPage }) {
     const [isReplyDeleted, setIsReplyDeleted] = useState(data.deleted);
     const [isOriginalDeleted, setIsOriginalDeleted] = useState(data.originalPost.deleted);
     const [showDeleteBalloon, setShowDeleteBalloon] = useState(0);
-    const { deletePost } = useContext(FeedContext);
+    const { deletePost, updateFeed } = useContext(FeedContext);
     const { addToast } = useContext(ToastContext);
 
     const navigate = useNavigate();
     const { isOpen: originalIsOpen, hoverRef: originalHoverRef, handleMouseEnter: originalHandleMouseEnter, handleMouseLeave: originalHandleMouseLeave } = hoverTimer();
     const { isOpen, hoverRef, handleMouseEnter, handleMouseLeave } = hoverTimer();
 
-    const originalPostData = postData.originalPost;
+    const usePostData = onFeed ? data : postData;
+    const originalPostData = usePostData.originalPost;
     const originalHasMidia = originalPostData.hasMidia;
-    const replyHasMidia = postData.hasMidia;
-    const isShare = data.postType == PostType.SHARE;
+    const replyHasMidia = usePostData.hasMidia;
+    const isShare = usePostData.postType == PostType.SHARE;
 
-    const isOriginalMy = data.originalPost.authorId == user.id;
-    const isReplyMy = data.authorId == user.id;
+    const isOriginalMy = usePostData.originalPost.authorId == user.id;
+    const isReplyMy = usePostData.authorId == user.id;
     const moreBtnRefOriginal = useRef(null);
     const moreBtnRefReply = useRef(null);
 
+    const originalPostActionsData = { likes: usePostData.originalPost.likes, shares: usePostData.originalPost.shares, bookmarks: usePostData.originalPost.bookmarks }
+    const replyPostActionsData = { likes: usePostData.likes, shares: usePostData.shares, bookmarks: usePostData.bookmarks }
+    const originalPostcounts = usePostData.originalPost._count;
+    const replyPostcounts = usePostData._count;
     async function handleLike(e, onOriginal) {
         e.stopPropagation();
         const postId = onOriginal ? originalPostData.id : postData.id;
-        if ((onOriginal && originalPostData.likes.length) || (!onOriginal && postData.likes.length)) {
+        const counts = onOriginal ? originalPostcounts : replyPostcounts;
+        const actionsData = onOriginal ? originalPostActionsData : replyPostActionsData;
+
+        if ((onOriginal && originalPostActionsData.likes.length) || (!onOriginal && replyPostActionsData.likes.length)) {
             const result = await dislikePost(postId);
             if (result && result.success) {
+                counts.likes = counts.likes - 1;
                 if (onOriginal) {
-                    setPostData({ ...postData, originalPost: { ...originalPostData, likes: [], _count: { ...postData.originalPost._count, likes: originalPostData._count.likes - 1 } } });
+                    setPostData({ ...postData, originalPost: { ...originalPostData, likes: [], _count: counts } });
                 } else {
-                    setPostData({ ...postData, likes: [], _count: { ...postData._count, likes: postData._count.likes - 1 } });
+                    setPostData({ ...postData, likes: [], _count: counts });
                 }
+                updateFeed(postId, { _count: counts, likes: [], bookmarks: actionsData.bookmarks, shares: actionsData.shares });
             }
             return;
         }
 
         const result = await likePost(postId);
         if (result && result.success) {
+            counts.likes = counts.likes + 1;
             if (onOriginal) {
-                setPostData({ ...postData, originalPost: { ...originalPostData, likes: [{ id: result.data.id }], _count: { ...postData.originalPost._count, likes: originalPostData._count.likes + 1 } } });
+                setPostData({ ...postData, originalPost: { ...originalPostData, likes: [{ id: result.data.id }], _count: counts } });
             } else {
-                setPostData({ ...postData, likes: [{ id: result.data.id }], _count: { ...postData._count, likes: postData._count.likes + 1 } });
+                setPostData({ ...postData, likes: [{ id: result.data.id }], _count: counts });
             }
+            updateFeed(postId, { _count: counts, likes: [{ id: result.data.id }], bookmarks: actionsData.bookmarks, shares: actionsData.shares });
         }
     }
 
     async function handleShare(e, onOriginal) {
         const postId = onOriginal ? originalPostData.id : postData.id;
-        const hasShared = onOriginal ? originalPostData.shares.length : postData.shares.length;
+        const counts = onOriginal ? originalPostcounts : replyPostcounts;
+        const actionsData = onOriginal ? originalPostActionsData : replyPostActionsData;
+        const hasShared = onOriginal ? originalPostActionsData.shares.length : replyPostActionsData.shares.length;
         if (hasShared) {
             const result = await unsharePost(postId);
             if (result && result.success) {
+                counts.shares = counts.shares - 1;
                 if (onOriginal) {
-                    setPostData({ ...postData, originalPost: { ...postData.originalPost, shares: [], _count: { ...postData.originalPost._count, shares: originalPostData._count.shares - 1 } } });
+                    setPostData({ ...postData, originalPost: { ...originalPostData, shares: [], _count: counts } });
                 } else {
-                    setPostData({ ...postData, shares: [], _count: { ...postData._count, shares: postData._count.shares - 1 } });
+                    setPostData({ ...postData, shares: [], _count: counts });
                 }
+                updateFeed(postId, { _count: counts, likes: actionsData.likes, bookmarks: actionsData.bookmarks, shares: [] });
             }
             return;
         }
 
         const result = await sharePost(postId);
         if (result && result.success) {
+            counts.shares = counts.shares + 1;
             if (onOriginal) {
-                setPostData({ ...postData, originalPost: { ...originalPostData, shares: [{ id: result.data.id }], _count: { ...postData.originalPost._count, shares: originalPostData._count.shares + 1 } } });
+                setPostData({ ...postData, originalPost: { ...originalPostData, shares: [{ id: result.data.id }], _count: counts } });
             } else {
-                setPostData({ ...postData, shares: [{ id: result.data.id }], _count: { ...postData._count, shares: postData._count.shares + 1 } });
+                setPostData({ ...postData, shares: [{ id: result.data.id }], _count: counts });
             }
+            updateFeed(postId, { _count: counts, likes: actionsData.likes, bookmarks: actionsData.bookmarks, shares: [{ id: result.data.id }] });
         }
     }
 
     async function handleBookmark(e, onOriginal) {
         e.stopPropagation();
         const postId = onOriginal ? originalPostData.id : postData.id;
-        const hasBookmarked = onOriginal ? originalPostData.bookmarks.length : postData.bookmarks.length;
+        const counts = onOriginal ? originalPostcounts : replyPostcounts;
+        const actionsData = onOriginal ? originalPostActionsData : replyPostActionsData;
+        const hasBookmarked = onOriginal ? originalPostActionsData.bookmarks.length : replyPostActionsData.bookmarks.length;
         if (hasBookmarked) {
             const result = await removeBookmarkPost(postId);
             if (result && result.success) {
                 addToast("Removed from the bookmarks");
+                counts.bookmarks = counts.bookmarks - 1;
                 if (onOriginal) {
-                    setPostData({ ...postData, originalPost: { ...originalPostData, bookmarks: [], _count: { ...postData.originalPost._count, bookmarks: originalPostData._count.bookmarks - 1 } } });
+                    setPostData({ ...postData, originalPost: { ...originalPostData, bookmarks: [], _count: counts } });
                 } else {
-                    setPostData({ ...postData, bookmarks: [], _count: { ...postData._count, bookmarks: postData._count.bookmarks - 1 } });
+                    setPostData({ ...postData, bookmarks: [], _count: counts });
                 }
+                updateFeed(postId, { _count: counts, likes: actionsData.likes, bookmarks: [], shares: actionsData.shares });
             }
             return;
         }
@@ -112,12 +134,13 @@ function PostWithComment({ user, data, onPostPage }) {
         const result = await bookmarkPost(postId);
         if (result && result.success) {
             addToast("Post added to the bookmarks");
+            counts.bookmarks = counts.bookmarks + 1;
             if (onOriginal) {
-                setPostData({ ...postData, originalPost: { ...originalPostData, bookmarks: [{ id: result.data.id }], _count: { ...postData.originalPost._count, bookmarks: originalPostData._count.bookmarks + 1 } } });
+                setPostData({ ...postData, originalPost: { ...originalPostData, bookmarks: [{ id: result.data.id }], _count: counts } });
+            } else {
+                setPostData({ ...postData, bookmarks: [{ id: result.data.id }], _count: counts });
             }
-            else {
-                setPostData({ ...postData, bookmarks: [{ id: result.data.id }], _count: { ...postData._count, bookmarks: postData._count.bookmarks + 1 } });
-            }
+            updateFeed(postId, { _count: counts, likes: actionsData.likes, bookmarks: [{ id: result.data.id }], shares: actionsData.shares });
         }
     }
 
@@ -179,21 +202,20 @@ function PostWithComment({ user, data, onPostPage }) {
     }
 
     function successReply() {
+        const postId = isOriginalPostDialogOpen ? originalPostData.id : postData.id;
+        const counts = isOriginalPostDialogOpen ? originalPostcounts : replyPostcounts;
+        const actionsData = isOriginalPostDialogOpen ? originalPostActionsData : replyPostActionsData;
+        counts.replyPost = counts.replyPost + 1;
         if (isOriginalPostDialogOpen) {
-            setPostData({ ...postData, originalPost: { ...postData.originalPost, shares: [], _count: { ...postData.originalPost._count, replyPost: originalPostData._count.replyPost + 1 } } });
+            setPostData({ ...postData, originalPost: { ...originalPostData, _count: counts } });
         } else {
-            setPostData({ ...postData, _count: { ...postData._count, replyPost: postData._count.replyPost + 1 } });
+            setPostData({ ...postData, _count: counts });
         }
+        updateFeed(postId, { _count: counts, ...actionsData });
         handleCloseDialog();
     }
 
     function successShareReply() {
-        if (isOriginalShareDialogOpen) {
-            setPostData({ ...postData, originalPost: { ...postData.originalPost, shares: [], _count: { ...postData.originalPost._count, shares: originalPostData._count.shares + 1 } } });
-        } else {
-            setPostData({ ...postData, _count: { ...postData._count, shares: postData._count.shares + 1 } });
-
-        }
         handleCloseDialog();
     }
 
@@ -263,12 +285,12 @@ function PostWithComment({ user, data, onPostPage }) {
     return (
         <>
             <div className="post-with-comment">
-                <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-                    {originalIsOpen && <UserCardInfos key={originalPostData.id} username={originalPostData.author.username} hoverRef={originalHoverRef} isMe={originalPostData.author.id == user.id} />}
-                </div>
-                <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-                    {isOpen && <UserCardInfos key={postData.id} username={postData.author.username} hoverRef={hoverRef} isMe={postData.author.id == user.id} />}
-                </div>
+                {originalIsOpen && <div onMouseEnter={originalHandleMouseEnter} onMouseLeave={originalHandleMouseLeave}>
+                    <UserCardInfos key={originalPostData.id} username={originalPostData.author.username} hoverRef={originalHoverRef} isMe={originalPostData.author.id == user.id} />
+                </div>}
+                {isOpen && <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+                    <UserCardInfos key={postData.id} username={postData.author.username} hoverRef={hoverRef} isMe={postData.author.id == user.id} />
+                </div>}
                 {!isOriginalDeleted && <div className="original-post post" onClick={() => handleSeePost(true)}>
                     {/* <div className="chain"></div> */}
                     <div className="post-body">
@@ -308,38 +330,38 @@ function PostWithComment({ user, data, onPostPage }) {
                                                 <path d="M1.751 10c0-4.42 3.584-8 8.005-8h4.366c4.49 0 8.129 3.64 8.129 8.13 0 2.96-1.607 5.68-4.196 7.11l-8.054 4.46v-3.69h-.067c-4.49.1-8.183-3.51-8.183-8.01zm8.005-6c-3.317 0-6.005 2.69-6.005 6 0 3.37 2.77 6.08 6.138 6.01l.351-.01h1.761v2.3l5.087-2.81c1.951-1.08 3.163-3.13 3.163-5.36 0-3.39-2.744-6.13-6.129-6.13H9.756z"></path></g>
                                             </svg>
                                         </div>
-                                        {originalPostData._count.replyPost != 0 && <p>{originalPostData._count.replyPost}</p>}
+                                        {originalPostcounts.replyPost != 0 && <p>{originalPostcounts.replyPost}</p>}
                                     </div>
                                 </div>
                                 <div className="controll-wrapper">
-                                    <div onClick={(e) => openShareOrReply(e, true)} className={`share-control-button ${originalPostData.shares.length ? "active" : ""}`}>
+                                    <div onClick={(e) => openShareOrReply(e, true)} className={`share-control-button ${originalPostActionsData.shares.length ? "active" : ""}`}>
                                         <div className="icon-box">
                                             <svg viewBox="0 0 24 24" aria-hidden="true"><g>
                                                 <path d="M4.75 3.79l4.603 4.3-1.706 1.82L6 8.38v7.37c0 .97.784 1.75 1.75 1.75H13V20H7.75c-2.347 0-4.25-1.9-4.25-4.25V8.38L1.853 9.91.147 8.09l4.603-4.3zm11.5 2.71H11V4h5.25c2.347 0 4.25 1.9 4.25 4.25v7.37l1.647-1.53 1.706 1.82-4.603 4.3-4.603-4.3 1.706-1.82L18 15.62V8.25c0-.97-.784-1.75-1.75-1.75z"></path></g>
                                             </svg>
                                         </div>
-                                        {originalPostData._count.shares != 0 && <p>{originalPostData._count.shares}</p>}
-                                        {isShareOrReplyOpen == 1 && <ShareOrReplyDialog onClose={handleCloseDialog} position={isShareOrReplyPosition} shared={originalPostData.shares.length} isOpen={isShareOrReplyOpen == 1} selectShare={selectShare} selectShareReply={handleShareReplyDialog} />}
+                                        {originalPostcounts.shares != 0 && <p>{originalPostcounts.shares}</p>}
+                                        {isShareOrReplyOpen == 1 && <ShareOrReplyDialog onClose={handleCloseDialog} position={isShareOrReplyPosition} shared={originalPostActionsData.shares.length} isOpen={isShareOrReplyOpen == 1} selectShare={selectShare} selectShareReply={handleShareReplyDialog} />}
                                     </div>
                                 </div>
                                 <div className="controll-wrapper">
-                                    <div onClick={(e) => handleLike(e, true)} className={`like-control-button no-fill ${originalPostData.likes.length ? "active" : ""}`}>
+                                    <div onClick={(e) => handleLike(e, true)} className={`like-control-button no-fill ${originalPostActionsData.likes.length ? "active" : ""}`}>
                                         <div className="icon-box">
                                             <svg viewBox="0 0 24 24" aria-hidden="true"><g>
                                                 <path d="M20.884 13.19c-1.351 2.48-4.001 5.12-8.379 7.67l-.503.3-.504-.3c-4.379-2.55-7.029-5.19-8.382-7.67-1.36-2.5-1.41-4.86-.514-6.67.887-1.79 2.647-2.91 4.601-3.01 1.651-.09 3.368.56 4.798 2.01 1.429-1.45 3.146-2.1 4.796-2.01 1.954.1 3.714 1.22 4.601 3.01.896 1.81.846 4.17-.514 6.67z"></path></g>
                                             </svg>
                                         </div>
-                                        {originalPostData._count.likes != 0 && <p>{originalPostData._count.likes}</p>}
+                                        {originalPostcounts.likes != 0 && <p>{originalPostcounts.likes}</p>}
                                     </div>
                                 </div>
                                 <div className="controll-wrapper">
-                                    <div onClick={(e) => handleBookmark(e, true)} className={`bookmark-control-button no-fill ${originalPostData.bookmarks.length ? "active" : ""}`}>
+                                    <div onClick={(e) => handleBookmark(e, true)} className={`bookmark-control-button no-fill ${originalPostActionsData.bookmarks.length ? "active" : ""}`}>
                                         <div className="icon-box">
                                             <svg viewBox="0 0 24 24" aria-hidden="true"><g>
                                                 <path d="M4 4.5C4 3.12 5.119 2 6.5 2h11C18.881 2 20 3.12 20 4.5v18.44l-8-5.71-8 5.71V4.5z"></path></g>
                                             </svg>
                                         </div>
-                                        {onPostPage && originalPostData._count.bookmarks != 0 && <p>{originalPostData._count.bookmarks}</p>}
+                                        {onPostPage && originalPostcounts.bookmarks != 0 && <p>{originalPostcounts.bookmarks}</p>}
                                     </div>
                                 </div>
                             </div>
@@ -397,38 +419,38 @@ function PostWithComment({ user, data, onPostPage }) {
                                                     <path d="M1.751 10c0-4.42 3.584-8 8.005-8h4.366c4.49 0 8.129 3.64 8.129 8.13 0 2.96-1.607 5.68-4.196 7.11l-8.054 4.46v-3.69h-.067c-4.49.1-8.183-3.51-8.183-8.01zm8.005-6c-3.317 0-6.005 2.69-6.005 6 0 3.37 2.77 6.08 6.138 6.01l.351-.01h1.761v2.3l5.087-2.81c1.951-1.08 3.163-3.13 3.163-5.36 0-3.39-2.744-6.13-6.129-6.13H9.756z"></path></g>
                                                 </svg>
                                             </div>
-                                            {postData._count.replyPost != 0 && <p>{postData._count.replyPost}</p>}
+                                            {replyPostcounts.replyPost != 0 && <p>{replyPostcounts.replyPost}</p>}
                                         </div>
                                     </div>
                                     <div className="controll-wrapper">
-                                        <div onClick={(e) => openShareOrReply(e, false)} className={`share-control-button ${postData.shares.length ? "active" : ""}`}>
+                                        <div onClick={(e) => openShareOrReply(e, false)} className={`share-control-button ${replyPostActionsData.shares.length ? "active" : ""}`}>
                                             <div className="icon-box">
                                                 <svg viewBox="0 0 24 24" aria-hidden="true"><g>
                                                     <path d="M4.75 3.79l4.603 4.3-1.706 1.82L6 8.38v7.37c0 .97.784 1.75 1.75 1.75H13V20H7.75c-2.347 0-4.25-1.9-4.25-4.25V8.38L1.853 9.91.147 8.09l4.603-4.3zm11.5 2.71H11V4h5.25c2.347 0 4.25 1.9 4.25 4.25v7.37l1.647-1.53 1.706 1.82-4.603 4.3-4.603-4.3 1.706-1.82L18 15.62V8.25c0-.97-.784-1.75-1.75-1.75z"></path></g>
                                                 </svg>
                                             </div>
-                                            {postData._count.shares != 0 && <p>{postData._count.shares}</p>}
+                                            {replyPostcounts.shares != 0 && <p>{replyPostcounts.shares}</p>}
                                             {isShareOrReplyOpen == 2 && <ShareOrReplyDialog onClose={handleCloseDialog} position={isShareOrReplyPosition} shared={postData.shares.length} isOpen={isShareOrReplyOpen == 2} selectShare={selectShare} selectShareReply={handleShareReplyDialog} />}
                                         </div>
                                     </div>
                                     <div className="controll-wrapper">
-                                        <div onClick={(e) => handleLike(e, false)} className={`like-control-button no-fill ${postData.likes.length ? "active" : ""}`}>
+                                        <div onClick={(e) => handleLike(e, false)} className={`like-control-button no-fill ${replyPostActionsData.likes.length ? "active" : ""}`}>
                                             <div className="icon-box">
                                                 <svg viewBox="0 0 24 24" aria-hidden="true"><g>
                                                     <path d="M20.884 13.19c-1.351 2.48-4.001 5.12-8.379 7.67l-.503.3-.504-.3c-4.379-2.55-7.029-5.19-8.382-7.67-1.36-2.5-1.41-4.86-.514-6.67.887-1.79 2.647-2.91 4.601-3.01 1.651-.09 3.368.56 4.798 2.01 1.429-1.45 3.146-2.1 4.796-2.01 1.954.1 3.714 1.22 4.601 3.01.896 1.81.846 4.17-.514 6.67z"></path></g>
                                                 </svg>
                                             </div>
-                                            {postData._count.likes != 0 && <p>{postData._count.likes}</p>}
+                                            {replyPostcounts.likes != 0 && <p>{replyPostcounts.likes}</p>}
                                         </div>
                                     </div>
                                     <div className="controll-wrapper">
-                                        <div onClick={(e) => handleBookmark(e, false)} className={`bookmark-control-button no-fill ${postData.bookmarks.length ? "active" : ""}`}>
+                                        <div onClick={(e) => handleBookmark(e, false)} className={`bookmark-control-button no-fill ${replyPostActionsData.bookmarks.length ? "active" : ""}`}>
                                             <div className="icon-box">
                                                 <svg viewBox="0 0 24 24" aria-hidden="true"><g>
                                                     <path d="M4 4.5C4 3.12 5.119 2 6.5 2h11C18.881 2 20 3.12 20 4.5v18.44l-8-5.71-8 5.71V4.5z"></path></g>
                                                 </svg>
                                             </div>
-                                            {onPostPage && postData._count.bookmarks != 0 && <p>{postData._count.bookmarks}</p>}
+                                            {onPostPage && replyPostcounts.bookmarks != 0 && <p>{replyPostcounts.bookmarks}</p>}
                                         </div>
                                     </div>
                                 </div>

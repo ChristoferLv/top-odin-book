@@ -14,9 +14,9 @@ import { ToastContext } from "../ToastsContext";
 import UserCardInfos from "./UserCardInfos";
 import hoverTimer from "../OnHoverTimer";
 
-function Post({ user, data }) {
-    const [postData, setPostData] = useState(data);
-    const { deletePost } = useContext(FeedContext);
+function Post({ user, data, onFeed }) {
+    const [postData, setPostData] = useState(data.postType == PostType.SHARE ? data.sharedPost : data);
+    const { deletePost, updateFeed } = useContext(FeedContext);
     const { addToast } = useContext(ToastContext);
     const { isOpen, hoverRef, handleMouseEnter, handleMouseLeave } = hoverTimer();
 
@@ -26,14 +26,11 @@ function Post({ user, data }) {
     const [isShareOrReplyPosition, setIsShareOrReplyPosition] = useState({});
     const navigate = useNavigate();
     const isShare = data.postType == PostType.SHARE;
-    const usePostData = isShare ? postData.sharedPost : postData;
-    const modifyKey = isShare ? "sharedPost" : "originalPost";
+    const usePostData = onFeed ? (isShare ? data.sharedPost : data) : postData;
     const hasShared = usePostData.shares.length;
     const hasMidia = usePostData.hasMidia;
-    const formatedDate = formatDate(postData.createdAt);
-    const numLikes = usePostData._count.likes;
-    const numShares = usePostData._count.shares;
-    const numReplies = usePostData._count.replyPost;
+    const formatedDate = formatDate(data.createdAt);
+    const actionValues = onFeed ? (isShare ? data.sharedPost._count : data._count) : postData._count;
     const isMyPost = usePostData.authorId == user.id;
     const [showDeleteBalloon, setShowDeleteBalloon] = useState(false);
     const moreBtnRef = useRef(null);
@@ -44,22 +41,18 @@ function Post({ user, data }) {
         if (usePostData.likes.length) {
             const result = await dislikePost(usePostData.id);
             if (result && result.success) {
-                if (isShare) {
-                    setPostData({ ...postData, [modifyKey]: { ...postData[modifyKey], likes: [], _count: { ...postData[modifyKey]._count, likes: numLikes - 1 } } });
-                } else {
-                    setPostData({ ...postData, likes: [], _count: { ...postData._count, likes: numLikes - 1 } });
-                }
+                actionValues.likes = actionValues.likes - 1;
+                setPostData({ ...postData, likes: [], _count: actionValues });
+                updateFeed(usePostData.id, { _count: actionValues, likes: [], bookmarks: usePostData.bookmarks, shares: usePostData.shares });
             }
             return;
         }
 
         const result = await likePost(usePostData.id);
         if (result && result.success) {
-            if (isShare) {
-                setPostData({ ...postData, [modifyKey]: { ...postData[modifyKey], likes: [{ id: result.data.id }], _count: { ...postData[modifyKey]._count, likes: numLikes + 1 } } });
-            } else {
-                setPostData({ ...postData, likes: [{ id: result.data.id }], _count: { ...postData._count, likes: numLikes + 1 } });
-            }
+            actionValues.likes = actionValues.likes + 1;
+            setPostData({ ...postData, likes: [{ id: result.data.id }], _count: actionValues });
+            updateFeed(usePostData.id, { _count: actionValues, likes: [{ id: result.data.id }], bookmarks: usePostData.bookmarks, shares: usePostData.shares });
         }
     }
 
@@ -67,22 +60,18 @@ function Post({ user, data }) {
         if (hasShared) {
             const result = await unsharePost(usePostData.id);
             if (result && result.success) {
-                if (isShare) {
-                    setPostData({ ...postData, [modifyKey]: { ...postData[modifyKey], shares: [], _count: { ...postData[modifyKey]._count, shares: numShares - 1 } } });
-                } else {
-                    setPostData({ ...postData, shares: [], _count: { ...postData._count, shares: numShares - 1 } });
-                }
+                actionValues.shares = actionValues.shares - 1;
+                setPostData({ ...postData, shares: [], _count: actionValues });
+                updateFeed(usePostData.id, { _count: actionValues, likes: usePostData.likes, bookmarks: usePostData.bookmarks, shares: [] });
             }
             return;
         }
 
         const result = await sharePost(usePostData.id);
         if (result && result.success) {
-            if (isShare) {
-                setPostData({ ...postData, [modifyKey]: { ...postData[modifyKey], shares: [{ id: result.data.id }], _count: { ...postData[modifyKey]._count, shares: numShares + 1 } } });
-            } else {
-                setPostData({ ...postData, shares: [{ id: result.data.id }], _count: { ...postData._count, shares: numShares + 1 } });
-            }
+            actionValues.shares = actionValues.shares + 1;
+            setPostData({ ...postData, shares: [{ id: result.data.id }], _count: actionValues });
+            updateFeed(usePostData.id, { _count: actionValues, likes: usePostData.likes, bookmarks: usePostData.bookmarks, shares: [{ id: result.data.id }] });
         }
     }
 
@@ -93,24 +82,20 @@ function Post({ user, data }) {
         if (bookmarked) {
             const result = await removeBookmarkPost(usePostData.id);
             if (result && result.success) {
+                actionValues.bookmarks = actionValues.bookmarks - 1;
                 addToast("Removed from the bookmarks");
-                if (isShare) {
-                    setPostData({ ...postData, [modifyKey]: { ...postData[modifyKey], bookmarks: [] } });
-                } else {
-                    setPostData({ ...postData, bookmarks: [] });
-                }
+                setPostData({ ...postData, bookmarks: [], _count: actionValues });
+                updateFeed(usePostData.id, { _count: actionValues, likes: usePostData.likes, bookmarks: [], shares: usePostData.shares });
                 return;
             }
         }
 
         const result = await bookmarkPost(usePostData.id);
         if (result && result.success) {
+            actionValues.booksmarks = actionValues.booksmarks + 1;
             addToast("Post added to the bookmarks");
-            if (isShare) {
-                setPostData({ ...postData, [modifyKey]: { ...postData[modifyKey], bookmarks: [{ id: result.data.id }] } })
-            } else {
-                setPostData({ ...postData, bookmarks: [{ id: result.data.id }] });
-            }
+            setPostData({ ...postData, bookmarks: [{ id: result.data.id }], _count: actionValues });
+            updateFeed(usePostData.id, { _count: actionValues, likes: usePostData.likes, bookmarks: [{ id: result.data.id }], shares: usePostData.shares });
         }
     }
 
@@ -120,20 +105,13 @@ function Post({ user, data }) {
     }
 
     function successReply() {
-        if (isShare) {
-            setPostData({ ...postData, [modifyKey]: { ...postData[modifyKey], _count: { ...postData[modifyKey]._count, replyPost: numReplies + 1 } } });
-        } else {
-            setPostData({ ...postData, _count: { ...postData._count, replyPost: numReplies + 1 } });
-        }
+        actionValues.replyPost = actionValues.replyPost + 1;
+        setPostData({ ...postData, _count: actionValues });
+        updateFeed(usePostData.id, { _count: actionValues, likes: usePostData.likes, bookmarks: usePostData.bookmarks, shares: usePostData.shares });
         handleCloseDialog();
     }
 
     function successShareReply() {
-        if (isShare) {
-            setPostData({ ...postData, [modifyKey]: { ...postData[modifyKey], _count: { ...postData[modifyKey]._count, shares: numShares + 1 } } });
-        } else {
-            setPostData({ ...postData, _count: { ...postData._count, shares: numShares + 1 } });
-        }
         handleCloseDialog();
     }
 
@@ -199,7 +177,6 @@ function Post({ user, data }) {
 
     if (isDeleted || data.deleted) return null;
 
-
     return (
         <>
             <div className="post" onClick={handleSeePost}>
@@ -212,7 +189,7 @@ function Post({ user, data }) {
                             <path d="M4.75 3.79l4.603 4.3-1.706 1.82L6 8.38v7.37c0 .97.784 1.75 1.75 1.75H13V20H7.75c-2.347 0-4.25-1.9-4.25-4.25V8.38L1.853 9.91.147 8.09l4.603-4.3zm11.5 2.71H11V4h5.25c2.347 0 4.25 1.9 4.25 4.25v7.37l1.647-1.53 1.706 1.82-4.603 4.3-4.603-4.3 1.706-1.82L18 15.62V8.25c0-.97-.784-1.75-1.75-1.75z"></path></g>
                         </svg>
                     </div>
-                    <p>{postData.author.name} shared</p>
+                    <p>{data.author.name} shared</p>
                 </div>
                 }
                 <div className="post-body">
@@ -228,7 +205,7 @@ function Post({ user, data }) {
                                 <span className="post-username">@{usePostData.author.username}</span>
                             </div>
                             <span className="post-date"> • {formatedDate}</span>
-                            {showDeleteBalloon && <DeletePostBalloon isOpen={showDeleteBalloon} postId={postData.id} onDelete={onDelete} onClose={handleMoreButton} postRef={moreBtnRef} />}
+                            {showDeleteBalloon && <DeletePostBalloon isOpen={showDeleteBalloon} postId={data.id} onDelete={onDelete} onClose={handleMoreButton} postRef={moreBtnRef} />}
                             {isMyPost && <div className="more-button" onClick={handleMoreButton} ref={moreBtnRef} >
                                 <div className="more-button-inner">
                                     <svg viewBox="0 0 24 24" aria-hidden="true"><g>
@@ -250,7 +227,7 @@ function Post({ user, data }) {
                                             <path d="M1.751 10c0-4.42 3.584-8 8.005-8h4.366c4.49 0 8.129 3.64 8.129 8.13 0 2.96-1.607 5.68-4.196 7.11l-8.054 4.46v-3.69h-.067c-4.49.1-8.183-3.51-8.183-8.01zm8.005-6c-3.317 0-6.005 2.69-6.005 6 0 3.37 2.77 6.08 6.138 6.01l.351-.01h1.761v2.3l5.087-2.81c1.951-1.08 3.163-3.13 3.163-5.36 0-3.39-2.744-6.13-6.129-6.13H9.756z"></path></g>
                                         </svg>
                                     </div>
-                                    {numReplies != 0 && <p>{numReplies}</p>}
+                                    {actionValues.replyPost != 0 && <p>{actionValues.replyPost}</p>}
                                 </div>
                             </div>
                             <div className="controll-wrapper">
@@ -260,7 +237,7 @@ function Post({ user, data }) {
                                             <path d="M4.75 3.79l4.603 4.3-1.706 1.82L6 8.38v7.37c0 .97.784 1.75 1.75 1.75H13V20H7.75c-2.347 0-4.25-1.9-4.25-4.25V8.38L1.853 9.91.147 8.09l4.603-4.3zm11.5 2.71H11V4h5.25c2.347 0 4.25 1.9 4.25 4.25v7.37l1.647-1.53 1.706 1.82-4.603 4.3-4.603-4.3 1.706-1.82L18 15.62V8.25c0-.97-.784-1.75-1.75-1.75z"></path></g>
                                         </svg>
                                     </div>
-                                    {numShares != 0 && <p>{numShares}</p>}
+                                    {actionValues.shares != 0 && <p>{actionValues.shares}</p>}
                                     {isShareOrReplyOpen && <ShareOrReplyDialog position={isShareOrReplyPosition} shared={hasShared} isOpen={isShareOrReplyOpen} onClose={handleCloseDialog} selectShare={selectShare} selectShareReply={handleShareReplyDialog} />}
                                 </div>
                             </div>
@@ -271,7 +248,7 @@ function Post({ user, data }) {
                                             <path d="M20.884 13.19c-1.351 2.48-4.001 5.12-8.379 7.67l-.503.3-.504-.3c-4.379-2.55-7.029-5.19-8.382-7.67-1.36-2.5-1.41-4.86-.514-6.67.887-1.79 2.647-2.91 4.601-3.01 1.651-.09 3.368.56 4.798 2.01 1.429-1.45 3.146-2.1 4.796-2.01 1.954.1 3.714 1.22 4.601 3.01.896 1.81.846 4.17-.514 6.67z"></path></g>
                                         </svg>
                                     </div>
-                                    {numLikes != 0 && <p>{numLikes}</p>}
+                                    {actionValues.likes != 0 && <p>{actionValues.likes}</p>}
                                 </div>
                             </div>
                             <div className="controll-wrapper">

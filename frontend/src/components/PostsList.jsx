@@ -4,17 +4,17 @@ import PostShareWithReply from "./PostShareWithReply";
 import PostWithComment from "./PostWithComment";
 import LoadingSpinner from "./LoadingSpinner";
 
-function PostsList({ observerRef, loading, hasMore, user, postsList, onUserPage, onBookmarksPage }) {
+function PostsList({ observerRef, loading, hasMore, user, postsList, fullReplies, onBookmarksPage, onFeed}) {
     return (<>
         <div className="posts-list">
             {postsList.map((post) => {
                 if (!onBookmarksPage) {
                     if (post.postType == PostType.SHARE_REPLY)
-                        return <PostShareWithReply key={post.id} data={post} user={user} />
-                    if (!onUserPage && post.postType == PostType.REPLY)
-                        return <PostWithComment key={post.id} data={post} user={user} />
+                        return <PostShareWithReply key={post.id} data={post} user={user} onFeed={onFeed}/>
+                    if (fullReplies && post.postType == PostType.REPLY)
+                        return <PostWithComment key={post.id} data={post} user={user} onFeed={onFeed}/>
                 }
-                return <Post key={post.id} data={post} user={user} />
+                return <Post key={post.id} data={post} user={user} onFeed={onFeed}/>
             })}
         </div>
         {loading && <LoadingSpinner />}
