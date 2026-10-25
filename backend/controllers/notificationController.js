@@ -48,7 +48,9 @@ async function getMyNotifications(req, res) {
 
 async function markNotificationsAsRead(req, res) {
     const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    // sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    sevenDaysAgo.setMinutes(sevenDaysAgo.getMinutes() - 2); //Simbolic time used just for demo and testing
+
 
     try {
         const result = await prisma.$transaction(async (tx) => {

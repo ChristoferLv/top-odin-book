@@ -1,15 +1,13 @@
 import { useCallback, useContext, useEffect, useState } from "react"
 import { fetchNotificationsCount } from "../../api/requests";
-import socketIO from "../../socket";
 import { AuthContext } from "../AuthContext";
 import { NotificationsContext } from "../NotificationsContext";
 
 
 
 function NotificationsCount() {
-    const { user, isLoading } = useContext(AuthContext);
-    const { notificationCount, notificationSetter } = useContext(NotificationsContext);
-    const [socket, setSocket] = useState(null);
+    const { user } = useContext(AuthContext);
+    const { notificationCount, notificationSetter, registerListener, removeListener, socket } = useContext(NotificationsContext);
 
     const getNotificationsCount = useCallback(async () => {
         const result = await fetchNotificationsCount();
@@ -17,38 +15,25 @@ function NotificationsCount() {
             if (result.data != 0)
                 notificationSetter(result.data);
         }
-    })
+    }, [])
 
     useEffect(() => {
-        getNotificationsCount();
-    }, []);
-
-
-
-    useEffect(() => {
-        function reloadNotifications() {
+        if (user)
             getNotificationsCount();
-        }
-
-        if (socket) {
-            socket.on('notification', reloadNotifications);
-        }
-        return () => {
-            if (socket) {
-                socket.off('notification', reloadNotifications);
-            }
-        };
-    }, [socket]);
+    }, [user]);
 
     useEffect(() => {
-        if (user && !isLoading) {
-            const storagedToken = localStorage.getItem('token');
-            socketIO.auth = { token: storagedToken }
-            const connection = socketIO.connect();
-            setSocket(connection);
+        function reloadNotificationsCount() {
+            if (user)
+                getNotificationsCount();
         }
-    }, [user, isLoading]);
 
+        if (socket?.connected){
+            registerListener("notification", reloadNotificationsCount);
+        }
+
+        return () => { removeListener("notification", reloadNotificationsCount) }
+    }, [socket?.connected, user?.id]);
 
     if (!user) return null;
     if (notificationCount == 0) return null;
