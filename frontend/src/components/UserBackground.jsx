@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import background from "../../public/bkgd.png";
+import background from "/bkgd.png";
 import { fetchUserBackground } from "../../api/requests";
 
 function UserBackground({id}) {

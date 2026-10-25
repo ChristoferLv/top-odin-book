@@ -9,10 +9,10 @@ import ShareWithReply from "./ShareWithReplyDialog";
 import ShareOrReplyDialog from "./ShareOrReplyDialog";
 import PostMidia from "./PostMidia";
 import DeletePostBalloon from "./DeletePostBalloon";
-import { FeedContext } from "../FeedContext";
-import { ToastContext } from "../ToastsContext";
+import { ToastContext } from "../contexts/ToastsContext";
 import UserCardInfos from "./UserCardInfos";
 import hoverTimer from "../OnHoverTimer";
+import { FeedContext } from "../contexts/FeedContext";
 
 function Post({ user, data, onFeed }) {
     const [postData, setPostData] = useState(data.postType == PostType.SHARE ? data.sharedPost : data);

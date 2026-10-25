@@ -1,7 +1,7 @@
 import { use, useEffect, useState } from "react";
 import { AuthContext } from "./AuthContext";
 import { useNavigate } from "react-router";
-import { getMe, logOut } from "../api/requests";
+import { getMe, logOut } from "../../api/requests";
 
 function getJwtExpiration(token) {
   const base64Url = token.split('.')[1];

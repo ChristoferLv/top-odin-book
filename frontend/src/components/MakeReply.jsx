@@ -1,11 +1,11 @@
 import { useContext, useRef, useState } from "react";
-import { AuthContext } from "../AuthContext";
+import { AuthContext } from "../contexts/AuthContext";
 import { makeReply } from "../../api/requests";
 import UserPicture from "./UserPicture";
 import { USER_PICTURE_DEFAULT_SIZE } from "../utils/defaults"
 import PictureDialog from "./PictureDialog";
 import Pie from "./ProgressCircle";
-import { ToastContext } from "../ToastsContext";
+import { ToastContext } from "../contexts/ToastsContext";
 
 function MakeReply({ postId, onSuccess, inputRef }) {
     const { user} = useContext(AuthContext);

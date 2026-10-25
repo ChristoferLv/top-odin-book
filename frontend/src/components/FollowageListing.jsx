@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { fetchFollowersOfUser, fetchUserByUsername, fetchWhoUserIsFollowing } from "../../api/requests";
-import { AuthContext } from "../AuthContext";
+import { AuthContext } from "../contexts/AuthContext";
 import { useLocation, useNavigate } from "react-router";
 import UsersList from "./UsersList";
 

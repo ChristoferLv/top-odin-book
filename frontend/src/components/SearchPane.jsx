@@ -1,7 +1,7 @@
 import {  useContext, useEffect,  useRef, useState } from "react";
 import PostsList from "./PostsList";
 import { searchPosts, searchUsers } from "../../api/requests";
-import { AuthContext } from "../AuthContext";
+import { AuthContext } from "../contexts/AuthContext";
 import { useLocation, useNavigate, useSearchParams } from "react-router";
 import UsersList from "./UsersList";
 import SearchField from "./SearchField";

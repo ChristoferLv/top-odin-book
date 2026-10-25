@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import { AuthContext } from "./AuthContext";
+import { AuthContext } from "./contexts/AuthContext";
 import { deleteFollower, fetchLikedPostsByUserId, fetchPostsByUserId, fetchRepliesByUserId, fetchSharedPostsByUserId, fetchUserByUsername, followUser, unfollowUser } from "../api/requests";
 import UserPicture from "./components/UserPicture";
 import UserBackground from "./components/UserBackground";

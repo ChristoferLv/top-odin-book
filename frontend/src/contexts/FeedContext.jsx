@@ -1,5 +1,5 @@
 import { createContext, useCallback, useState } from "react";
-import { fetchAllPosts } from "../api/requests";
+import { fetchAllPosts } from "../../api/requests";
 
 export const FeedContext = createContext({
     feed: [],

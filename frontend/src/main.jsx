@@ -3,11 +3,10 @@ import { createRoot } from 'react-dom/client'
 import './App.css'
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router';
 import LoginPage from './LoginPage.jsx';
-import { AuthProvider } from './AuthProvider.jsx'
+import { AuthProvider } from './contexts/AuthProvider.jsx'
 import MainPage from './MainPage.jsx';
 import RegisterPage from './RegisterPage.jsx';
 import MyPage from './MyPage.jsx';
-import PostsList from './components/PostsList.jsx';
 import ContentPane from './components/ContentPane.jsx';
 import BookmarksPage from './BookmarksPage.jsx';
 import EditProfile from './components/EditProfile.jsx';
@@ -17,10 +16,10 @@ import SeeingPicturePage from './SeeingPicturePage.jsx';
 import SearchPane from './components/SearchPane.jsx';
 import NotificationsPane from './components/NotificationsPane.jsx';
 import FollowageListing from './components/FollowageListing.jsx';
-import PictureContextProvider from './PictureContext.jsx';
-import NotificationsContextProvider from './NotificationsContext.jsx';
-import FeedContextProvider from './FeedContext.jsx';
-import ToastContextProvider from './ToastsContext.jsx';
+import ToastContextProvider from './contexts/ToastsContext.jsx';
+import FeedContextProvider from './contexts/FeedContext.jsx';
+import NotificationsContextProvider from './contexts/NotificationsContext.jsx';
+import PictureContextProvider from './contexts/PictureContext.jsx';
 
 
 const router = createBrowserRouter([

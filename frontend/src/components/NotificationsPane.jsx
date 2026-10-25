@@ -3,9 +3,9 @@ import { useNavigate } from "react-router";
 import { fetchNotifications, markNotificationsAsRead } from '../../api/requests'
 import UserPicture from './UserPicture';
 import { formatDate } from "../utils/dateUtils";
-import { NotificationsContext } from "../NotificationsContext";
 import hoverTimer from "../OnHoverTimer";
 import UserCardInfos from "./UserCardInfos";
+import { NotificationsContext } from "../contexts/NotificationsContext";
 
 
 function NotificationsPane() {

@@ -1,11 +1,11 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import { AuthContext } from "../AuthContext";
+import { AuthContext } from "../contexts/AuthContext";
 import { editUser, fetchUserBackground, removeBackground, removePicture, sendUserBackground, sendUserPicture } from "../../api/requests";
 import { useNavigate } from "react-router";
 import background from "../../public/bkgd.png";
-import { PictureContext } from "../PictureContext";
-import dafaultAvatar from "../../public/avatar.png";
-import { ToastContext } from "../ToastsContext";
+import dafaultAvatar from "/avatar.png";
+import { ToastContext } from "../contexts/ToastsContext";
+import { PictureContext } from "../contexts/PictureContext";
 
 function EditProfile() {
     const { userPictureUrl, isPictureSet, pictureSetter } = useContext(PictureContext);
@@ -47,7 +47,7 @@ function EditProfile() {
         e.stopPropagation();
         const result = await removePicture();
         if (result.success) {
-            setPicture(null);
+            pictureSetter("");
         }
     }
 
@@ -189,10 +189,10 @@ function EditProfile() {
                             <div className="background-actions">
                                 <button title="Change Background" className="change-background" onClick={handleClickBackground}>
                                     <svg viewBox="0 0 20 20" aria-hidden="true"><g>
-                                        <path d="M17.084 7.5c0-1.163 0-1.744-.144-2.218-.323-1.065-1.157-1.899-2.222-2.222-.473-.143-1.055-.143-2.218-.143H8.25c-1.867 0-2.8 0-3.513.363-.627.32-1.137.83-1.457 1.457-.363.713-.363 1.646-.363 3.513v4.25c0 1.163 0 1.745.144 2.218.323 1.065 1.156 1.899 2.222 2.222.473.143 1.054.143 2.217.143" fill="none" stroke="currentColor" stroke-width="1.667"></path>
-                                        <path d="M2.917 12.5l3.75-3.333 2.917 2.916" fill="none" stroke="currentColor" stroke-width="1.667"></path>
+                                        <path d="M17.084 7.5c0-1.163 0-1.744-.144-2.218-.323-1.065-1.157-1.899-2.222-2.222-.473-.143-1.055-.143-2.218-.143H8.25c-1.867 0-2.8 0-3.513.363-.627.32-1.137.83-1.457 1.457-.363.713-.363 1.646-.363 3.513v4.25c0 1.163 0 1.745.144 2.218.323 1.065 1.156 1.899 2.222 2.222.473.143 1.054.143 2.217.143" fill="none" stroke="currentColor" strokeWidth="1.667"></path>
+                                        <path d="M2.917 12.5l3.75-3.333 2.917 2.916" fill="none" stroke="currentColor" strokeWidth="1.667"></path>
                                         <circle cx="12.5" cy="7.5" fill="currentColor" r="1.667"></circle>
-                                        <path d="M17.56 10.894c-.644-.645-1.684-.659-2.346-.032l-3.656 3.463c-.6.568-.968 1.34-1.031 2.164l-.11 1.428 1.479-.114c.793-.061 1.539-.404 2.101-.967l3.564-3.563c.657-.657.657-1.722 0-2.38z" fill="none" stroke="currentColor" stroke-width="1.667"></path></g>
+                                        <path d="M17.56 10.894c-.644-.645-1.684-.659-2.346-.032l-3.656 3.463c-.6.568-.968 1.34-1.031 2.164l-.11 1.428 1.479-.114c.793-.061 1.539-.404 2.101-.967l3.564-3.563c.657-.657.657-1.722 0-2.38z" fill="none" stroke="currentColor" strokeWidth="1.667"></path></g>
                                     </svg>
                                 </button>
                                 {backgroundBuff && <button title="Remove background" className="remove-background" onClick={removeBckg}>
@@ -208,15 +208,15 @@ function EditProfile() {
                             <div
                                 className="profile-pic pic-border"
                             >
-                                {isPictureSet && <img src={userPictureUrl == "" ? dafaultAvatar :
-                                    userPictureUrl} alt="" />}
+                               <img src={userPictureUrl == "" ? dafaultAvatar :
+                                                           userPictureUrl} alt="" />
 
                                 <button title="Change picture" className="change-user-picture" onClick={handleClickImage}>
                                     <svg viewBox="0 0 20 20" aria-hidden="true"><g>
-                                        <path d="M17.084 7.5c0-1.163 0-1.744-.144-2.218-.323-1.065-1.157-1.899-2.222-2.222-.473-.143-1.055-.143-2.218-.143H8.25c-1.867 0-2.8 0-3.513.363-.627.32-1.137.83-1.457 1.457-.363.713-.363 1.646-.363 3.513v4.25c0 1.163 0 1.745.144 2.218.323 1.065 1.156 1.899 2.222 2.222.473.143 1.054.143 2.217.143" fill="none" stroke="currentColor" stroke-width="1.667"></path>
-                                        <path d="M2.917 12.5l3.75-3.333 2.917 2.916" fill="none" stroke="currentColor" stroke-width="1.667"></path>
+                                        <path d="M17.084 7.5c0-1.163 0-1.744-.144-2.218-.323-1.065-1.157-1.899-2.222-2.222-.473-.143-1.055-.143-2.218-.143H8.25c-1.867 0-2.8 0-3.513.363-.627.32-1.137.83-1.457 1.457-.363.713-.363 1.646-.363 3.513v4.25c0 1.163 0 1.745.144 2.218.323 1.065 1.156 1.899 2.222 2.222.473.143 1.054.143 2.217.143" fill="none" stroke="currentColor" strokeWidth="1.667"></path>
+                                        <path d="M2.917 12.5l3.75-3.333 2.917 2.916" fill="none" stroke="currentColor" strokeWidth="1.667"></path>
                                         <circle cx="12.5" cy="7.5" fill="currentColor" r="1.667"></circle>
-                                        <path d="M17.56 10.894c-.644-.645-1.684-.659-2.346-.032l-3.656 3.463c-.6.568-.968 1.34-1.031 2.164l-.11 1.428 1.479-.114c.793-.061 1.539-.404 2.101-.967l3.564-3.563c.657-.657.657-1.722 0-2.38z" fill="none" stroke="currentColor" stroke-width="1.667"></path></g>
+                                        <path d="M17.56 10.894c-.644-.645-1.684-.659-2.346-.032l-3.656 3.463c-.6.568-.968 1.34-1.031 2.164l-.11 1.428 1.479-.114c.793-.061 1.539-.404 2.101-.967l3.564-3.563c.657-.657.657-1.722 0-2.38z" fill="none" stroke="currentColor" strokeWidth="1.667"></path></g>
                                     </svg>
                                 </button>
 

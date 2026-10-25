@@ -1,8 +1,8 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { logOut } from "../../api/requests";
 import { useNavigate } from "react-router";
-import dafaultAvatar from "../../public/avatar.png";
-import { PictureContext } from "../PictureContext";
+import dafaultAvatar from "/avatar.png";
+import { PictureContext } from "../contexts/PictureContext";
 
 
 function UserToast({ user }) {

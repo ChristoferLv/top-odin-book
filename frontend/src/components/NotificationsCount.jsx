@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useState } from "react"
 import { fetchNotificationsCount } from "../../api/requests";
-import { AuthContext } from "../AuthContext";
-import { NotificationsContext } from "../NotificationsContext";
+import { AuthContext } from "../contexts/AuthContext";
+import { NotificationsContext } from "../contexts/NotificationsContext";
 
 
 

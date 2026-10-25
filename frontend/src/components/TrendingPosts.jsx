@@ -6,7 +6,7 @@ import { useNavigate } from "react-router";
 import PostMidia from "./PostMidia";
 import hoverTimer from "../OnHoverTimer";
 import UserCardInfos from "./UserCardInfos";
-import { AuthContext } from "../AuthContext";
+import { AuthContext } from "../contexts/AuthContext";
 
 function TrendingPosts() {
     const [postsList, setPostsList] = useState([]);

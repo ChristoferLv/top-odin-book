@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { AuthContext } from "./AuthContext";
+import { AuthContext } from "./contexts/AuthContext";
 import PostsList from "./components/PostsList";
 import { fetchBookmarkedPosts } from "../api/requests";
 import { useNavigate } from "react-router";

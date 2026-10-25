@@ -108,7 +108,7 @@ function RegisterPage() {
                     <div
                         className="profile-pic" onClick={handleClickImage}
                     >
-                        <img src={imgUrl == "" ? "../public/avatar.png" :
+                        <img src={imgUrl == "" ? "/avatar.png" :
                             imgUrl} alt="" />
                     </div>
                    {imgUrl != "" && <button title="Remove image" type="button" className='close-button' onClick={removeImg}>

@@ -2,9 +2,9 @@ import { useContext, useEffect, useRef, useState } from "react";
 import NewPost from "./NewPost";
 import PostsList from "./PostsList";
 import { fetchAllPosts } from "../../api/requests";
-import { AuthContext } from "../AuthContext";
-import { FeedContext } from "../FeedContext";
+import { AuthContext } from "../contexts/AuthContext";
 import { useLocation } from "react-router";
+import { FeedContext } from "../contexts/FeedContext";
 
 function ContentPane() {
     const { user } = useContext(AuthContext);

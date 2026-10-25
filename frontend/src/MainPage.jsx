@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import { AuthContext } from "./AuthContext";
+import { AuthContext } from "./contexts/AuthContext";
 import { Navigate, Outlet, ScrollRestoration, useLocation, useNavigate } from "react-router";
 import UserToast from "./components/UserToast";
 import NotificationsCount from "./components/NotificationsCount";
@@ -7,7 +7,7 @@ import WhoToFollow from "./components/WhoToFollow";
 import SearchInput from "./components/SearchInput";
 import SearchFilter from "./components/SearchFilter";
 import TrendingPosts from "./components/TrendingPosts";
-import { FeedContext } from "./FeedContext";
+import { FeedContext } from "./contexts/FeedContext";
 
 
 function useBidirectionalSticky(scrollContainerEl) {

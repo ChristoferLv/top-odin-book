@@ -6,7 +6,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import PictureDialog from "./PictureDialog";
 import CompactPost from "./CompactPost";
 import Pie from "./ProgressCircle";
-import { ToastContext } from "../ToastsContext";
+import { ToastContext } from "../contexts/ToastsContext";
 
 function ShareWithReply({ isOpen, user, originalPost, onCancel, onConfirm }) {
     const { addToast } = useContext(ToastContext);

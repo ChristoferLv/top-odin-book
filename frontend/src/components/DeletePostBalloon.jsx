@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import { ToastContext } from "../ToastsContext";
+import { ToastContext } from "../contexts/ToastsContext";
 import { deletePost } from "../../api/requests";
 
 function DeletePostBalloon({ isOpen, postId, onClose, onDelete, postRef }) {

@@ -10,10 +10,10 @@ import ShareWithReply from "./ShareWithReplyDialog";
 import ShareOrReplyDialog from "./ShareOrReplyDialog";
 import PostMidia from "./PostMidia";
 import DeletePostBalloon from "./DeletePostBalloon";
-import { FeedContext } from "../FeedContext";
-import { ToastContext } from "../ToastsContext";
+import { ToastContext } from "../contexts/ToastsContext";
 import hoverTimer from "../OnHoverTimer";
 import UserCardInfos from "./UserCardInfos";
+import { FeedContext } from "../contexts/FeedContext";
 
 function PostShareWithReply({ user, data, onFeed }) {
     const { deletePost, updateFeed } = useContext(FeedContext);

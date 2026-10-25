@@ -5,7 +5,7 @@ import UserPicture from "./UserPicture";
 import { makeReply } from "../../api/requests";
 import PictureDialog from "./PictureDialog";
 import Pie from "./ProgressCircle";
-import { ToastContext } from "../ToastsContext";
+import { ToastContext } from "../contexts/ToastsContext";
 import PostMidia from "./PostMidia";
 
 function ReplyDialog({ isOpen, user, originalPost, onCancel, onConfirm }) {

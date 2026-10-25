@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router";
-import { AuthContext } from "./AuthContext";
+import { AuthContext } from "./contexts/AuthContext";
 import { adjustPostDate } from "./utils/dateUtils";
 import { bookmarkPost, dislikePost, fetchPostById, fetchPostMidia, fetchRepliesOfPost, likePost, removeBookmarkPost, sharePost, unsharePost } from "../api/requests";
 import UserPicture from "./components/UserPicture";
@@ -11,11 +11,11 @@ import ShareWithReply from "./components/ShareWithReplyDialog";
 import ShareOrReplyDialog from "./components/ShareOrReplyDialog";
 import MakeReply from "./components/MakeReply";
 import LoadingSpinner from "./components/LoadingSpinner";
-import { FeedContext } from "./FeedContext";
 import DeletePostBalloon from "./components/DeletePostBalloon";
-import { ToastContext } from "./ToastsContext";
+import { ToastContext } from "./contexts/ToastsContext";
 import hoverTimer from "./OnHoverTimer";
 import UserCardInfos from "./components/UserCardInfos";
+import { FeedContext } from "./contexts/FeedContext";
 
 function SeeingPicturePage() {
     const { user } = useContext(AuthContext);

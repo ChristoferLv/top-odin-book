@@ -9,10 +9,10 @@ import ShareOrReplyDialog from "./ShareOrReplyDialog";
 import ShareWithReply from "./ShareWithReplyDialog";
 import PostMidia from "./PostMidia";
 import DeletePostBalloon from "./DeletePostBalloon";
-import { FeedContext } from "../FeedContext";
-import { ToastContext } from "../ToastsContext";
+import { ToastContext } from "../contexts/ToastsContext";
 import hoverTimer from "../OnHoverTimer";
 import UserCardInfos from "./UserCardInfos";
+import { FeedContext } from "../contexts/FeedContext";
 
 function PostWithComment({ user, data, onPostPage, onFeed }) {
     const [postData, setPostData] = useState(data);

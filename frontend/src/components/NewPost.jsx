@@ -4,9 +4,9 @@ import { USER_PICTURE_DEFAULT_SIZE } from "../utils/defaults"
 import PictureDialog from "./PictureDialog";
 import Pie from "./ProgressCircle";
 import { useNavigate } from "react-router";
-import { PictureContext } from "../PictureContext";
-import dafaultAvatar from "../../public/avatar.png";
-import { ToastContext } from "../ToastsContext";
+import dafaultAvatar from "/avatar.png";
+import { ToastContext } from "../contexts/ToastsContext";
+import { PictureContext } from "../contexts/PictureContext";
 
 
 function NewPost({ user, updatePosts }) {

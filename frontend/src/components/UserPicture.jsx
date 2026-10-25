@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchUserPicture } from "../../api/requests";
-import dafaultAvatar from "../../public/avatar.png";
+import dafaultAvatar from "/avatar.png";
 import { useNavigate } from "react-router";
 
 

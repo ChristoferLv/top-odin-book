@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { AuthContext } from "./AuthContext";
-import socketIO from "../socket";
+import socketIO from "../../socket";
 
 export const NotificationsContext = createContext({
     notificationCount: 0,

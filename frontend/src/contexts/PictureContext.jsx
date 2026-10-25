@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { fetchUserPicture } from "../../api/requests";
 import { AuthContext } from "./AuthContext";
-import { fetchUserPicture } from "../api/requests";
 
 export const PictureContext = createContext({
     setUserPicture: () => { },
@@ -16,6 +16,11 @@ function PictureContextProvider({ children }) {
     const [isPictureSet, setIsPictureSet] = useState(false);
 
     const pictureSetter = useCallback((value) => {
+        if (value == "") {
+            setIsPictureSet(false);
+        }else{
+            setIsPictureSet(true);
+        }
         setUserPicture(value);
     }, []);
 

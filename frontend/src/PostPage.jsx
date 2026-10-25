@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router";
-import { AuthContext } from "./AuthContext";
+import { AuthContext } from "./contexts/AuthContext";
 import { bookmarkPost, dislikePost, fetchPostById, fetchRepliesOfPost, likePost, removeBookmarkPost, sharePost, unsharePost } from "../api/requests";
 import UserPicture from "./components/UserPicture";
 import { USER_PICTURE_DEFAULT_SIZE } from "./utils/defaults";
@@ -13,10 +13,10 @@ import MakeReply from "./components/MakeReply";
 import PostWithComment from "./components/PostWithComment";
 import LoadingSpinner from "./components/LoadingSpinner";
 import DeletePostBalloon from "./components/DeletePostBalloon";
-import { FeedContext } from "./FeedContext";
-import { ToastContext } from "./ToastsContext";
+import { ToastContext } from "./contexts/ToastsContext";
 import hoverTimer from "./OnHoverTimer";
 import UserCardInfos from "./components/UserCardInfos";
+import { FeedContext } from "./contexts/FeedContext";
 
 function PostPage() {
     const { user } = useContext(AuthContext);
