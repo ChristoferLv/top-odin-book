@@ -515,7 +515,7 @@ header {
         font-size: 20px;
         resize: none;
         field-sizing: content;
-        word-break: break-all;
+        word-break: normal;
         overflow-wrap: anywhere;
         min-height: 1lh;
     }
@@ -656,11 +656,11 @@ header {
         font-family: sans-serif;
         font-size: 0.97rem;
         color: var(--main-white-color);
-        word-break: break-all;
+        word-break: normal;
     }
 
     textarea {
-        word-break: break-all;
+        word-break: normal;
         margin: 0;
         box-shadow: none;
         border: none;
@@ -668,7 +668,6 @@ header {
         outline: none;
         resize: none;
         field-sizing: content;
-        word-break: break-all;
         overflow-wrap: anywhere;
         font-family: inherit;
         font-size: inherit;
@@ -961,7 +960,7 @@ header {
         font-family: sans-serif;
         font-size: 0.97rem;
         color: var(--main-white-color);
-        word-break: break-all;
+        word-break: normal;
     }
 
     .post-body {
@@ -969,7 +968,7 @@ header {
     }
 
     textarea {
-        word-break: break-all;
+        word-break: normal;
         margin: 0;
         box-shadow: none;
         border: none;
@@ -977,7 +976,6 @@ header {
         outline: none;
         resize: none;
         field-sizing: content;
-        word-break: break-all;
         overflow-wrap: anywhere;
         font-family: inherit;
         font-size: inherit;
@@ -1081,10 +1079,9 @@ header {
         font-family: sans-serif;
         font-size: 0.97rem;
         color: var(--main-white-color);
-        word-break: break-all;
+        word-break: normal;
 
         textarea {
-            word-break: break-all;
             margin: 0;
             box-shadow: none;
             border: none;
@@ -1092,7 +1089,6 @@ header {
             outline: none;
             resize: none;
             field-sizing: content;
-            word-break: break-all;
             overflow-wrap: anywhere;
             font-family: inherit;
             font-size: inherit;
@@ -1245,7 +1241,7 @@ header {
         font-size: 20px;
         resize: none;
         field-sizing: content;
-        word-break: break-all;
+        word-break: normal;
         overflow-wrap: anywhere;
         min-height: 1lh;
     }
@@ -2003,7 +1999,7 @@ header {
         font-size: 20px;
         resize: none;
         field-sizing: content;
-        word-break: break-all;
+        word-break: normal;
         overflow-wrap: anywhere;
         min-height: 1lh;
     }
@@ -2106,7 +2102,7 @@ header {
         font-size: large;
         resize: none;
         field-sizing: content;
-        word-break: break-all;
+        word-break: normal;
         overflow-wrap: anywhere;
         min-height: 1lh;
     }
@@ -2606,7 +2602,7 @@ header {
             font-size: large;
             resize: none;
             field-sizing: content;
-            word-break: break-all;
+            word-break: normal;
             overflow-wrap: anywhere;
             min-height: 1lh;
         }
@@ -2981,7 +2977,7 @@ header {
         background-color: #041622;
     }
 
-    .notifications-empty{
+    .notifications-empty {
         display: flex;
         justify-content: center;
         margin-top: 10px;
@@ -3445,11 +3441,11 @@ header {
         font-family: sans-serif;
         font-size: 0.97rem;
         color: var(--main-white-color);
-        word-break: break-all;
+        word-break: normal;
     }
 
     textarea {
-        word-break: break-all;
+        word-break: normal;
         margin: 0;
         box-shadow: none;
         border: none;
@@ -3458,7 +3454,6 @@ header {
         resize: none;
         max-height: 6lh;
         field-sizing: content;
-        word-break: break-all;
         overflow: hidden;
         overflow-wrap: anywhere;
         font-family: inherit;
@@ -3530,7 +3525,7 @@ header {
     }
 }
 
-.list-empty{
+.list-empty {
     display: flex;
     justify-content: center;
     margin-top: 10px;
