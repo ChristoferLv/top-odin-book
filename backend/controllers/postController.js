@@ -163,9 +163,10 @@ async function getAllPosts(req, res) {
         const upTo = req.query.upto;
 
         let condition = {};
-        // if (req.query.onFeed == 'true') {
-        //     Object.assign(condition, { NOT: { AND: { authorId: userId, postType: { in: ["POST"] } } } })
-        // }
+        if (req.query.onFeed == 'true') { //Do not show the own user's posts if its on feed, like twitter
+            Object.assign(condition, { NOT: { authorId: userId } })
+        }
+
         if (req.query.userId) {
             Object.assign(condition, { authorId: parseInt(req.query.userId), postType: { in: ["POST", "SHARE_REPLY"] } });
         }
