@@ -204,9 +204,18 @@ npm run dev
 
 ## Visualization
 
-<img width="1920" height="919" alt="odin-book_screenshot" src="" />
+Feed:
+<img width="1920" height="918" alt="the-odin-book-feed-screenshot" src="https://github.com/user-attachments/assets/265712fd-a5bb-4222-992e-8c1a2e20a1ce" />
+
+Profile page: 
+<img width="1920" height="918" alt="the-odin-book-profile-screenshot" src="https://github.com/user-attachments/assets/de062ca4-e8a3-473b-b277-ca9551dd5da5" />
+
+Search page:
+<img width="1920" height="918" alt="the-odin-book-search-page-screenshot" src="https://github.com/user-attachments/assets/4d93f323-a524-48c6-ae12-2583feb1fdb9" />
 
 ---
+
+>**Note on file storage:** storing uploaded files directly in the database isn't the best long-term choice for a production app, but it was a deliberate trade-off here. It keeps the project self-contained and easy for anyone to clone, run, and test without setting up external file storage.
 
 Project developed following: [The Odin Project - Odin Book](https://www.theodinproject.com/lessons/node-path-nodejs-odin-book)
 
