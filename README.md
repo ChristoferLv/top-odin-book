@@ -1,6 +1,6 @@
 # Odin Book
 
-A full-featured Twitter/X-inspired social network built as the final project of [The Odin Project Node.js](https://www.theodinproject.com/lessons/node-path-nodejs-odin-book) course. It brings together everything learned throughout the entire curriculum: authentication, real-time communication, complex data modeling, file handling, and a polished frontend, into a production-grade social platform powered by Express, Prisma, Socket.IO, and React.
+A full-featured Twitter/X-inspired social network built as the final project of [The Odin Project Node.js](https://www.theodinproject.com/paths/full-stack-javascript/courses/nodejs) course. It brings together everything learned throughout the entire curriculum: authentication, real-time communication, complex data modeling, file handling, and a polished frontend, into a production-grade social platform powered by Express, Prisma, Socket.IO, and React.
 
 This is the largest project in the course and the one that pulls it all together. It is designed as a real social network where users can post, reply, share, like, bookmark, follow, get notified in real time, search for content, upload images, and explore trending posts. All in a Twitter-like experience built from scratch.
 
